@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | GomiWet</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+</head>
+
+<body>
+
+<header class="header">
+  <h1>ร้านรับซื้อเศษอาหาร</h1>
+  <button onclick="logout()">ออกจากระบบ</button>
+</header>
+
+<main class="container">
+  <div id="map"></div>
+  <div id="storeList"></div>
+</main>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Init -->
+<script src="js/firebase.js"></script>
+<script src="js/home.js"></script>
+
+</body>
+</html>
