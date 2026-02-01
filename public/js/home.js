@@ -100,6 +100,7 @@ function renderStores(stores) {
                 <hr />
 
                 <div class="store-types">
+                    <span class="type-label">ประเภท:</span>
                     ${(store.tags || []).map(t => `
                     <span class="type-pill">${t}</span>
                     `).join('')}
