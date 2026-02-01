@@ -17,6 +17,10 @@ body {
   padding-bottom: 80px; /* กัน bottom-nav */
 }
 
+.bottom-space {
+  height: 80px; /* ปรับตามความสูง bottom-nav */
+}
+
 /* === login page === */
 .card {
   background: #00BEC4;
@@ -153,35 +157,97 @@ body {
 }
 
 .store-card {
+  border: 1px solid #222;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
   background: #fff;
-  padding: 14px;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  font-size: 12px;
 }
 
-.store-card h3 {
-  font-size: 15px;
-  margin-bottom: 4px;
+/* header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.store-card p {
-  font-size: 13px;
-  color: #555;
+.store-name {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
 }
 
-/* ===== Sell Button ===== */
-.btn-sell {
-  margin-top: 10px;
-  background: #00c853;
+.badge-yellow {
+  background: #ffc400;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* address */
+.store-address {
+  margin-top: 6px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #333;
+}
+
+.store-address i {
+  color: #00c853;
+  font-size: 14px;
+}
+
+hr {
+  margin: 12px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* types */
+.store-types {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.type-pill {
+  border: 1px solid #aaa;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  background: #eee;
+}
+
+/* footer */
+.card-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sell-count {
+  color: #00c853;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sell-btn {
+  background: #14c614;
   color: #fff;
   border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-size: 13px;
+  padding: 6px 18px;
   cursor: pointer;
+}
+
+.sell-btn:hover {
+  background: #10a810;
 }
 
 /* ===== Desktop จำกัดความกว้าง ===== */

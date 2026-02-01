@@ -3,15 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>ชำระเงิน</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sell_style.css">
 </head>
 <body>
 
-<h1>ชำระเงิน</h1>
-<p id="amount"></p>
+<header class="header">
+  <h2>สรุปและชำระเงิน</h2>
+</header>
 
-<button onclick="pay()">ยืนยัน</button>
+<div class="card">
+  <p><b>สินค้า:</b> <span id="showProduct"></span></p>
+  <p><b>ราคา:</b> <span id="showPrice"></span> บาท</p>
+  <p><b>การขนส่ง:</b> <span id="showShipping"></span></p>
 
-<script src="js/payment.js"></script>
+  <button onclick="alert('ชำระเงินสำเร็จ 🎉')">
+    ชำระเงิน
+  </button>
+</div>
+
+<script src="js/sell.js"></script>
 </body>
 </html>

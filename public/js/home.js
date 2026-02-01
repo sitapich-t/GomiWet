@@ -85,41 +85,87 @@ function renderStores(stores) {
             distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กิโลเมตร`;
         }
 
-        // สร้าง HTML Card
         storeList.innerHTML += `
             <div class="store-card">
-                <span class="badge">${store.type || 'ผู้รับซื้อ'}</span>
-                <h3 style="margin:0">${store.store_name}</h3>
+                <div class="card-header">
+                    <h2 class="store-name">${store.store_name}</h2>
+                    <span class="badge-yellow">${store.type || 'ผู้รับซื้อ'}</span>
+                </div>
+
                 <div class="store-address">
-                    <i class="fa-solid fa-location-dot" style="color:var(--main-teal)"></i>
+                    <i class="fa-solid fa-location-dot"></i>
                     ${store.address}
                 </div>
-                <div class="store-tags">
-                    ${(store.tags || ['เศษอาหาร']).map(t => `<span class="tag">${t}</span>`).join('')}
+
+                <hr />
+
+                <div class="store-types">
+                    ${(store.tags || []).map(t => `
+                    <span class="type-pill">${t}</span>
+                    `).join('')}
                 </div>
-                <div class="buy-count">รับซื้อแล้ว ${store.sellCount || 0} ครั้ง</div>
-                <div style="font-size:12px; color:#999; margin-top:5px;">${distanceInfo}</div>
-                <button class="btn-sell">ขาย</button>
+
+                <div class="card-footer">
+                    <div class="sell-count">รับซื้อแล้ว ${store.sellCount || 0} ครั้ง</div>
+                    <button class="sell-btn" onclick="startSell('${store.id}')">
+                        ขาย
+                    </button>
+                </div>
             </div>
         `;
 
         // ปักหมุดร้านค้าบน Map
-        L.marker([store.lat, store.lng]).addTo(map).bindPopup(store.name);
+        L.marker([store.lat, store.lng])
+  .addTo(map)
+  .bindPopup(store.store_name || "ร้านรับซื้อ");
+
     });
 }
 
+function startSell(storeId) {
+    // เก็บร้านที่เลือกไว้ก่อน
+    sessionStorage.setItem("selectedStoreId", storeId);
+
+    // ไปหน้าเลือกขนส่ง
+    window.location.href = "shipping.html";
+}
+
 function filterStores() {
-    const term = document.getElementById("searchInput").value.toLowerCase();
-    const filtered = allStores.filter(s => 
-        s.name.toLowerCase().includes(term) || 
-        (s.category && s.category.toLowerCase().includes(term))
-    );
+    const term = document.getElementById("searchInput").value
+        .toLowerCase()
+        .trim();
+
+    console.log("🔍 search:", term);
+
+    if (!term) {
+        renderStores(allStores);
+        return;
+    }
+
+    const filtered = allStores.filter(store => {
+        const name = (store.store_name || "").toLowerCase();
+        const type = (store.type || "").toLowerCase();
+        const address = (store.address || "").toLowerCase();
+        const tags = (store.tags || []).join(" ").toLowerCase();
+
+        return (
+            name.includes(term) ||
+            type.includes(term) ||
+            address.includes(term) ||
+            tags.includes(term)
+        );
+    });
+
+    console.log("✅ filtered result:", filtered.length);
     renderStores(filtered);
 }
 
-function logout() {
-    liff.logout();
-    window.location.replace("index.html");
-}
 
-document.addEventListener("DOMContentLoaded", checkLogin);
+document.addEventListener("DOMContentLoaded", () => {
+    checkLogin();
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", filterStores);
+    }
+});

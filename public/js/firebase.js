@@ -7,8 +7,5 @@ const firebaseConfig = {
   appId: "1:583759356106:web:7192049c957472f822d433"
 };
 
-// init
-firebase.initializeApp(firebaseConfig);
-
-// IMPORTANT
-db = firebase.firestore();
+initializeApp(firebaseConfig);
+db = getFirestore();
