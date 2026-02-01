@@ -15,3 +15,4 @@ if (!firebase.apps.length) {
 
 // 🔥 ตัวนี้แหละที่ทุกหน้าใช้
 const db = firebase.firestore();
+db.useEmulator("127.0.0.1", 8080);
