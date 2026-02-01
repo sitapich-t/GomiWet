@@ -1,22 +1,25 @@
-/* ===== Reset เบื้องต้น ===== */
+/* ===== Reset ===== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #f4f6f8;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+html, body {
+  width: 100%;
+  height: 100%;
 }
 
-/* ===== Card กลางจอ ===== */
+body {
+  font-family: "IBM Plex Sans Thai Looped", system-ui, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+  padding-bottom: 80px; /* กัน bottom-nav */
+}
+
+/* === login page === */
 .card {
-  background: #ffffff;
+  background: #00BEC4;
   width: 100%;
   max-width: 360px;
   margin: 16px;
@@ -26,129 +29,334 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* ===== ข้อความ ===== */
-.card h1 {
-  font-size: 22px;
-  margin-bottom: 8px;
-  color: #222;
+.logo-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 80%;  
+  object-fit: cover;   
+  display: block;
+  margin: 0 auto 20px;
 }
 
-.card p {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
-}
+.line-btn {
+  width: 90%;
+  padding: 14px 18px;
+  background: #F6F6F6;
+  border-radius: 999px;
 
-/* ===== ปุ่ม LINE ===== */
-button {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  display: flex;               
+  align-items: center;          
+  justify-content: center;
+
+  gap: 10px;                    
+  font-size: 20px;
   font-weight: 600;
-  border-radius: 12px;
+  color: #111;
   border: none;
   cursor: pointer;
-  background: #06c755; /* LINE green */
-  color: #fff;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 4px 12px rgba(6, 199, 85, 0.4);
+.line-icon {
+  width: 30px;
+  height: 28px;
+  display: block;
 }
 
-/* ===== Home page ===== */
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
+/* ===== Header ===== */
+.header-blue {
+  background: #00bec4;
+  padding: 20px 16px 40px;
+  border-radius: 0 0 24px 24px;
+}
+
+.header-inner {
   max-width: 420px;
-  background: #06c755;
-  color: #fff;
-  padding: 14px 16px;
+  margin: auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  z-index: 10;
+  gap: 12px;
 }
 
-.header h1 {
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
+.header-text h2 {
   font-size: 18px;
+  color: #fff;
 }
 
-.header button {
-  width: auto;
-  padding: 8px 12px;
-  font-size: 13px;
-  background: #ffffff;
-  color: #06c755;
-  border-radius: 8px;
+.header-text p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
 }
 
-/* ===== เนื้อหา ===== */
-.container {
-  width: 100%;
+/* ===== Search ===== */
+.search-container {
   max-width: 420px;
-  padding: 80px 16px 20px;
+  margin: -28px auto 10px;
+  padding: 0 16px;
 }
 
-/* ===== Card ร้านค้า ===== */
+.search-box {
+  background: #fff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* ===== Map ===== */
+#map {
+  max-width: 420px;
+  height: 220px;
+  margin: 14px auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dist-info {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* ===== Section ===== */
+.section-title {
+  max-width: 420px;
+  margin: 10px auto;
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ===== Store list ===== */
+#storeList {
+  max-width: 420px;
+  margin: auto;
+  padding: 0 16px;
+}
+
 .store-card {
-  background: #ffffff;
-  padding: 16px;
-  border-radius: 14px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
 .store-card h3 {
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 4px;
 }
 
 .store-card p {
   font-size: 13px;
   color: #555;
+}
+
+/* ===== Sell Button ===== */
+.btn-sell {
+  margin-top: 10px;
+  background: #00c853;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== Desktop จำกัดความกว้าง ===== */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    justify-content: center;
+  }
+
+  body > * {
+    width: 420px;
+  }
+}
+
+/* ===== Profile Header ===== */
+.container {
+  padding: 16px;
+  max-width: 480px;
+  margin: auto;
+}
+
+.profile-header {
+  padding-bottom: 24px;
+}
+
+.user-info {
+  max-width: 480px;
+  margin: auto;
+}
+
+.avatar-container {
+  position: relative;
+}
+
+.avatar-container img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+.edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.edit-btn i {
+  color: #27ae60;
+  font-size: 14px;
+}
+
+.user-detail h2 {
+  font-size: 20px;
   margin-bottom: 6px;
 }
 
-.store-card .sell-btn {
-  margin-top: 10px;
+.user-detail p {
   font-size: 14px;
-  padding: 10px;
-  border-radius: 10px;
+  opacity: 0.9;
 }
 
-/* ===== หน้าจอใหญ่ (tablet ขึ้นไป) ===== */
-@media (min-width: 768px) {
-  body {
-    background: #e9edf0;
-  }
-
-  .card,
-  .container,
-  .header {
-    max-width: 420px;
-  }
-}
-
+/* ===== Main Container ===== */
 .container {
-  display: flex;
-  height: calc(100vh - 70px);
-}
-
-#map {
-  flex: 1;
-}
-
-#storeList {
-  flex: 1;
-  overflow-y: auto;
   padding: 16px;
 }
 
-.store {
-  border-bottom: 1px solid #ddd;
+/* ===== Summary ===== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.sum-card {
+  min-height: 90px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sum-title {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.sum-value {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: left;
+}
+
+
+/* ===== History ===== */
+.history-section {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.section-header h3 {
+  font-size: 16px;
+}
+
+.count-badge {
+  background: #ecf9f1;
+  color: #27ae60;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.loading-text {
+  text-align: center;
+  color: #999;
+  padding: 20px 0;
+}
+
+.view-all-btn {
+  width: 100%;
+  margin-top: 12px;
   padding: 10px;
+  border: none;
+  background: #f1f1f1;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ===== Bottom Nav ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 999;
+}
+
+.bottom-nav a {
+  text-decoration: none;
+  color: #777;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bottom-nav a.active {
+  color: #27ae60;
+}
+
+.bottom-nav i {
+  font-size: 20px;
+  margin-bottom: 2px;
 }

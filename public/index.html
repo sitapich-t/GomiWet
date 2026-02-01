@@ -1,21 +1,38 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <title>Login | GomiWet</title>
   <link rel="stylesheet" href="css/style.css">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body>
+
+<body class="login-page">
 
   <div class="card">
-    <h1>เข้าสู่ระบบ</h1>
-    <p>กรุณาเข้าสู่ระบบด้วย LINE</p>
-    <button id="loginBtn">เข้าสู่ระบบด้วย LINE</button>
+    <div class="logo-wrapper">
+      <img src="images/logo.jpg" class="logo-img" alt="GomiWet Logo">
+    </div>
+
+    <h1 class="welcome-title">ยินดีต้อนรับ</h1>
+    <p class="welcome-subtitle">แพลตฟอร์มรับซื้อ-ขายเศษอาหาร</p>
+
+    <button id="loginBtn" class="line-btn">
+      <img src="images/line-icon.png" class="line-icon">
+      <span>เข้าสู่ระบบด้วย LINE</span>
+    </button>
+
   </div>
 
   <script src="js/auth.js"></script>
 </body>
+
 </html>

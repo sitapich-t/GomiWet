@@ -2,39 +2,61 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Home | GomiWet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GomiWet | ค้นหาผู้รับซื้อ</title>
 
+  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bottom-nav.css">
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+<body class="container">
 
-<body>
+  <!-- Header -->
+  <div class="header-blue">
+    <div class="header-inner">
+      <img src="images/logo.png" class="logo" alt="logo">
+      <div class="header-text">
+        <h2>ค้นหาผู้รับซื้อ</h2>
+        <p>ค้นหาผู้รับซื้อเศษอาหารใกล้คุณ</p>
+      </div>
+    </div>
+  </div>
 
-<header class="header">
-  <h1>ร้านรับซื้อเศษอาหาร</h1>
-  <button onclick="logout()">ออกจากระบบ</button>
-</header>
+  <!-- Search -->
+  <div class="search-container">
+    <div class="search-box">
+      <i class="fa fa-search"></i>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="ค้นหาชื่อหรือประเภทผู้รับซื้อ"
+      >
+    </div>
+  </div>
 
-<main class="container">
+  <!-- Map -->
   <div id="map"></div>
+  <div class="dist-info" id="distDisplay">
+    คำนวณระยะทางจากตำแหน่งของคุณ...
+  </div>
+
+  <!-- Store list -->
+  <div class="section-title">ร้านแนะนำ</div>
   <div id="storeList"></div>
-</main>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- JS -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Init -->
-<script src="js/firebase.js"></script>
-<script src="js/home.js"></script>
-
+  <script src="js/firebase.js"></script>
+  <div id="bottom-nav"></div>
+  <script src="js/load-bottom-nav.js"></script>
+  <script src="js/home.js"></script>
 </body>
 </html>
