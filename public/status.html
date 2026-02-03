@@ -6,24 +6,26 @@
   <title>สถานะการขนส่ง</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="css/cal-style.css">
+  <link rel="stylesheet" href="css/bottom-nav.css">
+
 </head>
 
 <body>
 
   <!-- 🚚 TRACKING -->
-    <div id="track" class="page">
-        <div class="header">
-            <div class="icon_frame">
-                <img class="icon" src="assets/nav_icons/truck.png" />
-            </div>
-            <h2>สถานะการขาย</h2>
-        </div>
-        <div class="card">
-            <input id="trackInput" placeholder="กรอกเลขพัสดุ">
-            <button class="primary" onclick="trackParcel()">ติดตาม</button>
-            <div id="trackResult"></div>
-        </div>
+  <div id="track" class="page">
+    <div class="header">
+      <div class="icon_frame">
+        <img class="icon" src="assets/nav_icons/truck.png" />
+      </div>
+      <h2>สถานะการขาย</h2>
     </div>
+    <div class="card">
+      <input id="trackInput" placeholder="กรอกเลขพัสดุ">
+      <button class="primary" onclick="trackParcel()">ติดตาม</button>
+      <div id="trackResult"></div>
+    </div>
+  </div>
 
   <div id="bottom-nav"></div>
   <script src="js/load-bottom-nav.js"></script>

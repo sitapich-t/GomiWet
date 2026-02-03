@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="container">
 
   <!-- Header -->
@@ -30,11 +32,7 @@
   <div class="search-container">
     <div class="search-box">
       <i class="fa fa-search"></i>
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="ค้นหาชื่อหรือประเภทผู้รับซื้อ"
-      >
+      <input type="text" id="searchInput" placeholder="ค้นหาชื่อหรือประเภทผู้รับซื้อ">
     </div>
   </div>
 
@@ -49,17 +47,18 @@
   <div id="storeList"></div>
 
   <div class="bottom-space"></div>
-  
+
   <!-- JS -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script src="js/firebase.js"></script>
   <div id="bottom-nav"></div>
   <script src="js/load-bottom-nav.js"></script>
-  
+
 </body>
 <script src="js/home.js"></script>
+
 </html>

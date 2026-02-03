@@ -4,6 +4,7 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 let map, userMarker;
 let allStores = [];
 let userCoords = null;
+let storeMarkers = [];
 
 async function checkLogin() {
     try {
@@ -63,65 +64,93 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 async function loadStores() {
-    try {
-        // ดึงข้อมูลจาก Firestore (ตรวจสอบชื่อ collection 'stores' ให้ตรง)
-        const snapshot = await db.collection("stores").get();
-        allStores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderStores(allStores);
-    } catch (error) {
-        console.error("Firestore Error:", error);
-        document.getElementById("storeList").innerHTML = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+  try {
+    const snapshot = await db.ref("shops").once("value");
+
+    if (!snapshot.exists()) {
+      console.log("❌ ไม่มีข้อมูล");
+      return;
     }
+
+    const data = snapshot.val();
+
+    // แปลง object → array
+    allStores = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    }));
+
+    console.log("✅ โหลดข้อมูลแล้ว:", allStores);
+
+    renderStores(allStores);
+
+  } catch (err) {
+    console.error("RTDB error:", err);
+  }
 }
 
 function renderStores(stores) {
-    const storeList = document.getElementById("storeList");
-    storeList.innerHTML = "";
+  const storeList = document.getElementById("storeList");
+  storeList.innerHTML = "";
 
-    stores.forEach(store => {
-        let distanceInfo = "กรุณาเปิด GPS";
-        if (userCoords && store.lat && store.lng) {
-            const dist = calculateDistance(userCoords.lat, userCoords.lng, store.lat, store.lng);
-            distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กิโลเมตร`;
-        }
+  // ลบ marker เก่า
+  storeMarkers.forEach(m => map.removeLayer(m));
+  storeMarkers = [];
 
-        storeList.innerHTML += `
-            <div class="store-card">
-                <div class="card-header">
-                    <h2 class="store-name">${store.store_name}</h2>
-                    <span class="badge-yellow">${store.type || 'ผู้รับซื้อ'}</span>
-                </div>
+  stores.forEach(store => {
+    let distanceInfo = "กรุณาเปิด GPS";
+    let distanceValue = null;
 
-                <div class="store-address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    ${store.address}
-                </div>
+    if (userCoords && store.latitude && store.longitude) {
+      const dist = calculateDistance(
+        userCoords.lat,
+        userCoords.lng,
+        store.latitude,
+        store.longitude
+      );
+      distanceValue = dist;
+      distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กม.`;
+    }
 
-                <hr />
+    // 🟢 การ์ดร้าน
+    storeList.innerHTML += `
+      <div class="store-card">
+        <div class="card-header">
+          <h2 class="store-name">${store.shop_name}</h2>
+        </div>
 
-                <div class="store-types">
-                    <span class="type-label">ประเภท:</span>
-                    ${(store.tags || []).map(t => `
-                    <span class="type-pill">${t}</span>
-                    `).join('')}
-                </div>
+        <div class="store-address">
+          👤 เจ้าของร้าน: ${store.owner_name} ${store.owner_surname}
+        </div>
 
-                <div class="card-footer">
-                    <div class="sell-count">รับซื้อแล้ว ${store.sellCount || 0} ครั้ง</div>
-                    <button class="sell-btn" onclick="startSell('${store.id}')">
-                        ขาย
-                    </button>
-                </div>
-            </div>
-        `;
+        <div class="store-distance">
+          📍 ${distanceInfo}
+        </div>
 
-        // ปักหมุดร้านค้าบน Map
-        L.marker([store.lat, store.lng])
-  .addTo(map)
-  .bindPopup(store.store_name || "ร้านรับซื้อ");
+        <div class="card-footer">
+          📞 ${store.telephone}
+          <button class="sell-btn" onclick="startSell('${store.id}')">
+            ขาย
+          </button>
+        </div>
+      </div>
+    `;
 
-    });
+    // 📍 marker ร้าน
+    if (store.latitude && store.longitude) {
+      const marker = L.marker([store.latitude, store.longitude])
+        .addTo(map)
+        .bindPopup(`
+          <b>${store.shop_name}</b><br/>
+          ${distanceInfo}<br/>
+          📞 ${store.telephone}
+        `);
+
+      storeMarkers.push(marker);
+    }
+  });
 }
+
 
 function startSell(storeId) {
     // เก็บร้านที่เลือกไว้ก่อน
