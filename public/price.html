@@ -2,138 +2,122 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <link rel="stylesheet" href="css/cal-styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="stylesheet" href="css/cal-styles.css">
+  <link rel="stylesheet" href="css/bottom-nav.css">
+
 </head>
 
 <body>
-    <!-- 🧮 CALCULATOR -->
-    <div id="calc" class="page">
-        <div class="header">
-            <div class="icon_frame">
-                <img class="icon" src="assets/nav_icons/calculator.png" />
-            </div>
-            <h2>คำนวณราคา</h2>
-        </div>
-        <h4>เลือกประเภทเศษอาหารที่ต้องการขาย</h4>
-        <div class="card_frame">
-            <div class="card">
-                <strong>ข้าว</strong>
-                <img class="bigIcon" src="assets/types/rice.png" />
-                <p>7.0 บาท/กก.</p>
-            </div>
-            <div class="card">
-                <strong>ผัก</strong>
-                <img class="bigIcon" src="assets/types/vegetable.png" />
-                <p>4.0 บาท/กก.</p>
-            </div>
-            <div class="card">
-                <strong>กระดูก</strong>
-                <img class="bigIcon" src="assets/types/bone.png" />
-                <p>8.0 บาท/กก.</p>
-            </div>
-            <div class="card">
-                <strong>เศษอาหารปรุงสุก</strong>
-                <img class="bigIcon" src="assets/types/cooking.png" />
-                <p>5.5 บาท/กก.</p>
-            </div>
-            <div class="card">
-                <strong>เนื้อสัตว์</strong>
-                <img class="bigIcon" src="assets/types/meat.png" />
-                <p>5.0 บาท/กก.</p>
-            </div>
-            <div class="card">
-                <strong>เศษอาหารที่ปนกัน</strong>
-                <img class="bigIcon" src="assets/types/mix.png" />
-                <p>2.5 บาท/กก.</p>
-            </div>
-            <!-- <input id="num1" type="number" placeholder="จำนวนที่ 1">
+  <!-- 🧮 CALCULATOR -->
+  <div id="calc" class="page">
+    <div class="header">
+      <div class="icon_frame">
+        <img class="icon" src="assets/nav_icons/calculator.png" />
+      </div>
+      <h2>คำนวณราคา</h2>
+    </div>
+    <h4>เลือกประเภทเศษอาหารที่ต้องการขาย</h4>
+    <div class="card_frame">
+      <div class="card">
+        <strong>ข้าว</strong>
+        <img class="bigIcon" src="assets/types/rice.png" />
+        <p>7.0 บาท/กก.</p>
+      </div>
+      <div class="card">
+        <strong>ผัก</strong>
+        <img class="bigIcon" src="assets/types/vegetable.png" />
+        <p>4.0 บาท/กก.</p>
+      </div>
+      <div class="card">
+        <strong>กระดูก</strong>
+        <img class="bigIcon" src="assets/types/bone.png" />
+        <p>8.0 บาท/กก.</p>
+      </div>
+      <div class="card">
+        <strong>เศษอาหารปรุงสุก</strong>
+        <img class="bigIcon" src="assets/types/cooking.png" />
+        <p>5.5 บาท/กก.</p>
+      </div>
+      <div class="card">
+        <strong>เนื้อสัตว์</strong>
+        <img class="bigIcon" src="assets/types/meat.png" />
+        <p>5.0 บาท/กก.</p>
+      </div>
+      <div class="card">
+        <strong>เศษอาหารที่ปนกัน</strong>
+        <img class="bigIcon" src="assets/types/mix.png" />
+        <p>2.5 บาท/กก.</p>
+      </div>
+      <!-- <input id="num1" type="number" placeholder="จำนวนที่ 1">
             <input id="num2" type="number" placeholder="จำนวนที่ 2">
             <button class="primary" onclick="calculate()">คำนวณ</button>
             <div class="result" id="calcResult"></div> -->
-        </div>
-        <div class="calcCard">
-            <div>
-                <strong>กรอกนํ้าหนัก:</strong>
-                <input id="foodWeight" class="input_box" type="number" placeholder="น้ำหนัก (กก.)">
-                <button class="primary" onclick="calculateEarnings()">คำนวณ</button>
-            </div>
-            
-            <div>
-                <strong>ราคาประเมิน:</strong>
-                <input id="estimatedPrice" class="input_box" type="number" placeholder="ราคาประเมิน (บาท)" disabled>
-            </div>
-        </div>
+    </div>
+    <div class="calcCard">
+      <div>
+        <strong>กรอกนํ้าหนัก:</strong>
+        <input id="foodWeight" class="input_box" type="number" placeholder="น้ำหนัก (กก.)">
+        <button class="primary" onclick="calculateEarnings()">คำนวณ</button>
+      </div>
 
-        
-        <div class="table-wrapper">
-            <h4>ตารางราคา</h4>
-            <table class="price_table">
-                <!-- หัวตาราง/ชื่อคอลลัมน์-->
-                <thead>
-                    <tr>
-                        <th>ระยะทาง (กม.)</th>
-                        <th>ราคา (บาท)</th>
-                    </tr>
-                </thead>
-                
-                <!-- ข้อมูลในตาราง-->
-                <tbody>
-                    <!-- ข้อมูลแต่ละแถว -->
-                    <tr>
-                        <td>10</td>
-                        <td>ฟรี</td>
-                    </tr>
-                    <tr>
-                        <!-- ช่องข้อมูล -->
-                        <td>20</td>
-                        <td>20</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      <div>
+        <strong>ราคาประเมิน:</strong>
+        <input id="estimatedPrice" class="input_box" type="number" placeholder="ราคาประเมิน (บาท)" disabled>
+      </div>
     </div>
 
-    <!-- 🚚 TRACKING -->
-    <div id="track" class="page">
-        <div class="header">
-            <div class="icon_frame">
-                <img class="icon" src="assets/nav_icons/truck.png" />
-            </div>
-            <h2>สถานะการขาย</h2>
-        </div>
-        <div class="card">
-            <input id="trackInput" placeholder="กรอกเลขพัสดุ">
-            <button class="primary" onclick="trackParcel()">ติดตาม</button>
-            <div id="trackResult"></div>
-        </div>
+
+    <div class="table-wrapper">
+      <h4>ตารางราคา</h4>
+      <table class="price_table">
+        <!-- หัวตาราง/ชื่อคอลลัมน์-->
+        <thead>
+          <tr>
+            <th>ระยะทาง (กม.)</th>
+            <th>ราคา (บาท)</th>
+          </tr>
+        </thead>
+
+        <!-- ข้อมูลในตาราง-->
+        <tbody>
+          <!-- ข้อมูลแต่ละแถว -->
+          <tr>
+            <td>10</td>
+            <td>ฟรี</td>
+          </tr>
+          <tr>
+            <!-- ช่องข้อมูล -->
+            <td>20</td>
+            <td>20</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <!-- 👤 PROFILE -->
-    <div id="profile" class="page">
-        <div class="header">
-            <div class="icon_frame">
-                <img class="icon" src="assets/nav_icons/user.png" />
-            </div>
-            <h2>โปรไฟล์</h2>
-        </div>
-        <div class="card">
-            <p><b>ชื่อ:</b> <span id="profileName">-</span></p>
-            <p><b>LINE ID:</b> <span id="profileId">-</span></p>
-            <button onclick="logout()">ออกจากระบบ</button>
-        </div>
+
+
+  <!-- 👤 PROFILE -->
+  <div id="profile" class="page">
+    <div class="header">
+      <div class="icon_frame">
+        <img class="icon" src="assets/nav_icons/user.png" />
+      </div>
+      <h2>โปรไฟล์</h2>
     </div>
+    <div class="card">
+      <p><b>ชื่อ:</b> <span id="profileName">-</span></p>
+      <p><b>LINE ID:</b> <span id="profileId">-</span></p>
+      <button onclick="logout()">ออกจากระบบ</button>
+    </div>
+  </div>
 
-    <!-- 🔻 NAV -->
-    <nav>
-        <button onclick="goto('search')">หน้าแรก</button>
-        <button onclick="goto('calc')">คำนวณราคา</button>
-        <button onclick="goto('track')">สถานะการขาย</button>
-        <button onclick="goto('profile')">โปรไฟล์</button>
-    </nav>
+  <div id="bottom-nav"></div>
+  <script src="js/load-bottom-nav.js"></script>
 
-    <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 
 </html>
