@@ -3,6 +3,7 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 
 let map, userMarker;
 let allStores = [];
+let categoriesMap = {};
 let userCoords = null;
 let storeMarkers = [];
 
@@ -63,30 +64,39 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
 
+async function loadCategories() {
+  const snap = await db.ref("shop_categories").once("value");
+  if (!snap.exists()) return;
+
+  const data = snap.val();
+
+  // แปลงเป็น map: { 1: "ฟาร์มหมู", 2: "..." }
+  categoriesMap = Object.keys(data).reduce((acc, key) => {
+    acc[key] = data[key].category;
+    return acc;
+  }, {});
+}
+
+
 async function loadStores() {
-  try {
-    const snapshot = await db.ref("shops").once("value");
+  await loadCategories(); // 🔥 สำคัญ ต้องโหลดหมวดก่อน
 
-    if (!snapshot.exists()) {
-      console.log("❌ ไม่มีข้อมูล");
-      return;
-    }
+  const snapshot = await db.ref("shops").once("value");
+  if (!snapshot.exists()) return;
 
-    const data = snapshot.val();
+  const data = snapshot.val();
 
-    // แปลง object → array
-    allStores = Object.keys(data).map(key => ({
+  allStores = Object.keys(data).map(key => {
+    const store = data[key];
+    return {
       id: key,
-      ...data[key]
-    }));
+      ...store,
+      category_name: categoriesMap[store.category_id] || "ไม่ระบุหมวด"
+    };
+  });
 
-    console.log("✅ โหลดข้อมูลแล้ว:", allStores);
-
-    renderStores(allStores);
-
-  } catch (err) {
-    console.error("RTDB error:", err);
-  }
+  console.log("✅ ร้านพร้อมหมวด:", allStores);
+  renderStores(allStores);
 }
 
 function renderStores(stores) {
@@ -122,6 +132,8 @@ function renderStores(stores) {
         <div class="store-address">
           👤 เจ้าของร้าน: ${store.owner_name} ${store.owner_surname}
         </div>
+
+        <p>📦 หมวด: ${store.category_name}</p>
 
         <div class="store-distance">
           📍 ${distanceInfo}
@@ -160,12 +172,17 @@ function startSell(storeId) {
     window.location.href = "shipping.html";
 }
 
-function filterStores() {
-    const term = document.getElementById("searchInput").value
+function handleSearchInput(e) {
+    const term = e.target.value
         .toLowerCase()
         .trim();
 
     console.log("🔍 search:", term);
+
+    if (!allStores || allStores.length === 0) {
+        console.warn("❌ allStores ว่าง");
+        return;
+    }
 
     if (!term) {
         renderStores(allStores);
@@ -173,23 +190,13 @@ function filterStores() {
     }
 
     const filtered = allStores.filter(store => {
-        const name = (store.store_name || "").toLowerCase();
-        const type = (store.type || "").toLowerCase();
-        const address = (store.address || "").toLowerCase();
-        const tags = (store.tags || []).join(" ").toLowerCase();
-
-        return (
-            name.includes(term) ||
-            type.includes(term) ||
-            address.includes(term) ||
-            tags.includes(term)
-        );
+        const name = String(store.shop_name || "").toLowerCase();
+        return name.includes(term);
     });
 
-    console.log("✅ filtered result:", filtered.length);
+    console.log("✅ filtered:", filtered.length);
     renderStores(filtered);
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
     checkLogin();
