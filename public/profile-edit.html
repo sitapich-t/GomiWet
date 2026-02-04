@@ -1,57 +1,56 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8">
-    <title>แก้ไขโปรไฟล์ | GomiWet</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แก้ไขข้อมูลส่วนตัว | GomiWet</title>
 
-    <link rel="stylesheet" href="css/profile-edit.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/profile-edit.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <!-- LIFF -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 
 <body>
 
-    <header class="top-bar">
-        <button class="back-btn" onclick="history.back()">
-            <i class="fa fa-arrow-left"></i>
-        </button>
-        <h1>แก้ไขโปรไฟล์</h1>
-    </header>
+  <!-- HEADER -->
+  <div class="header">
+    <img id="userImg" class="avatar" src="https://via.placeholder.com/80">
+    <h2 id="userName">กำลังโหลด...</h2>
+  </div>
 
-    <main class="container">
+  <!-- CONTENT -->
+  <div class="container">
 
-        <!-- รูปโปรไฟล์ -->
-        <div class="avatar-section">
-            <img id="previewImg" src="https://via.placeholder.com/100">
-            <label class="upload-btn">
-                เปลี่ยนรูป
-                <input type="file" id="imgInput" hidden>
-            </label>
-        </div>
+    <div class="form-group">
+      <label>เบอร์โทรศัพท์</label>
+      <input type="tel" id="phoneInput" placeholder="เช่น 0812345678">
+    </div>
 
-        <!-- ฟอร์ม -->
-        <form id="profileForm">
-            <label>ชื่อ</label>
-            <input type="text" id="name" />
+    <div class="form-group">
+      <label>ที่อยู่</label>
+      <textarea id="addressInput" rows="3"
+        placeholder="กรอกที่อยู่ของคุณ"></textarea>
+    </div>
 
-            <label>เบอร์โทร</label>
-            <input type="text" id="phone" />
+    <button class="save-btn" type="button" onclick="saveProfile()">
+      บันทึกข้อมูล
+    </button>
 
-            <label>ที่อยู่</label>
-            <textarea id="address"></textarea>
+  </div>
 
-            <button type="submit">บันทึกข้อมูล</button>
-        </form>
+  <!-- JS -->
+  <script src="js/firebase.js"></script>
+  <script src="js/profile-edit.js"></script>
 
-
-    </main>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="js/firebase.js"></script>
-
-    <script src="js/profile-edit.js"></script>
 </body>
-
 </html>
