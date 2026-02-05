@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <title>เลือกการขนส่ง</title>
   <link rel="stylesheet" href="css/sell-style.css">
 </head>
+
 <body>
 
-<header class="header">
-  <h2>กรอกข้อมูลการขาย</h2>
-  <p>เลือกช่องทางขนส่งและกรอกข้อมูลที่จำเป็นก่อนชำระเงิน</p>
-</header>
+  <header class="header">
+    <h2>กรอกข้อมูลการขาย</h2>
+    <p>เลือกช่องทางขนส่งและกรอกข้อมูลที่จำเป็นก่อนชำระเงิน</p>
+  </header>
 
-<div class="card">
-  <h3>บริการขนส่ง</h3>
+  <div class="card">
+    <h3>บริการขนส่ง</h3>
 
-  <button onclick="selectShipping('delivery')">
-    ต้องการขนส่ง
-  </button>
+    <button onclick="selectShipping(true)">
+      ต้องการขนส่ง
+    </button>
 
-  <button onclick="selectShipping('pickup')">
-    ไม่ต้องการขนส่ง
-  </button>
-</div>
+    <button onclick="selectShipping(false)">
+      ไม่ต้องการขนส่ง
+    </button>
 
-<script src="js/sell.js"></script>
+  </div>
+
+  <script src="js/shipping.js"></script>
 </body>
+
 </html>

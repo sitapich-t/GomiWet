@@ -1,4 +1,4 @@
-const db = firebase.database();
+
 const LIFF_ID = "2008999812-I2Dz19pN";
 
 async function loadProfile() {

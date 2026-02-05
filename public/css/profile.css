@@ -8,21 +8,26 @@ body {
   background: #f6f7f8;
 }
 
+.bottom-space {
+  height: 80px; /* ปรับตามความสูง bottom-nav */
+}
+
 .profile-header {
   background: #12c6c2;
   padding: clamp(16px, 5vw, 24px);
 }
 
-.user-info {
+.profile-top {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
+/* 🖼 Avatar */
 .avatar-container {
-  position: relative;
   width: clamp(64px, 18vw, 80px);
   height: clamp(64px, 18vw, 80px);
+  flex-shrink: 0;
 }
 
 .avatar-container img {
@@ -30,41 +35,68 @@ body {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
+  border: 2px solid #eee;
+  display: block;
 }
 
-/* ปุ่มแก้ไข */
+/* ℹ️ Info */
+.profile-info {
+  flex: 1;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.info-row i {
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#userName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ✏️ Edit button */
 .edit-btn {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
+  background: #f3f3f3;
+  border: none;
+  border-radius: 50%;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  color: #12c6c2;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   cursor: pointer;
 }
 
-.user-detail h2 {
-  margin: 0;
-  font-size: clamp(18px, 5vw, 22px);
-  color: #fff;
+.edit-btn i {
+  font-size: 14px;
+  color: #555;
 }
 
-.user-detail p {
+.profile-info p {
   margin: 4px 0;
-  font-size: clamp(13px, 3.5vw, 14px);
-  color: #e9ffff;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.profile-info i {
+  margin-right: 6px;
+  color: #777;
 }
 
 .summary-grid {
@@ -74,7 +106,7 @@ body {
   padding: 16px;
 }
 
-.sum-card {
+.summary-card {
   background: #fff;
   border-radius: 12px;
   padding: 14px;
@@ -82,12 +114,12 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.sum-title {
+.summary-title {
   font-size: 13px;
   color: #666;
 }
 
-.sum-value {
+.summary-value {
   font-size: clamp(20px, 6vw, 26px);
   font-weight: bold;
   margin-top: 6px;

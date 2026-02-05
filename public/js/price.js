@@ -1,5 +1,3 @@
-const db = firebase.database();
-
 let selectedType = null;
 let selectedPrice = 0;
 
@@ -42,7 +40,7 @@ function mapIcon(category) {
   if (category.includes("กระดูก")) return "assets/types/bone.png";
   if (category.includes("เศษอาหารปรุงสุก")) return "assets/types/cooking.png";
   if (category.includes("เนื้อสัตว์")) return "assets/types/meat.png";
-  return "assets/types/mix.png";
+  if (category.includes("เศษอาหารที่ปนกัน")) return "assets/types/mix.png";
 }
 
 // 🔹 คำนวณราคา

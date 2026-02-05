@@ -1,3 +1,5 @@
+console.count("🔥 firebase.js loaded");
+
 const firebaseConfig = {
   apiKey: "...",
   authDomain: "gomi-wet.firebaseapp.com",

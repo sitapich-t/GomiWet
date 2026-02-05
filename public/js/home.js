@@ -141,7 +141,7 @@ function renderStores(stores) {
 
         <div class="card-footer">
           📞 ${store.telephone}
-          <button class="sell-btn" onclick="startSell('${store.id}')">
+          <button class="sell-btn" onclick="onclick="location.href='shipping.html'"">
             ขาย
           </button>
         </div>

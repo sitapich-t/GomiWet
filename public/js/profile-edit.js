@@ -1,5 +1,4 @@
 const LIFF_ID = "2008999812-I2Dz19pN";
-const db = firebase.database();
 
 let currentUserId = null;
 
@@ -27,7 +26,7 @@ async function loadProfile() {
     const userRef = db.ref(`users/${currentUserId}`);
 
     // โหลดข้อมูลจาก DB
-    userRef.once("value").then(snapshot => {
+    userRef.on("value").then(snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         document.getElementById("phoneInput").value =
