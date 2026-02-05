@@ -2,18 +2,37 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ขายเศษอาหาร</title>
-  <link rel="stylesheet" href="css/sell-style.css">
+  <title>ข้อมูลขนส่ง</title>
+  <link rel="stylesheet" href="sale-shipping-form.css">
 </head>
 <body>
 
-<h1>กรอกข้อมูลขาย</h1>
+  <form id="shippingForm">
 
-<input id="type" placeholder="ประเภทเศษอาหาร">
-<input id="weight" type="number" placeholder="น้ำหนัก (กก.)">
+    <h3>เลือกวันรับสินค้า</h3>
+    <input type="date" id="pickupDate" required>
 
-<button onclick="calculate()">คำนวณราคา</button>
+    <h3>สถานที่เข้ารับ</h3>
+    <input type="text" value="ใช้ตำแหน่งปัจจุบัน" disabled>
+    <textarea id="pickupAddress" placeholder="กรอกที่อยู่สำหรับรับสินค้า"></textarea>
 
-<script src="js/sale-form.js"></script>
+    <h3>ราคาขนส่ง</h3>
+    <input type="number" id="shippingPrice" placeholder="บาท">
+
+    <h3>เลือกช่วงเวลา</h3>
+    <div class="time-grid">
+      <button type="button" onclick="selectTime(this)">08:00 - 10:00</button>
+      <button type="button" onclick="selectTime(this)">10:00 - 12:00</button>
+      <button type="button" onclick="selectTime(this)">13:00 - 15:00</button>
+      <button type="button" onclick="selectTime(this)">15:00 - 17:00</button>
+    </div>
+
+    <h3>หมายเหตุ (ถ้ามี)</h3>
+    <textarea id="note" placeholder="ระบุข้อมูลเพิ่มเติม..."></textarea>
+
+    <button class="submit-btn">ยืนยันการขาย</button>
+  </form>
+
+  <script src="sale-shipping-form.js"></script>
 </body>
 </html>

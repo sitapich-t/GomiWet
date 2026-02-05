@@ -1,7 +1,9 @@
-function selectShipping(isShipping) {
-  // เก็บสถานะไว้ใช้หน้าถัดไป
-  localStorage.setItem('needShipping', isShipping)
+function goShipping() {
+  localStorage.setItem('needShipping', 'true')
+  location.href = 'sale-shipping-form.html'
+}
 
-  // ไปหน้ากรอกข้อมูลขาย
+function goNoShipping() {
+  localStorage.setItem('needShipping', 'false')
   location.href = 'sale-form.html'
 }

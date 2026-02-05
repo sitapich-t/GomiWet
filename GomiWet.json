@@ -1,0 +1,1877 @@
+{
+  "food_waste_types": {
+    "1": {
+      "category": "ข้าว",
+      "weight": 1,
+      "price": 7,
+      "updated_at": "2025-12-25 13:05"
+    },
+    "2": {
+      "category": "ผัก",
+      "weight": 1,
+      "price": 4,
+      "updated_at": "2025-12-25 13:06"
+    },
+    "3": {
+      "category": "กระดูก",
+      "weight": 1,
+      "price": 8,
+      "updated_at": "2025-12-25 13:07"
+    },
+    "4": {
+      "category": "เศษอาหารปรุงสุก",
+      "weight": 1,
+      "price": 5.5,
+      "updated_at": "2025-12-25 13:08"
+    },
+    "5": {
+      "category": "เนื้อสัตว์",
+      "weight": 1,
+      "price": 5,
+      "updated_at": "2025-12-25 13:09"
+    },
+    "6": {
+      "category": "เศษอาหารที่ปนกัน",
+      "weight": 1,
+      "price": 2.5,
+      "updated_at": "2025-12-25 13:10"
+    }
+  },
+
+  "shop_categories": {
+    "1": { "category": "ฟาร์มหมู" },
+    "2": { "category": "ฟาร์มไก่" },
+    "3": { "category": "ฟาร์มปลา" },
+    "4": { "category": "ฟาร์มเป็ด" },
+    "5": { "category": "ผลิตก๊าซชีวภาพ" },
+    "6": { "category": "ผลิตปุ๋ยอินทรีย์" },
+    "7": { "category": "ผลิตอาหารสัตว์" },
+    "8": { "category": "ผลิตน้ำหมัก" }
+  },
+
+  "shops": {
+    "1": {
+      "category_id": 1,
+      "shop_name": "ฟาร์มหมูลุงพล",
+      "owner_name": "พลาธร",
+      "owner_surname": "สุนทรโปษยาสิน",
+      "telephone": "083-465-7890",
+      "latitude": 13.997963,
+      "longitude": 99.969049,
+      "address": "456 หมู่ 4 ต.รางพิกุล อ.กำแพงแสน จ.นครปฐม"
+    },
+    "2": {
+      "category_id": 5,
+      "shop_name": "ไบโอก๊าซ",
+      "owner_name": "ตฤณภัทร",
+      "owner_surname": "วรารักษ์",
+      "telephone": "091-234-5567",
+      "latitude": 13.996453,
+      "longitude": 100.211177,
+      "address": "89/2 หมู่ 3 ต.บางเลน อ.บางเลน จ.นครปฐม"
+    },
+    "3": {
+      "category_id": 6,
+      "shop_name": "ปุ๋ยอีเกิล",
+      "owner_name": "ชนนิกา",
+      "owner_surname": "แสงกระจ่าง",
+      "telephone": "082-345-6789",
+      "latitude": 13.989951,
+      "longitude": 100.105807,
+      "address": "201 หมู่ 5 ต.ดอนตูม อ.บางเลน จ.นครปฐม"
+    },
+    "4": {
+      "category_id": 7,
+      "shop_name": "โรงอาหารสัตว์สมบูรณ์",
+      "owner_name": "ชลาธิศ",
+      "owner_surname": "แสนโอภาส",
+      "telephone": "086-789-9876",
+      "latitude": 13.828176,
+      "longitude": 100.087503,
+      "address": "50 หมู่ 1 ต.บ่อพลับ อ.เมือง จ.นครปฐม"
+    },
+    "5": {
+      "category_id": 8,
+      "shop_name": "น้ำหมักคลีนดี",
+      "owner_name": "พัชญ์ธนัน",
+      "owner_surname": "กลิ่นโพธิ์",
+      "telephone": "081-234-5432",
+      "latitude": 13.949156,
+      "longitude": 100.160432,
+      "address": "1 หมู่ 4 ต.บางพระ อ.บางเลน จ.นครปฐม"
+    }
+  },
+
+"shop_accepted": {
+    "1": {
+      "1": true,
+      "2": true,
+      "4": true,
+      "6": true
+    },
+    "2": {
+      "1": true,
+      "2": true,
+      "4": true,
+      "5": true
+    },
+    "3": {
+      "1": true,
+      "2": true
+    },
+    "4": {
+      "1": true,
+      "2": true,
+      "4": true
+    },
+    "5": {
+      "1": true,
+      "2": true
+    }
+  }
+,
+
+  "shop_records": {
+    "1": { "shop_id": 1, "order_no": 1, "record_at": "2026-01-02 14:05" },
+    "2": { "shop_id": 2, "order_no": 2, "record_at": "2026-01-02 14:11" },
+    "3": { "shop_id": 3, "order_no": 3, "record_at": "2026-01-03 14:11" },
+    "4": { "shop_id": 4, "order_no": 4, "record_at": "2026-01-03 14:12" },
+    "5": { "shop_id": 5, "order_no": 5, "record_at": "2026-01-03 14:18" },
+    "6": { "shop_id": 1, "order_no": 6, "record_at": "2026-01-03 14:28" },
+    "7": { "shop_id": 2, "order_no": 7, "record_at": "2026-01-04 14:05" },
+    "8": { "shop_id": 3, "order_no": 8, "record_at": "2026-01-04 14:05" }
+  },
+
+  "sellers": {
+    "1": {
+      "user_id": 1,
+      "profile_name": "Pakkapol",
+      "name": "พัคพล",
+      "surname": "อิทธินันท์",
+      "telephone": "066-884-1223",
+      "registered_at": "2026-01-02 10:05:44",
+      "address": {
+        "address_detail": "88 หมู่ 3",
+        "sub_district": "กำแพงแสน",
+        "district": "กำแพงแสน",
+        "province": "นครปฐม",
+        "postal_code": "73140"
+      }
+    },
+
+    "2": {
+      "user_id": 2,
+      "profile_name": "Jitradee",
+      "name": "จิตรรดี",
+      "surname": "คงเกียรติ",
+      "telephone": "087-556-9865",
+      "registered_at": "2026-01-02 16:09:03",
+      "address": {
+        "address_detail": "55 หมู่ 2",
+        "sub_district": "บางหลวง",
+        "district": "บางเลน",
+        "province": "นครปฐม",
+        "postal_code": "73130"
+      }
+    },
+
+    "3": {
+      "user_id": 3,
+      "profile_name": "Araya",
+      "name": "อารยา",
+      "surname": "วิวัฒนกุล",
+      "telephone": "097-444-5621",
+      "registered_at": "2026-01-02 10:05:44",
+      "address": {
+        "address_detail": "45/2 หมู่ 2",
+        "sub_district": "ทุ่งขวาง",
+        "district": "กำแพงแสน",
+        "province": "นครปฐม",
+        "postal_code": "73140"
+      }
+    },
+
+    "4": {
+      "user_id": 4,
+      "profile_name": "Chaiyut",
+      "name": "ชัยยุทธ",
+      "surname": "อ้อมน้อย",
+      "telephone": "096-256-4723",
+      "registered_at": "2026-01-02 16:09:03",
+      "address": {
+        "address_detail": "88 หมู่ 3",
+        "sub_district": "กำแพงแสน",
+        "district": "กำแพงแสน",
+        "province": "นครปฐม",
+        "postal_code": "73140"
+      }
+    },
+
+    "5": {
+      "user_id": 5,
+      "profile_name": "Titi",
+      "name": "ทิติ",
+      "surname": "ธราสกุล",
+      "telephone": "064-543-2215",
+      "registered_at": "2026-01-02 10:05:44",
+      "address": {
+        "address_detail": "77/3 หมู่ 5",
+        "sub_district": "สามง่าม",
+        "district": "ดอนตูม",
+        "province": "นครปฐม",
+        "postal_code": "73150"
+      }
+    },
+
+    "6": {
+      "user_id": 6,
+      "profile_name": "Rattana",
+      "name": "รัตนา",
+      "surname": "จิรกานต์",
+      "telephone": "087-565-2365",
+      "registered_at": "2026-01-02 16:09:03",
+      "address": {
+        "address_detail": "201 หมู่ 7",
+        "sub_district": "บางภาษี",
+        "district": "บางเลน",
+        "province": "นครปฐม",
+        "postal_code": "73130"
+      }
+    },
+
+    "7": {
+      "user_id": 7,
+      "profile_name": "Niramon",
+      "name": "นิรมณ",
+      "surname": "หิรัญกิจ",
+      "telephone": "076-744-8877",
+      "registered_at": "2026-01-02 10:05:44",
+      "address": {
+        "address_detail": "68 หมู่ 1",
+        "sub_district": "ห้วยพระ",
+        "district": "ดอนตูม",
+        "province": "นครปฐม",
+        "postal_code": "73150"
+      }
+    },
+
+    "8": {
+      "user_id": 8,
+      "profile_name": "Sommai",
+      "name": "สมไหม",
+      "surname": "อัครโยธิน",
+      "telephone": "099-826-6440",
+      "registered_at": "2026-01-02 16:09:03",
+      "address": {
+        "address_detail": "144 หมู่ 8",
+        "sub_district": "ทุ่งบัว",
+        "district": "กำแพงแสน",
+        "province": "นครปฐม",
+        "postal_code": "73140"
+      }
+    },
+
+    "9": {
+      "user_id": 9,
+      "profile_name": "Sunaree",
+      "name": "ศุนาลี",
+      "surname": "รภิรมย์",
+      "telephone": "088-642-1524",
+      "registered_at": "2026-01-02 10:05:44",
+      "address": {
+        "address_detail": "45/2 หมู่ 2",
+        "sub_district": "ทุ่งขวาง",
+        "district": "กำแพงแสน",
+        "province": "นครปฐม",
+        "postal_code": "73140"
+      }
+    },
+
+    "10": {
+      "user_id": 10,
+      "profile_name": "Ronnagit",
+      "name": "รนณกิต",
+      "surname": "เจริญภิวัฒน์",
+      "telephone": "093-214-1421",
+      "registered_at": "2026-01-01 16:09:03",
+      "address": {
+        "address_detail": "275 หมู่ 6",
+        "sub_district": "บางปลา",
+        "district": "บางเลน",
+        "province": "นครปฐม",
+        "postal_code": "73130"
+      }
+    }
+  }, 
+
+ "sale_records": {
+    "1": {
+      "salerec_id": 1,
+      "user_id": 1,
+      "order_no": 1,
+      "total_amount": 250,
+      "record_at": "2026-01-02 14:05"
+    },
+    "2": {
+      "salerec_id": 2,
+      "user_id": 3,
+      "order_no": 2,
+      "total_amount": 800,
+      "record_at": "2026-01-02 14:11"
+    },
+    "3": {
+      "salerec_id": 3,
+      "user_id": 2,
+      "order_no": 3,
+      "total_amount": 1400,
+      "record_at": "2026-01-03 14:11"
+    },
+    "4": {
+      "salerec_id": 4,
+      "user_id": 1,
+      "order_no": 4,
+      "total_amount": 2350,
+      "record_at": "2026-01-03 14:12"
+    },
+    "5": {
+      "salerec_id": 5,
+      "user_id": 3,
+      "order_no": 5,
+      "total_amount": 2300,
+      "record_at": "2026-01-03 14:18"
+    },
+    "6": {
+      "salerec_id": 6,
+      "user_id": 4,
+      "order_no": 6,
+      "total_amount": 500,
+      "record_at": "2026-01-03 14:28"
+    },
+    "7": {
+      "salerec_id": 7,
+      "user_id": 1,
+      "order_no": 7,
+      "total_amount": 3850,
+      "record_at": "2026-01-04 14:05"
+    },
+    "8": {
+      "salerec_id": 8,
+      "user_id": 1,
+      "order_no": 8,
+      "total_amount": 5850,
+      "record_at": "2026-01-04 14:05"
+    }
+  },
+
+  "bank_accounts": {
+    "1": {
+      "bank_id": 1,
+      "user_id": 1,
+      "name": "อชิระ",
+      "surname": "วาณิชย์",
+      "bank_name": "อชิระ วาณิชย์",
+      "bank_account_number": "364-212143-0",
+      "promptpay": "076-872-1893"
+    },
+    "2": {
+      "bank_id": 2,
+      "user_id": 2,
+      "name": "จารวี",
+      "surname": "จันทรา",
+      "bank_name": "จารวี จันทรา",
+      "bank_account_number": "144-253142-5",
+      "promptpay": "087-852-9745"
+    },
+    "3": {
+      "bank_id": 3,
+      "user_id": 3,
+      "name": "รินรดา",
+      "surname": "ปรีชากุล",
+      "bank_name": "รินรดา ปรีชากุล",
+      "bank_account_number": "026-785527-2",
+      "promptpay": "097-858-5521"
+    },
+    "4": {
+      "bank_id": 4,
+      "user_id": 4,
+      "name": "จรัล",
+      "surname": "บริรักษ์",
+      "bank_name": "จรัล บริรักษ์",
+      "bank_account_number": "033-885623-0",
+      "promptpay": "069-885-4776"
+    },
+    "5": {
+      "bank_id": 5,
+      "user_id": 5,
+      "name": "วรันธร",
+      "surname": "ธนานันท์",
+      "bank_name": "วรันธร ธนานันท์",
+      "bank_account_number": "142-020300-8",
+      "promptpay": "087-542-4453"
+    }
+  },
+
+  "delivery_emps": {
+    "1": {
+      "delivery_id": 1,
+      "title": "นาย",
+      "name": "สมชาย",
+      "surname": "ใจดี",
+      "telephone": "0812345678",
+      "national_id": "1103700000000",
+      "national_id_expiry": "2032-05-18",
+      "driver_license_no": "640123000000",
+      "driver_license_expiry": "2031-09-30",
+      "start_at": "2025-01-10"
+    },
+    "2": {
+      "delivery_id": 2,
+      "title": "นาย",
+      "name": "วิชัย",
+      "surname": "แสงทอง",
+      "telephone": "0898765432",
+      "national_id": "1103700000000",
+      "national_id_expiry": "2030-11-02",
+      "driver_license_no": "650988000000",
+      "driver_license_expiry": "2030-06-15",
+      "start_at": "2025-06-01"
+    },
+    "3": {
+      "delivery_id": 3,
+      "title": "นาย",
+      "name": "ธนพล",
+      "surname": "พรหมมา",
+      "telephone": "0863452198",
+      "national_id": "1103700000000",
+      "national_id_expiry": "2033-02-20",
+      "driver_license_no": "630457000000",
+      "driver_license_expiry": "2032-12-01",
+      "start_at": "2025-03-18"
+    },
+    "4": {
+      "delivery_id": 4,
+      "title": "นาย",
+      "name": "กิตติ",
+      "surname": "รุ่งเรือง",
+      "telephone": "0829183746",
+      "national_id": "1103700000000",
+      "national_id_expiry": "2031-08-09",
+      "driver_license_no": "660112000000",
+      "driver_license_expiry": "2031-04-22",
+      "start_at": "2025-10-05"
+    }
+  },
+
+  "delivery_cars": {
+    "กท 1234": {
+      "license_plate": "กท 1234",
+      "type": "รถกระบะ",
+      "model": "Toyota Hilux Revo",
+      "color": "ขาว",
+      "registered_at": "2025-12-19"
+    },
+    "1กข 5678": {
+      "license_plate": "1กข 5678",
+      "type": "รถกระบะ",
+      "model": "Toyota Hilux Revo",
+      "color": "ขาว",
+      "registered_at": "2025-12-20"
+    },
+    "8ฑฒ 3219": {
+      "license_plate": "8ฑฒ 3219",
+      "type": "รถกระบะ",
+      "model": "Toyota Hilux Revo",
+      "color": "ขาว",
+      "registered_at": "2025-12-21"
+    }
+  },
+
+  "driving_schedules": {
+    "1": {
+      "schedule_id": 1,
+      "delivery_id": 1,
+      "license_plate": "กท 1234",
+      "pickup_at": "2026-01-01 08:00",
+      "return_at": "2026-01-01 18:00"
+    },
+    "2": {
+      "schedule_id": 2,
+      "delivery_id": 2,
+      "license_plate": "1กข 5678",
+      "pickup_at": "2026-01-01 08:00",
+      "return_at": "2026-01-01 18:00"
+    },
+    "3": {
+      "schedule_id": 3,
+      "delivery_id": 3,
+      "license_plate": "8ฑฒ 3219",
+      "pickup_at": "2026-01-01 10:00",
+      "return_at": "2026-01-01 20:00"
+    },
+    "4": {
+      "schedule_id": 4,
+      "delivery_id": 4,
+      "license_plate": "บฉ 7391",
+      "pickup_at": "2026-01-01 10:00",
+      "return_at": "2026-01-01 20:00"
+    },
+
+    "5": {
+      "schedule_id": 5,
+      "delivery_id": 1,
+      "license_plate": "กท 1234",
+      "pickup_at": "2026-01-02 08:00",
+      "return_at": "2026-01-02 18:00"
+    },
+    "6": {
+      "schedule_id": 6,
+      "delivery_id": 2,
+      "license_plate": "1กข 5678",
+      "pickup_at": "2026-01-02 08:00",
+      "return_at": "2026-01-02 18:00"
+    },
+    "7": {
+      "schedule_id": 7,
+      "delivery_id": 3,
+      "license_plate": "8ฑฒ 3219",
+      "pickup_at": "2026-01-02 10:00",
+      "return_at": "2026-01-02 20:00"
+    },
+    "8": {
+      "schedule_id": 8,
+      "delivery_id": 4,
+      "license_plate": "บฉ 7391",
+      "pickup_at": "2026-01-02 10:00",
+      "return_at": "2026-01-02 20:00"
+    },
+
+    "9": {
+      "schedule_id": 9,
+      "delivery_id": 1,
+      "license_plate": "กท 1234",
+      "pickup_at": "2026-01-03 08:00",
+      "return_at": "2026-01-03 18:00"
+    },
+    "10": {
+      "schedule_id": 10,
+      "delivery_id": 2,
+      "license_plate": "1กข 5678",
+      "pickup_at": "2026-01-03 08:00",
+      "return_at": "2026-01-03 18:00"
+    },
+    "11": {
+      "schedule_id": 11,
+      "delivery_id": 3,
+      "license_plate": "8ฑฒ 3219",
+      "pickup_at": "2026-01-03 10:00",
+      "return_at": "2026-01-03 20:00"
+    },
+    "12": {
+      "schedule_id": 12,
+      "delivery_id": 4,
+      "license_plate": "บฉ 7391",
+      "pickup_at": "2026-01-03 10:00",
+      "return_at": "2026-01-03 20:00"
+    },
+
+    "13": {
+      "schedule_id": 13,
+      "delivery_id": 1,
+      "license_plate": "กท 1234",
+      "pickup_at": "2026-01-04 08:00",
+      "return_at": "2026-01-04 18:00"
+    },
+    "14": {
+      "schedule_id": 14,
+      "delivery_id": 2,
+      "license_plate": "1กข 5678",
+      "pickup_at": "2026-01-04 08:00",
+      "return_at": "2026-01-04 18:00"
+    },
+    "15": {
+      "schedule_id": 15,
+      "delivery_id": 3,
+      "license_plate": "8ฑฒ 3219",
+      "pickup_at": "2026-01-04 10:00",
+      "return_at": "2026-01-04 20:00"
+    },
+    "16": {
+      "schedule_id": 16,
+      "delivery_id": 4,
+      "license_plate": "บฉ 7391",
+      "pickup_at": "2026-01-04 10:00",
+      "return_at": "2026-01-04 20:00"
+    },
+
+    "17": {
+      "schedule_id": 17,
+      "delivery_id": 1,
+      "license_plate": "กท 1234",
+      "pickup_at": "2026-01-05 08:00",
+      "return_at": "2026-01-05 18:00"
+    },
+    "18": {
+      "schedule_id": 18,
+      "delivery_id": 2,
+      "license_plate": "1กข 5678",
+      "pickup_at": "2026-01-05 08:00",
+      "return_at": "2026-01-05 18:00"
+    },
+    "19": {
+      "schedule_id": 19,
+      "delivery_id": 3,
+      "license_plate": "8ฑฒ 3219",
+      "pickup_at": "2026-01-05 10:00",
+      "return_at": "2026-01-05 20:00"
+    },
+    "20": {
+      "schedule_id": 20,
+      "delivery_id": 4,
+      "license_plate": "บฉ 7391",
+      "pickup_at": "2026-01-05 10:00",
+      "return_at": "2026-01-05 20:00"
+    }
+  },
+
+  "delivery_slots": {
+    "1": {
+      "slot_id": 1,
+      "start_time": "08:00",
+      "end_time": "10:00"
+    },
+    "2": {
+      "slot_id": 2,
+      "start_time": "10:01",
+      "end_time": "12:00"
+    },
+    "3": {
+      "slot_id": 3,
+      "start_time": "13:00",
+      "end_time": "15:00"
+    },
+    "4": {
+      "slot_id": 4,
+      "start_time": "15:01",
+      "end_time": "17:00"
+    }
+  },
+  
+  "order": {
+    "1": {
+      "user_id": 1,
+      "shop_id": 1,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-01",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-01 09:15:32",
+      "complete_at": "2026-01-02 14:00:16",
+      "status": "completed"
+    },
+    "2": {
+      "user_id": 3,
+      "shop_id": 2,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-01",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-01 13:47:10",
+      "complete_at": "2026-01-02 14:06:23",
+      "status": "completed"
+    },
+    "3": {
+      "user_id": 2,
+      "shop_id": 3,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-02",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-02 10:05:44",
+      "complete_at": "2026-01-03 14:01:34",
+      "status": "completed"
+    },
+    "4": {
+      "user_id": 1,
+      "shop_id": 4,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-02",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-02 11:22:18",
+      "complete_at": "2026-01-03 14:08:41",
+      "status": "completed"
+    },
+    "5": {
+      "user_id": 3,
+      "shop_id": 5,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-02",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-02 14:36:50",
+      "complete_at": "2026-01-03 14:14:38",
+      "status": "completed"
+    },
+    "6": {
+      "user_id": 4,
+      "shop_id": 1,
+      "delivery_type": "dropoff",
+      "booked_delivery_date": "2026-01-02",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-02 16:09:03",
+      "complete_at": "2026-01-03 14:23:53",
+      "status": "completed"
+    },
+    "7": {
+      "user_id": 1,
+      "shop_id": 2,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-03",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-02 20:41:27",
+      "complete_at": "2026-01-04 14:00:37",
+      "status": "completed"
+    },
+    "8": {
+      "user_id": 1,
+      "shop_id": 3,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-03",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-03 13:58:09",
+      "complete_at": "2026-01-04 14:00:50",
+      "status": "completed"
+    },
+    "9": {
+      "user_id": 2,
+      "shop_id": 4,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-04",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-04 08:42:11",
+      "complete_at": null,
+      "status": "sold"
+    },
+    "10": {
+      "user_id": 1,
+      "shop_id": 3,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-04",
+      "delivery_slot_id": 2,
+      "order_at": "2026-01-04 16:30:55",
+      "complete_at": null,
+      "status": "sorted"
+    },
+    "11": {
+      "user_id": 2,
+      "shop_id": 1,
+      "delivery_type": "dropoff",
+      "booked_delivery_date": "2026-01-04",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-04 16:35:37",
+      "complete_at": null,
+      "status": "outbound"
+    },
+    "12": {
+      "user_id": 3,
+      "shop_id": 2,
+      "delivery_type": "dropoff",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-04 17:16:02",
+      "complete_at": null,
+      "status": "outbound"
+    },
+    "13": {
+      "user_id": 4,
+      "shop_id": 3,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-04 17:33:48",
+      "complete_at": null,
+      "status": "evaluated"
+    },
+    "14": {
+      "user_id": 5,
+      "shop_id": 4,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 1,
+      "order_at": "2026-01-04 21:05:19",
+      "complete_at": null,
+      "status": "evaluated"
+    },
+    "15": {
+      "user_id": 6,
+      "shop_id": 5,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 2,
+      "order_at": "2026-01-05 09:08:26",
+      "complete_at": null,
+      "status": "sorted"
+    },
+    "16": {
+      "user_id": 7,
+      "shop_id": 1,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-05 10:55:41",
+      "complete_at": null,
+      "status": "inbound"
+    },
+    "17": {
+      "user_id": 8,
+      "shop_id": 2,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-05 11:27:59",
+      "complete_at": null,
+      "status": "inbound"
+    },
+    "18": {
+      "user_id": 9,
+      "shop_id": 3,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 3,
+      "order_at": "2026-01-05 12:18:07",
+      "complete_at": null,
+      "status": "inbound"
+    },
+    "19": {
+      "user_id": 2,
+      "shop_id": 4,
+      "delivery_type": "pickup",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-05 12:44:33",
+      "complete_at": null,
+      "status": "picked_up"
+    },
+    "20": {
+      "user_id": 1,
+      "shop_id": 5,
+      "delivery_type": "dropoff",
+      "booked_delivery_date": "2026-01-05",
+      "delivery_slot_id": 4,
+      "order_at": "2026-01-05 14:10:52",
+      "complete_at": null,
+      "status": "order_received"
+    }
+  },
+
+  "order_items": {
+    "1": { "order_no": 1, "waste_id": 6, "weight": 100 },
+    "2": { "order_no": 2, "waste_id": 2, "weight": 200 },
+    "3": { "order_no": 3, "waste_id": 1, "weight": 200 },
+    "4": { "order_no": 4, "waste_id": 1, "weight": 300 },
+    "5": { "order_no": 5, "waste_id": 5, "weight": 300 },
+    "6": { "order_no": 6, "waste_id": 6, "weight": 200 },
+    "7": { "order_no": 7, "waste_id": 5, "weight": 300 },
+    "8": { "order_no": 8, "waste_id": 2, "weight": 500 },
+    "9": { "order_no": 9, "waste_id": 4, "weight": 200 },
+    "10": { "order_no": 10, "waste_id": 1, "weight": 250 },
+    "11": { "order_no": 11, "waste_id": 4, "weight": 400 },
+    "12": { "order_no": 12, "waste_id": 5, "weight": 300 },
+    "13": { "order_no": 13, "waste_id": 6, "weight": 500 },
+    "14": { "order_no": 14, "waste_id": 2, "weight": 400 },
+    "15": { "order_no": 15, "waste_id": 2, "weight": 400 },
+    "16": { "order_no": 16, "waste_id": 2, "weight": 100 },
+    "17": { "order_no": 17, "waste_id": 4, "weight": 200 },
+    "18": { "order_no": 18, "waste_id": 2, "weight": 400 },
+    "19": { "order_no": 19, "waste_id": 1, "weight": 350 },
+    "20": { "order_no": 20, "waste_id": 1, "weight": 300 }
+  },
+
+  "pickup_addresses": {
+    "1": {
+      "order_no": 1,
+      "rate_id": 1,
+      "address": "88 หมู่ 3",
+      "sub_district": "กำแพงแสน",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 0.8
+    },
+    "2": {
+      "order_no": 2,
+      "rate_id": 2,
+      "address": "55 หมู่ 2",
+      "sub_district": "บางหลวง",
+      "district": "บางเลน",
+      "province": "นครปฐม",
+      "postal_code": "73130",
+      "distance": 10.8
+    },
+    "3": {
+      "order_no": 3,
+      "rate_id": 1,
+      "address": "45/2 หมู่ 2",
+      "sub_district": "ทุ่งขวาง",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 4.5
+    },
+    "4": {
+      "order_no": 4,
+      "rate_id": 1,
+      "address": "88 หมู่ 3",
+      "sub_district": "กำแพงแสน",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 0.8
+    },
+    "5": {
+      "order_no": 5,
+      "rate_id": 2,
+      "address": "55 หมู่ 2",
+      "sub_district": "บางหลวง",
+      "district": "บางเลน",
+      "province": "นครปฐม",
+      "postal_code": "73130",
+      "distance": 10.8
+    },
+    "6": {
+      "order_no": 7,
+      "rate_id": 1,
+      "address": "88 หมู่ 3",
+      "sub_district": "กำแพงแสน",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 0.8
+    },
+    "7": {
+      "order_no": 8,
+      "rate_id": 1,
+      "address": "88 หมู่ 3",
+      "sub_district": "กำแพงแสน",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 0.8
+    },
+    "8": {
+      "order_no": 9,
+      "rate_id": 1,
+      "address": "45/2 หมู่ 2",
+      "sub_district": "ทุ่งขวาง",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 4.5
+    },
+    "9": {
+      "order_no": 10,
+      "rate_id": 2,
+      "address": "55 หมู่ 2",
+      "sub_district": "บางหลวง",
+      "district": "บางเลน",
+      "province": "นครปฐม",
+      "postal_code": "73130",
+      "distance": 10.8
+    },
+    "10": {
+      "order_no": 13,
+      "rate_id": 1,
+      "address": "45/2 หมู่ 2",
+      "sub_district": "ทุ่งขวาง",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 4.5
+    },
+    "11": {
+      "order_no": 14,
+      "rate_id": 2,
+      "address": "55 หมู่ 2",
+      "sub_district": "บางหลวง",
+      "district": "บางเลน",
+      "province": "นครปฐม",
+      "postal_code": "73130",
+      "distance": 10.8
+    },
+    "12": {
+      "order_no": 15,
+      "rate_id": 2,
+      "address": "77/3 หมู่ 5",
+      "sub_district": "สามง่าม",
+      "district": "ดอนตูม",
+      "province": "นครปฐม",
+      "postal_code": "73150",
+      "distance": 14.2
+    },
+    "13": {
+      "order_no": 16,
+      "rate_id": 2,
+      "address": "201 หมู่ 7",
+      "sub_district": "บางภาษี",
+      "district": "บางเลน",
+      "province": "นครปฐม",
+      "postal_code": "73130",
+      "distance": 11.5
+    },
+    "14": {
+      "order_no": 17,
+      "rate_id": 2,
+      "address": "68 หมู่ 1",
+      "sub_district": "ห้วยพระ",
+      "district": "ดอนตูม",
+      "province": "นครปฐม",
+      "postal_code": "73150",
+      "distance": 16.0
+    },
+    "15": {
+      "order_no": 18,
+      "rate_id": 1,
+      "address": "144 หมู่ 8",
+      "sub_district": "ทุ่งบัว",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 7.0
+    },
+    "16": {
+      "order_no": 19,
+      "rate_id": 1,
+      "address": "45/2 หมู่ 2",
+      "sub_district": "ทุ่งขวาง",
+      "district": "กำแพงแสน",
+      "province": "นครปฐม",
+      "postal_code": "73140",
+      "distance": 4.5
+    }
+  },
+
+  "pickup_rate": {
+    "1": {
+      "min_distance": 0,
+      "max_distance": 10,
+      "price": 0,
+      "created_at": "2025-12-27 14:23:00"
+    },
+    "2": {
+      "min_distance": 10.1,
+      "max_distance": 20,
+      "price": 20,
+      "created_at": "2025-12-27 14:23:03"
+    }
+  },
+
+  "payment": {
+    "1": {
+      "order_no": 1,
+      "payment_type": "QR Code",
+      "omise_charge_id": "5k9a1b2c3d4e5f01",
+      "amount": 0,
+      "currency": "THB",
+      "qr_reference": null,
+      "qr_expires_at": "2026-01-01 09:25:32",
+      "payment_status": "PAID",
+      "paid_at": "2026-01-01 09:18:32"
+    },
+    "2": {
+      "order_no": 2,
+      "payment_type": "QR Code",
+      "omise_charge_id": "5k9a1b2c3d4e5f02",
+      "amount": 20,
+      "currency": "THB",
+      "qr_reference": "QR20260130001",
+      "qr_expires_at": "2026-01-01 13:57:10",
+      "payment_status": "PAID",
+      "paid_at": "2026-01-01 13:55:10"
+    },
+    "3": {
+      "order_no": 3,
+      "payment_type": "QR Code",
+      "omise_charge_id": "5k9a1b2c3d4e5f03",
+      "amount": 0,
+      "currency": "THB",
+      "qr_reference": null,
+      "qr_expires_at": "2026-01-02 10:15:44",
+      "payment_status": "PAID",
+      "paid_at": "2026-01-02 10:15:44"
+    },
+    "4": {
+      "order_no": 4,
+      "payment_type": "QR Code",
+      "omise_charge_id": "5k9a1b2c3d4e5f04",
+      "amount": 0,
+      "currency": "THB",
+      "qr_reference": null,
+      "qr_expires_at": "2026-01-02 11:32:18",
+      "payment_status": "PAID",
+      "paid_at": "2026-01-02 11:30:18"
+    },
+    "5": {
+      "order_no": 5,
+      "payment_type": "QR Code",
+      "omise_charge_id": "5k9a1b2c3d4e5f05",
+      "amount": 20,
+      "currency": "THB",
+      "qr_reference": "QR20260130002",
+      "qr_expires_at": "2026-01-02 14:46:50",
+      "payment_status": "PAID",
+      "paid_at": "2026-01-02 14:38:50"
+    }
+  },
+
+  "self_drop_off": {
+    "1": {
+      "payment_id": 6,
+      "dropped_off_at": "2026-01-02 16:34:22",
+      "status": "COMPLETED"
+    },
+    "2": {
+      "payment_id": 11,
+      "dropped_off_at": "2026-01-05 09:32:33",
+      "status": "COMPLETED"
+    },
+    "3": {
+      "payment_id": 12,
+      "dropped_off_at": "2026-01-05 09:45:11",
+      "status": "COMPLETED"
+    },
+    "4": {
+      "payment_id": 20,
+      "dropped_off_at": "2026-01-05 16:45:23",
+      "status": "waiting"
+    }
+  },
+
+  "logistic": {
+    "1": {
+      "payment_id": 1,
+      "outbound_id": null,
+      "schedule_id": 1,
+      "pickup_at": "2026-01-01 13:30:32",
+      "delivered_at": "2026-01-01 14:30:32",
+      "status": "completed"
+    },
+    "2": {
+      "payment_id": 2,
+      "outbound_id": null,
+      "schedule_id": 1,
+      "pickup_at": "2026-01-01 14:15:10",
+      "delivered_at": "2026-01-01 14:30:32",
+      "status": "completed"
+    },
+    "3": {
+      "payment_id": null,
+      "outbound_id": 1,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "4": {
+      "payment_id": null,
+      "outbound_id": 2,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "5": {
+      "payment_id": 3,
+      "outbound_id": null,
+      "schedule_id": 5,
+      "pickup_at": "2026-01-02 13:05:44",
+      "delivered_at": "2026-01-02 13:25:44",
+      "status": "completed"
+    },
+    "6": {
+      "payment_id": 4,
+      "outbound_id": null,
+      "schedule_id": 7,
+      "pickup_at": "2026-01-02 15:10:18",
+      "delivered_at": "2026-01-02 15:40:18",
+      "status": "completed"
+    },
+    "7": {
+      "payment_id": 5,
+      "outbound_id": null,
+      "schedule_id": 7,
+      "pickup_at": "2026-01-02 15:30:50",
+      "delivered_at": "2026-01-02 15:40:18",
+      "status": "completed"
+    },
+    "8": {
+      "payment_id": null,
+      "outbound_id": 3,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "9": {
+      "payment_id": null,
+      "outbound_id": 4,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "10": {
+      "payment_id": null,
+      "outbound_id": 5,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "11": {
+      "payment_id": null,
+      "outbound_id": 6,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "12": {
+      "payment_id": 7,
+      "outbound_id": null,
+      "schedule_id": 9,
+      "pickup_at": "2026-01-03 10:05:09",
+      "delivered_at": "2026-01-03 10:25:09",
+      "status": "completed"
+    },
+    "13": {
+      "payment_id": 8,
+      "outbound_id": null,
+      "schedule_id": 9,
+      "pickup_at": "2026-01-03 15:05:09",
+      "delivered_at": "2026-01-03 15:18:09",
+      "status": "completed"
+    },
+    "14": {
+      "payment_id": null,
+      "outbound_id": 7,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "15": {
+      "payment_id": null,
+      "outbound_id": 8,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "16": {
+      "payment_id": 9,
+      "outbound_id": null,
+      "schedule_id": 13,
+      "pickup_at": "2026-01-04 08:53:11",
+      "delivered_at": "2026-01-04 09:10:11",
+      "status": "completed"
+    },
+    "17": {
+      "payment_id": null,
+      "outbound_id": 9,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "completed"
+    },
+    "18": {
+      "payment_id": 10,
+      "outbound_id": null,
+      "schedule_id": 17,
+      "pickup_at": "2026-01-05 10:40:55",
+      "delivered_at": "2026-01-05 11:02:55",
+      "status": "completed"
+    },
+    "19": {
+      "payment_id": 13,
+      "outbound_id": null,
+      "schedule_id": 18,
+      "pickup_at": "2026-01-05 08:52:55",
+      "delivered_at": "2026-01-05 09:40:55",
+      "status": "completed"
+    },
+    "20": {
+      "payment_id": 14,
+      "outbound_id": null,
+      "schedule_id": 18,
+      "pickup_at": "2026-01-05 09:15:55",
+      "delivered_at": "2026-01-05 09:40:55",
+      "status": "completed"
+    },
+    "21": {
+      "payment_id": 15,
+      "outbound_id": null,
+      "schedule_id": 17,
+      "pickup_at": "2026-01-05 10:15:26",
+      "delivered_at": "2026-01-05 11:02:55",
+      "status": "completed"
+    },
+    "22": {
+      "payment_id": 16,
+      "outbound_id": null,
+      "schedule_id": 19,
+      "pickup_at": "2026-01-05 13:11:41",
+      "delivered_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "23": {
+      "payment_id": 17,
+      "outbound_id": null,
+      "schedule_id": 19,
+      "pickup_at": "2026-01-05 13:34:59",
+      "delivered_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "24": {
+      "payment_id": 18,
+      "outbound_id": null,
+      "schedule_id": 19,
+      "pickup_at": "2026-01-05 13:57:07",
+      "delivered_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "25": {
+      "payment_id": 19,
+      "outbound_id": null,
+      "schedule_id": 20,
+      "pickup_at": "2026-01-05 15:03:07",
+      "delivered_at": null,
+      "status": "in process"
+    },
+    "26": {
+      "payment_id": null,
+      "outbound_id": 10,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "in process"
+    },
+    "27": {
+      "payment_id": null,
+      "outbound_id": 11,
+      "schedule_id": null,
+      "pickup_at": null,
+      "delivered_at": null,
+      "status": "in process"
+    }
+  },
+
+  "waiting_sort": {
+    "1": {
+      "inbound_id": 1,
+      "waste_id": 6,
+      "weight": 100,
+      "seller_sorted": "N",
+      "sorted_at": "2026-01-01 15:00:32",
+      "status": "completed"
+    },
+    "2": {
+      "inbound_id": 2,
+      "waste_id": 2,
+      "weight": 200,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-01 15:00:32",
+      "status": "completed"
+    },
+    "3": {
+      "inbound_id": 3,
+      "waste_id": 1,
+      "weight": 200,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-02 14:00:44",
+      "status": "completed"
+    },
+    "4": {
+      "inbound_id": 4,
+      "waste_id": 1,
+      "weight": 300,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-02 16:30:18",
+      "status": "completed"
+    },
+    "5": {
+      "inbound_id": 5,
+      "waste_id": 5,
+      "weight": 300,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-02 16:30:18",
+      "status": "completed"
+    },
+    "6": {
+      "inbound_id": 6,
+      "waste_id": 6,
+      "weight": 200,
+      "seller_sorted": "N",
+      "sorted_at": "2026-01-02 17:10:22",
+      "status": "completed"
+    },
+    "7": {
+      "inbound_id": 7,
+      "waste_id": 5,
+      "weight": 300,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-03 11:00:09",
+      "status": "completed"
+    },
+    "8": {
+      "inbound_id": 8,
+      "waste_id": 2,
+      "weight": 500,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-03 15:50:09",
+      "status": "completed"
+    },
+    "9": {
+      "inbound_id": 9,
+      "waste_id": 4,
+      "weight": 200,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-04 10:10:11",
+      "status": "completed"
+    },
+    "10": {
+      "inbound_id": 10,
+      "waste_id": 1,
+      "weight": 250,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 10:40:55",
+      "status": "in process"
+    },
+    "11": {
+      "inbound_id": 11,
+      "waste_id": 4,
+      "weight": 400,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 10:40:55",
+      "status": "completed"
+    },
+    "12": {
+      "inbound_id": 12,
+      "waste_id": 5,
+      "weight": 300,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 10:10:33",
+      "status": "completed"
+    },
+    "13": {
+      "inbound_id": 13,
+      "waste_id": 6,
+      "weight": 500,
+      "seller_sorted": "N",
+      "sorted_at": "2026-01-05 10:30:11",
+      "status": "completed"
+    },
+    "14": {
+      "inbound_id": 14,
+      "waste_id": 2,
+      "weight": 400,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 11:35:55",
+      "status": "completed"
+    },
+    "15": {
+      "inbound_id": 15,
+      "waste_id": 2,
+      "weight": 400,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 11:35:55",
+      "status": "in process"
+    },
+    "16": {
+      "inbound_id": 16,
+      "waste_id": 2,
+      "weight": 100,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 15:00:41",
+      "status": "waiting"
+    },
+      "17": {
+      "inbound_id": 17,
+      "waste_id": 4,
+      "weight": 200,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 15:00:41",
+      "status": "waiting"
+    },
+    "18": {
+      "inbound_id": 18,
+      "waste_id": 2,
+      "weight": 400,
+      "seller_sorted": "Y",
+      "sorted_at": "2026-01-05 15:00:41",
+      "status": "waiting"
+    }
+  }, 
+
+  "inbound_food_waste": {
+    "1": {
+      "logistic_id": 1,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-01 14:30:32",
+      "status": "completed"
+    },
+    "2": {
+      "logistic_id": 2,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-01 14:30:32",
+      "status": "completed"
+    },
+    "3": {
+      "logistic_id": 5,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-02 13:25:44",
+      "status": "completed"
+    },
+    "4": {
+      "logistic_id": 6,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-02 15:40:18",
+      "status": "completed"
+    },
+    "5": {
+      "logistic_id": 7,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-02 15:40:18",
+      "status": "completed"
+    },
+    "6": {
+      "logistic_id": null,
+      "drop_off_id": 1,
+      "inbound_at": "2026-01-02 16:34:22",
+      "status": "completed"
+    },
+    "7": {
+      "logistic_id": 12,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-03 10:25:09",
+      "status": "completed"
+    },
+    "8": {
+      "logistic_id": 13,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-03 15:18:09",
+      "status": "completed"
+    },
+    "9": {
+      "logistic_id": 16,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-04 09:10:11",
+      "status": "completed"
+    },
+    "10": {
+      "logistic_id": 19,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 09:40:55",
+      "status": "completed"
+    },
+    "11": {
+      "logistic_id": 20,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 09:40:55",
+      "status": "completed"
+    },
+    "12": {
+      "logistic_id": null,
+      "drop_off_id": 2,
+      "inbound_at": "2026-01-05 09:32:33",
+      "status": "completed"
+    },
+    "13": {
+      "logistic_id": null,
+      "drop_off_id": 3,
+      "inbound_at": "2026-01-05 09:45:11",
+      "status": "completed"
+    },
+    "14": {
+      "logistic_id": 21,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 11:02:55",
+      "status": "completed"
+    },
+    "15": {
+      "logistic_id": 18,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 11:02:55",
+      "status": "completed"
+    },
+    "16": {
+      "logistic_id": 22,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "17": {
+      "logistic_id": 23,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "18": {
+      "logistic_id": 24,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 14:20:41",
+      "status": "completed"
+    },
+    "19": {
+      "logistic_id": 25,
+      "drop_off_id": null,
+      "inbound_at": "2026-01-05 14:20:41",
+      "status": "waiting"
+    }
+  }, 
+
+  "price_estimation": {
+    "1": {
+      "sort_id": 1,
+      "estimate_at": "2026-01-01 16:00:32",
+      "status": "completed"
+    },
+    "2": {
+      "sort_id": 2,
+      "estimate_at": "2026-01-01 16:10:32",
+      "status": "completed"
+    },
+    "3": {
+      "sort_id": 3,
+      "estimate_at": "2026-01-02 15:00:44",
+      "status": "completed"
+    },
+    "4": {
+      "sort_id": 4,
+      "estimate_at": "2026-01-02 17:30:18",
+      "status": "completed"
+    },
+    "5": {
+      "sort_id": 5,
+      "estimate_at": "2026-01-02 17:40:18",
+      "status": "completed"
+    },
+    "6": {
+      "sort_id": 6,
+      "estimate_at": "2026-01-02 18:10:22",
+      "status": "completed"
+    },
+    "7": {
+      "sort_id": 7,
+      "estimate_at": "2026-01-03 12:00:09",
+      "status": "completed"
+    },
+    "8": {
+      "sort_id": 8,
+      "estimate_at": "2026-01-03 16:50:09",
+      "status": "completed"
+    },
+    "9": {
+      "sort_id": 9,
+      "estimate_at": "2026-01-04 10:10:11",
+      "status": "completed"
+    },
+    "10": {
+      "sort_id": 10,
+      "estimate_at": null,
+      "status": "waiting"
+    },
+    "11": {
+      "sort_id": 11,
+      "estimate_at": "2026-01-05 11:50:55",
+      "status": "completed"
+    },
+    "12": {
+      "sort_id": 12,
+      "estimate_at": "2026-01-05 11:10:33",
+      "status": "completed"
+    },
+    "13": {
+      "sort_id": 13,
+      "estimate_at": null,
+      "status": "in process"
+    },
+    "14": {
+      "sort_id": 14,
+      "estimate_at": null,
+      "status": "in process"
+    },
+    "15": {
+      "sort_id": 15,
+      "estimate_at": null,
+      "status": "waiting"
+    }
+  },
+
+  "outbound_food_waste": {
+    "1": {
+      "estimate_id": 1,
+      "dispatched_at": "2026-01-01 16:30:32",
+      "delivered_at": "2026-01-01 17:30:32",
+      "status": "completed"
+    },
+    "2": {
+      "estimate_id": 2,
+      "dispatched_at": "2026-01-01 16:40:32",
+      "delivered_at": "2026-01-01 17:47:10",
+      "status": "completed"
+    },
+    "3": {
+      "estimate_id": 3,
+      "dispatched_at": "2026-01-02 15:30:44",
+      "delivered_at": "2026-01-02 16:30:44",
+      "status": "completed"
+    },
+    "4": {
+      "estimate_id": 4,
+      "dispatched_at": "2026-01-02 18:00:18",
+      "delivered_at": "2026-01-02 18:32:18",
+      "status": "completed"
+    },
+    "5": {
+      "estimate_id": 5,
+      "dispatched_at": "2026-01-02 18:10:18",
+      "delivered_at": "2026-01-02 19:10:50",
+      "status": "completed"
+    },
+    "6": {
+      "estimate_id": 6,
+      "dispatched_at": "2026-01-02 18:40:22",
+      "delivered_at": "2026-01-02 19:09:03",
+      "status": "completed"
+    },
+    "7": {
+      "estimate_id": 7,
+      "dispatched_at": "2026-01-03 12:30:09",
+      "delivered_at": "2026-01-02 13:11:27",
+      "status": "completed"
+    },
+    "8": {
+      "estimate_id": 8,
+      "dispatched_at": "2026-01-03 17:00:09",
+      "delivered_at": "2026-01-03 17:58:09",
+      "status": "completed"
+    },
+    "9": {
+      "estimate_id": 9,
+      "dispatched_at": "2026-01-04 10:30:11",
+      "delivered_at": "2026-01-04 11:25:11",
+      "status": "completed"
+    },
+    "10": {
+      "estimate_id": 11,
+      "dispatched_at": "2026-01-05 12:00:55",
+      "delivered_at": null,
+      "status": "in process"
+    },
+    "11": {
+      "estimate_id": 12,
+      "dispatched_at": "2026-01-05 11:40:33",
+      "delivered_at": null,
+      "status": "in process"
+    },
+    "12": {
+      "estimate_id": 13,
+      "dispatched_at": null,
+      "delivered_at": null,
+      "status": "waiting"
+    },
+    "13": {
+      "estimate_id": 14,
+      "dispatched_at": null,
+      "delivered_at": null,
+      "status": "waiting"
+    }
+  }, 
+
+  "seller_payouts": {
+    "1": {
+      "outbound_id": 1,
+      "bank_id": 1,
+      "amount": 250,
+      "payout_at": "2026-01-02 14:00:16",
+      "slip": "https://GomiWet.com/payouts/photo1.jpg",
+      "status": "completed"
+    },
+    "2": {
+      "outbound_id": 2,
+      "bank_id": 3,
+      "amount": 800,
+      "payout_at": "2026-01-02 14:06:23",
+      "slip": "https://GomiWet.com/payouts/photo2.jpg",
+      "status": "completed"
+    },
+    "3": {
+      "outbound_id": 3,
+      "bank_id": 2,
+      "amount": 1400,
+      "payout_at": "2026-01-03 14:01:34",
+      "slip": "https://GomiWet.com/payouts/photo3.jpg",
+      "status": "completed"
+    },
+    "4": {
+      "outbound_id": 4,
+      "bank_id": 1,
+      "amount": 2100,
+      "payout_at": "2026-01-03 14:08:41",
+      "slip": "https://GomiWet.com/payouts/photo4.jpg",
+      "status": "completed"
+    },
+    "5": {
+      "outbound_id": 5,
+      "bank_id": 3,
+      "amount": 1500,
+      "payout_at": "2026-01-03 14:14:38",
+      "slip": "https://GomiWet.com/payouts/photo5.jpg",
+      "status": "completed"
+    },
+    "6": {
+      "outbound_id": 6,
+      "bank_id": 4,
+      "amount": 500,
+      "payout_at": "2026-01-03 14:23:53",
+      "slip": "https://GomiWet.com/payouts/photo6.jpg",
+      "status": "completed"
+    },
+    "7": {
+      "outbound_id": 7,
+      "bank_id": 1,
+      "amount": 1500,
+      "payout_at": "2026-01-04 14:00:37",
+      "slip": "https://GomiWet.com/payouts/photo7.jpg",
+      "status": "completed"
+    },
+    "8": {
+      "outbound_id": 8,
+      "bank_id": 1,
+      "amount": 2000,
+      "payout_at": "2026-01-04 14:00:50",
+      "slip": "https://GomiWet.com/payouts/photo8.jpg",
+      "status": "completed"
+    },
+    "9": {
+      "outbound_id": 9,
+      "bank_id": 2,
+      "amount": 1100,
+      "payout_at": null,
+      "slip": null,
+      "status": "in process"
+    },
+    "10": {
+      "outbound_id": 10,
+      "bank_id": 2,
+      "amount": 2200,
+      "payout_at": null,
+      "slip": null,
+      "status": "waiting"
+    },
+    "11": {
+      "outbound_id": 11,
+      "bank_id": 3,
+      "amount": 1500,
+      "payout_at": null,
+      "slip": null,
+      "status": "waiting"
+    }
+  }
+
+}

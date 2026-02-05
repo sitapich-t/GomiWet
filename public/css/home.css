@@ -1,0 +1,78 @@
+.store-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+/* ─── TOP ─── */
+.store-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.store-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.store-address {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #444;
+}
+
+.store-address i {
+  color: #00c853;
+  margin-right: 6px;
+}
+
+.store-tag {
+  background: #ffc107;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ─── TYPES ─── */
+.store-types {
+  margin: 12px 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.type-chip {
+  background: #eee;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* ─── BOTTOM ─── */
+.store-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.store-count {
+  color: #00c853;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sell-btn {
+  background: #00c853;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 18px;
+  font-size: 16px;
+  cursor: pointer;
+}
