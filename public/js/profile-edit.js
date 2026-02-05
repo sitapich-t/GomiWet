@@ -76,4 +76,10 @@ function saveProfile() {
   });
 }
 
-loadProfile();
+document.addEventListener("DOMContentLoaded", () => {
+  loadProfile();
+
+  document.getElementById("saveBtn")
+  .addEventListener("click", saveProfile);
+
+});

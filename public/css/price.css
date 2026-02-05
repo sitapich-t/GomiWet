@@ -157,3 +157,8 @@ button.primary {
   font-weight: bold;
   margin-top: 8px;
 }
+
+.card.active {
+  border: 2px solid #00bfbf;
+  background: #eaffff;
+}
