@@ -1,3 +1,130 @@
+/* 1. รีเซ็ตพื้นฐาน */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. บังคับให้หน้าเว็บอยู่ตรงกลางจอคอมเสมอ */
+body {
+    background-color: #f5f5f5; /* สีเทาอ่อนด้านนอก */
+    margin: 0;
+    display: flex;
+    justify-content: center; 
+    font-family: "IBM Plex Sans Thai Looped", 'Kanit', sans-serif;
+}
+
+.container{
+   width: 100%;
+   max-width: 900px;   /* desktop กว้างขึ้น */
+   margin: auto;
+   padding: 0 16px;
+}
+
+/* 3. หัวใจสำคัญ: บังคับความกว้างเท่ามือถือ และเรียงเป็นแนวตั้ง */
+.page-layout {
+    width: 100%;
+    max-width: 500px; /* ล็อกความกว้างไว้ไม่ให้บานออกในคอม */
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* บังคับให้ทุกอย่างเรียงต่อกันลงมาข้างล่างเท่านั้น */
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+/* 4. จัดการส่วน Header */
+.header-blue {
+    width: 100%;
+    background-color: #00bcd4;
+    padding: 20px;
+    color: white;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* 5. จัดการส่วนแผนที่ */
+.map-section {
+    width: 90%;
+    height: 300px; /* กำหนดความสูงให้ชัดเจน */
+    z-index: 1;
+}
+
+.dist-info {
+    padding: 10px;
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    background: #fafafa;
+}
+
+/* 6. จัดการรายการร้านค้า (ให้เรียงต่อลงมา) */
+.store-section {
+    padding: 16px;
+    width: 100%;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.store-list {
+    display: flex;
+    flex-direction: column; /* บังคับการ์ดเรียงลงมาข้างล่าง */
+    gap: 15px;
+}
+
+/* 7. สไตล์การ์ดร้านค้า (แบบรูปที่สองที่คุณต้องการ) */
+.store-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+    width: 90%;
+}
+
+.store-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.sell-btn {
+    width: 100%;
+    background: #00c853;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 8. จัดการ Bottom Nav ให้ไม่ทับเนื้อหา */
+.bottom-space {
+    height: 80px;
+}
+
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 500px; /* ต้องเท่ากับ .page-layout */
+    background: white;
+    border-top: 1px solid #ddd;
+}
+
 .store-card {
   background: #fff;
   border-radius: 20px;
@@ -7,10 +134,9 @@
 }
 
 /* ─── TOP ─── */
-.store-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.store-top{
+  flex-direction: column;
+  gap: 8px;
 }
 
 .store-name {
@@ -55,10 +181,10 @@
 }
 
 /* ─── BOTTOM ─── */
-.store-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.store-bottom{
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .store-count {
@@ -75,4 +201,14 @@
   border-radius: 18px;
   font-size: 16px;
   cursor: pointer;
+}
+
+.store-distance{
+  margin:6px 0 10px;
+  font-size:13px;
+  color:#555;
+}
+
+.search-box {
+  width: 80%
 }

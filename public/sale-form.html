@@ -1,38 +1,48 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>ข้อมูลขนส่ง</title>
-  <link rel="stylesheet" href="sale-form.css">
+<meta charset="UTF-8">
+<title>ขายสินค้า</title>
+<link rel="stylesheet" href="css/sale-form.css">
 </head>
+
 <body>
 
-  <form id="shippingForm">
+<div class="container">
 
-    <h3>เลือกวันรับสินค้า</h3>
-    <input type="date" id="pickupDate" required>
+  <div class="card">
+    <label>เลือกวันเดือนปี</label>
+    <input type="date" id="date">
+  </div>
 
-    <h3>สถานที่เข้ารับ</h3>
-    <input type="text" value="ใช้ตำแหน่งปัจจุบัน" disabled>
-    <textarea id="pickupAddress" placeholder="กรอกที่อยู่สำหรับรับสินค้า"></textarea>
+  <div class="card">
+    <label>เวลา</label>
+    <input type="time" id="time">
+  </div>
 
-    <h3>ราคาขนส่ง</h3>
-    <input type="number" id="shippingPrice" placeholder="บาท">
+  <div class="card">
+    <h3>ประเภทเศษอาหาร / น้ำหนัก (กก.)</h3>
+    <p style="color:#888;font-size:14px">
+      * สามารถกรอกได้ครั้งละ 1 ประเภทเท่านั้น
+    </p>
+    <div id="wasteList"></div>
+  </div>
 
-    <h3>เลือกช่วงเวลา</h3>
-    <div class="time-grid">
-      <button type="button" onclick="selectTime(this)">08:00 - 10:00</button>
-      <button type="button" onclick="selectTime(this)">10:00 - 12:00</button>
-      <button type="button" onclick="selectTime(this)">13:00 - 15:00</button>
-      <button type="button" onclick="selectTime(this)">15:00 - 17:00</button>
-    </div>
+  <div class="card">
+    <label>หมายเหตุ</label>
+    <textarea id="note" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+  </div>
 
-    <h3>หมายเหตุ (ถ้ามี)</h3>
-    <textarea id="note" placeholder="ระบุข้อมูลเพิ่มเติม..."></textarea>
+  <button class="submit-btn" onclick="submitSale()">
+    ยืนยันการขาย
+  </button>
 
-    <button class="submit-btn">ยืนยันการขาย</button>
-  </form>
+</div>
 
-  <script src="sale-form.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script src="js/firebase.js"></script>
+<script src="js/sale-form.js"></script>
 </body>
 </html>

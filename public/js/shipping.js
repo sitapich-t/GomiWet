@@ -1,9 +1,22 @@
-function goShipping() {
-  localStorage.setItem('needShipping', 'true')
-  location.href = 'sale-shipping-form.html'
+function getStoreId(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get("storeId");
 }
 
-function goNoShipping() {
-  localStorage.setItem('needShipping', 'false')
-  location.href = 'sale-form.html'
+function goShipping(){
+  const storeId = getStoreId();
+
+  localStorage.setItem("storeId", storeId);
+  localStorage.setItem("needShipping","true");
+
+  location.href = "sale-shipping-form.html";
+}
+
+function goNoShipping(){
+  const storeId = getStoreId();
+
+  localStorage.setItem("storeId", storeId);
+  localStorage.setItem("needShipping","false");
+
+  location.href = "sale-form.html";
 }

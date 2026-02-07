@@ -149,7 +149,7 @@ function renderStores(stores) {
           </div>
           <span class="store-tag">${store.category_name}</span>
         </div>
-
+       
         <div class="store-types">
           ${
             store.food_types.length
@@ -159,7 +159,11 @@ function renderStores(stores) {
               : `<span class="type-chip empty">ไม่ระบุประเภท</span>`
           }
         </div>
-
+       
+        <div class="store-distance">
+          ${distanceText}
+        </div>
+      
         <button class="sell-btn"
           onclick="location.href='shipping.html?storeId=${store.id}'">
           ขาย

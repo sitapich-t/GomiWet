@@ -1,60 +1,41 @@
-body {
-  font-family: sans-serif;
-  background: #f6f6f6;
-  padding: 16px;
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#f4f6f8;
 }
 
-form {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
+.container{
+  padding:15px;
 }
 
-h3 {
-  margin-top: 20px;
-  font-size: 16px;
+.card{
+  background:white;
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:15px;
 }
 
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+input, textarea{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  margin-top:10px;
 }
 
-textarea {
-  resize: none;
-  height: 80px;
+.waste-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
 }
 
-.time-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.time-grid button {
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-
-.time-grid button.active {
-  background: #00bfc4;
-  color: #fff;
-  border-color: #00bfc4;
-}
-
-.submit-btn {
-  margin-top: 24px;
-  width: 100%;
-  padding: 14px;
-  background: #00c853;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
+.submit-btn{
+  width:100%;
+  background:#09c022;
+  color:white;
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  font-size:18px;
 }
