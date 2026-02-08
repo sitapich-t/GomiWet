@@ -15,6 +15,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // set default date/time
+  const now = new Date();
+  document.getElementById("date").value =
+    now.toISOString().split("T")[0];
+
+  document.getElementById("time").value =
+    now.toTimeString().slice(0,5);
+
   loadWasteTypes();
 });
 
