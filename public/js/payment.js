@@ -1,15 +1,34 @@
-const price = localStorage.getItem('price')
-document.getElementById('amount').innerText = `ยอดเงิน ${price} บาท`
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get("orderId");
 
-function pay() {
-  const user = JSON.parse(localStorage.getItem('user'))
+document.getElementById("orderId").innerText = orderId;
 
-  user.sales.push({
-    amount: price,
-    status: 'กำลังขนส่ง'
-  })
-  user.total += Number(price)
+let shippingFee = 0;
 
-  localStorage.setItem('user', JSON.stringify(user))
-  window.location.href = 'status.html'
+async function loadOrder(){
+
+  const snap = await db.ref("order/" + orderId).once("value");
+
+  if(!snap.exists()){
+    alert("ไม่พบ order");
+    return;
+  }
+
+  const data = snap.val();
+  shippingFee = data.shipping_fee || 0;
+
+  document.getElementById("fee").innerText = shippingFee;
 }
+
+async function payNow(){
+
+  await db.ref("order/" + orderId).update({
+    payment_status: "paid",
+    status: "รอรับสินค้า"
+  });
+
+  alert("ชำระเงินเรียบร้อย");
+  location.href="home.html";
+}
+
+loadOrder();

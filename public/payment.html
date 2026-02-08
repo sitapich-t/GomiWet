@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>ชำระเงิน</title>
-  <link rel="stylesheet" href="css/sell-style.css">
+<meta charset="UTF-8">
+<title>ชำระเงิน</title>
+<link rel="stylesheet" href="css/payment.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
 </head>
+
 <body>
 
-<header class="header">
-  <h2>สรุปและชำระเงิน</h2>
-</header>
+<div class="container">
 
-<div class="card">
-  <p><b>สินค้า:</b> <span id="showProduct"></span></p>
-  <p><b>ราคา:</b> <span id="showPrice"></span> บาท</p>
-  <p><b>การขนส่ง:</b> <span id="showShipping"></span></p>
+  <h2>ชำระค่าขนส่ง</h2>
 
-  <button onclick="alert('ชำระเงินสำเร็จ 🎉')">
-    ชำระเงิน
-  </button>
+  <div class="card">
+    <p>Order ID: <span id="orderId"></span></p>
+    <p>ค่าขนส่ง: <span id="fee"></span> บาท</p>
+  </div>
+
+  <button onclick="payNow()">ชำระเงิน</button>
+
 </div>
 
-<script src="js/sell.js"></script>
+<script src="js/payment.js"></script>
 </body>
 </html>

@@ -115,9 +115,8 @@ async function loadMyOrders(){
 
     count++;
 
-    // 🔥 โหลดชื่อร้านจาก store
-    const storeSnap = await db.ref("stores/" + data.shop_id).once("value");
-    const storeName = storeSnap.exists() ? storeSnap.val().name : "-";
+    const storeSnap = await db.ref("shops/" + data.shop_id).once("value");
+    const storeName = storeSnap.exists() ? storeSnap.val().shop_name : "-";
 
     list.innerHTML += `
       <div class="order-card">

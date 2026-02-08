@@ -35,24 +35,48 @@ async function loadWasteTypes() {
   const list = document.getElementById("wasteList");
   list.innerHTML = "กำลังโหลด...";
 
-  const snap = await db.ref("food_waste_types").once("value");
+  // 1️⃣ ดึง waste_id ที่ร้านนี้รับซื้อ
+  const acceptedSnap = await db.ref("shop_accepted")
+    .orderByChild("shop_id")
+    .equalTo(Number(storeId))   // ถ้า storeId เป็น string
+    .once("value");
+
+  const acceptedWasteIds = [];
+
+  acceptedSnap.forEach(s => {
+    acceptedWasteIds.push(String(s.val().waste_id));
+  });
+
+  // ถ้าร้านไม่รับซื้ออะไรเลย
+  if (acceptedWasteIds.length === 0) {
+    list.innerHTML = "ร้านนี้ไม่รับซื้อเศษอาหาร";
+    return;
+  }
+
+  // 2️⃣ โหลดประเภทเศษอาหารทั้งหมด
+  const wasteSnap = await db.ref("food_waste_types").once("value");
 
   list.innerHTML = "";
   wasteTypes = [];
 
-  snap.forEach(w => {
-    wasteTypes.push({ id: w.key, name: w.val().name });
+  // 3️⃣ แสดงเฉพาะที่ร้านรับซื้อ
+  wasteSnap.forEach(w => {
 
-    list.innerHTML += `
-      <div class="waste-row">
-        <span>${w.val().category}</span>
-        <input type="number"
-               class="waste-input"
-               id="w_${w.key}"
-               placeholder="กก."
-               oninput="limitOneInput(this)">
-      </div>
-    `;
+    if (acceptedWasteIds.includes(w.key)) {
+
+      wasteTypes.push({ id: w.key, name: w.val().name });
+
+      list.innerHTML += `
+        <div class="waste-row">
+          <span>${w.val().category}</span>
+          <input type="number"
+                 class="waste-input"
+                 id="w_${w.key}"
+                 placeholder="กก."
+                 oninput="limitOneInput(this)">
+        </div>
+      `;
+    }
   });
 }
 
@@ -103,7 +127,8 @@ async function submitSale(){
       weight:i.weight
     });
   }
-
+  
   alert("บันทึกสำเร็จ");
   location.href="home.html";
 }
+
