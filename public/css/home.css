@@ -31,6 +31,7 @@ body {
     flex-direction: column; /* บังคับให้ทุกอย่างเรียงต่อกันลงมาข้างล่างเท่านั้น */
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
     position: relative;
+    overflow-x: hidden;
 }
 
 /* 4. จัดการส่วน Header */
@@ -54,9 +55,19 @@ body {
 }
 
 /* 5. จัดการส่วนแผนที่ */
+/* จัดการส่วนแผนที่ */
 .map-section {
-    width: 90%;
-    height: 300px; /* กำหนดความสูงให้ชัดเจน */
+    width: 90%; 
+    height: 300px; 
+    margin: 15px auto; /* เพิ่ม margin auto เพื่อให้อยู่กลาง */
+    border-radius: 15px; /* เพิ่มความโค้งมนตามรูป */
+    overflow: hidden;    /* กันแผนที่ล้นขอบโค้ง */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* เพิ่มเงาให้นุ่มนวล */
+}
+
+#map {
+    height: 100%; /* ให้ใช้ความสูงเต็มพื้นที่ของ .map-section */
+    width: 100%;
     z-index: 1;
 }
 

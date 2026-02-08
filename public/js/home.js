@@ -25,11 +25,19 @@ async function checkLogin() {
 
 /* ===================== MAP ===================== */
 function initMap() {
-  map = L.map("map", { zoomControl: false })
-    .setView([13.7563, 100.5018], 12);
+    // กำหนดพิกัดเริ่มต้น (กรุงเทพฯ)
+    map = L.map("map", { 
+        zoomControl: false,  /* ปิดปุ่ม +/- เพื่อให้เหมือนในรูป */
+        attributionControl: false /* ปิดข้อความลิขสิทธิ์เล็กๆ เพื่อความคลีน */
+    }).setView([13.7563, 100.5018], 12);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+     .addTo(map);
+
+    // 🔥 บังคับให้แผนที่คำนวณขนาดใหม่หลังจากโหลดหน้าเสร็จ
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500);
 }
 
 function getUserLocation() {
@@ -119,6 +127,7 @@ async function loadStores() {
 /* ===================== RENDER ===================== */
 function renderStores(stores) {
   const list = document.getElementById("storeList");
+  if (!list) return;
   list.innerHTML = "";
 
   storeMarkers.forEach(m => map.removeLayer(m));
@@ -126,63 +135,46 @@ function renderStores(stores) {
 
   stores.forEach(store => {
     let distanceText = "กรุณาเปิด GPS";
-
     if (userCoords && store.latitude && store.longitude) {
-      const d = calculateDistance(
-        userCoords.lat,
-        userCoords.lng,
-        store.latitude,
-        store.longitude
-      );
+      const d = calculateDistance(userCoords.lat, userCoords.lng, store.latitude, store.longitude);
       distanceText = `ห่างจากคุณ ${d.toFixed(1)} กม.`;
     }
 
+    // สร้าง Card HTML
     list.innerHTML += `
       <div class="store-card">
-        <div class="store-top">
+        <div class="store-header">
           <div>
             <h2 class="store-name">${store.shop_name}</h2>
-            <div class="store-address">
-              <i class="fa-solid fa-location-dot"></i>
-              ${store.address || ""}
-            </div>
+            <div class="store-address"><i class="fa-solid fa-location-dot"></i> ${store.address || ""}</div>
           </div>
-          <span class="store-tag">${store.category_name}</span>
+          <span class="store-tag">${store.category}</span>
         </div>
-       
         <div class="store-types">
-          ${
-            store.food_types.length
-              ? store.food_types.map(t =>
-                  `<span class="type-chip">${t}</span>`
-                ).join("")
-              : `<span class="type-chip empty">ไม่ระบุประเภท</span>`
-          }
+          ${store.food_wates_types.length ? store.food_waste_types.map(t => `<span class="type-chip">${t}</span>`).join("") : `<span class="type-chip empty">ไม่ระบุประเภท</span>`}
         </div>
-       
-        <div class="store-distance">
-          ${distanceText}
+        <div>
+          <div class="store-distance">${distanceText}</div>
+          <button class="sell-btn" onclick="location.href='shipping.html?storeId=${store.id}'">ขาย</button>
         </div>
-      
-        <button class="sell-btn"
-          onclick="location.href='shipping.html?storeId=${store.id}'">
-          ขาย
-        </button>
-      </div>
-    `;
+        
+      </div>`;
 
+    // เพิ่ม Marker
     if (store.latitude && store.longitude) {
-      storeMarkers.push(
-        L.marker([store.latitude, store.longitude])
-          .addTo(map)
-          .bindPopup(`
-            <b>${store.shop_name}</b><br>
-            ${distanceText}<br>
-            📞 ${store.telephone || "-"}
-          `)
-      );
+      const m = L.marker([store.latitude, store.longitude])
+        .addTo(map)
+        .bindPopup(`<b>${store.shop_name}</b><br>${distanceText}`);
+      storeMarkers.push(m);
     }
   });
+
+  // ✅ ย้ายมาตรงนี้! เรียกครั้งเดียวหลังจากลูปเสร็จ
+  if (map) {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+  }
 }
 
 /* ===================== INIT ===================== */
