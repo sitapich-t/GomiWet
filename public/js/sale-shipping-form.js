@@ -1,11 +1,6 @@
 let wasteTypes = [];
 const LIFF_ID = "2008999812-I2Dz19pN";
 
-const params = new URLSearchParams(window.location.search);
-const storeId = params.get("storeId");
-
-console.log("storeId:", storeId);
-
 document.addEventListener("DOMContentLoaded", async () => {
 
   await liff.init({ liffId: LIFF_ID });
@@ -15,8 +10,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // set default date/time
+  const now = new Date();
+  document.getElementById("date").value =
+    now.toISOString().split("T")[0];
+
+  document.getElementById("time").value =
+    now.toTimeString().slice(0,5);
+
   loadWasteTypes();
 });
+
+
+function getStoreId(){
+  return localStorage.getItem("storeId");
+}
 
 async function getUserId(){
   const profile = await liff.getProfile();
@@ -59,8 +67,9 @@ function limitOneInput(current){
 async function submitSale(){
   console.log("submit clicked")
 
-  const shopId = storeId;
+  const shopId = getStoreId();
   const userId = await getUserId();
+  const address = document.getElementById("address").value;
 
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
@@ -85,7 +94,8 @@ async function submitSale(){
     shop_id:shopId,
     order_at:`${date} ${time}`,
     status:"กำลังขนส่ง",
-    note:note
+    note:note,
+    address:address
   });
 
   for(const i of items){
@@ -98,4 +108,26 @@ async function submitSale(){
 
   alert("บันทึกสำเร็จ");
   location.href="home.html";
+}
+
+function getCurrentLocation(){
+
+  if(!navigator.geolocation){
+    alert("อุปกรณ์ไม่รองรับ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos => {
+
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    // ใส่ค่า lat,lng ลง input
+    document.getElementById("address").value =
+      `Lat:${lat}, Lng:${lng}`;
+
+  }, err => {
+    alert("ไม่สามารถดึงตำแหน่งได้");
+  });
+
 }

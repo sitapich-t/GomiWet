@@ -1,225 +1,194 @@
-/* 1. รีเซ็ตพื้นฐาน */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* 2. บังคับให้หน้าเว็บอยู่ตรงกลางจอคอมเสมอ */
-body {
-    background-color: #f5f5f5; /* สีเทาอ่อนด้านนอก */
-    margin: 0;
-    display: flex;
-    justify-content: center; 
-    font-family: "IBM Plex Sans Thai Looped", 'Kanit', sans-serif;
-}
-
-.container{
-   width: 100%;
-   max-width: 900px;   /* desktop กว้างขึ้น */
-   margin: auto;
-   padding: 0 16px;
-}
-
-/* 3. หัวใจสำคัญ: บังคับความกว้างเท่ามือถือ และเรียงเป็นแนวตั้ง */
-.page-layout {
-    width: 100%;
-    max-width: 500px; /* ล็อกความกว้างไว้ไม่ให้บานออกในคอม */
-    background-color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column; /* บังคับให้ทุกอย่างเรียงต่อกันลงมาข้างล่างเท่านั้น */
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    position: relative;
-    overflow-x: hidden;
-}
-
-/* 4. จัดการส่วน Header */
+/* ===== Header ===== */
 .header-blue {
-    width: 100%;
-    background-color: #00bcd4;
-    padding: 20px;
-    color: white;
+  background: #00bec4;
+  padding: 20px 16px 40px;
 }
 
 .header-inner {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  max-width: 420px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
 }
 
-/* 5. จัดการส่วนแผนที่ */
-/* จัดการส่วนแผนที่ */
-.map-section {
-    width: 90%; 
-    height: 300px; 
-    margin: 15px auto; /* เพิ่ม margin auto เพื่อให้อยู่กลาง */
-    border-radius: 15px; /* เพิ่มความโค้งมนตามรูป */
-    overflow: hidden;    /* กันแผนที่ล้นขอบโค้ง */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* เพิ่มเงาให้นุ่มนวล */
+.header-text h2 {
+  font-size: 18px;
+  color: #fff;
 }
 
+.header-text p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+}
+
+/* ===== Search ===== */
+.search-container {
+  max-width: 420px;
+  margin: -28px auto 10px;
+  padding: 0 16px;
+}
+
+.search-box {
+  background: #fff;
+  border-radius: 999px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* ===== Map ===== */
 #map {
-    height: 100%; /* ให้ใช้ความสูงเต็มพื้นที่ของ .map-section */
-    width: 100%;
-    z-index: 1;
+  max-width: 420px;
+  height: 220px;
+  margin: 14px auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .dist-info {
-    padding: 10px;
-    font-size: 13px;
-    color: #666;
-    text-align: center;
-    background: #fafafa;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
 }
 
-/* 6. จัดการรายการร้านค้า (ให้เรียงต่อลงมา) */
-.store-section {
-    padding: 16px;
-    width: 100%;
-}
-
+/* ===== Section ===== */
 .section-title {
-    font-weight: bold;
-    margin-bottom: 15px;
+  max-width: 420px;
+  margin: 10px auto;
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 16px;
 }
 
-.store-list {
-    display: flex;
-    flex-direction: column; /* บังคับการ์ดเรียงลงมาข้างล่าง */
-    gap: 15px;
-}
-
-/* 7. สไตล์การ์ดร้านค้า (แบบรูปที่สองที่คุณต้องการ) */
-.store-card {
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 16px;
-    background: #fff;
-    width: 90%;
-}
-
-.store-name {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.sell-btn {
-    width: 100%;
-    background: #00c853;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* 8. จัดการ Bottom Nav ให้ไม่ทับเนื้อหา */
-.bottom-space {
-    height: 80px;
-}
-
-#bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 500px; /* ต้องเท่ากับ .page-layout */
-    background: white;
-    border-top: 1px solid #ddd;
+/* ===== Store list ===== */
+#storeList {
+  max-width: 420px;
+  margin: auto;
+  padding: 0 16px;
 }
 
 .store-card {
-  background: #fff;
-  border-radius: 20px;
+  border: 1px solid #222;
+  border-radius: 14px;
   padding: 16px;
   margin-bottom: 16px;
-  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 12px;
 }
 
-/* ─── TOP ─── */
-.store-top{
-  flex-direction: column;
-  gap: 8px;
+/* header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .store-name {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 16px;
   margin: 0;
+  font-weight: 600;
 }
 
+.badge-yellow {
+  background: #ffc400;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* address */
 .store-address {
   margin-top: 6px;
-  font-size: 14px;
-  color: #444;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #333;
 }
 
 .store-address i {
   color: #00c853;
-  margin-right: 6px;
-}
-
-.store-tag {
-  background: #ffc107;
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-/* ─── TYPES ─── */
-.store-types {
-  margin: 12px 0;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.type-chip {
-  background: #eee;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-/* ─── BOTTOM ─── */
-.store-bottom{
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.store-count {
-  color: #00c853;
-  font-weight: bold;
   font-size: 14px;
 }
 
+hr {
+  margin: 12px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* types */
+.store-types {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.type-pill {
+  border: 1px solid #aaa;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  background: #eee;
+}
+
+/* footer */
+.card-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sell-count {
+  color: #00c853;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .sell-btn {
-  background: #00c853;
+  background: #14c614;
   color: #fff;
   border: none;
-  padding: 10px 22px;
-  border-radius: 18px;
-  font-size: 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  padding: 6px 18px;
   cursor: pointer;
 }
 
-.store-distance{
-  margin:6px 0 10px;
-  font-size:13px;
-  color:#555;
+.sell-btn:hover {
+  background: #10a810;
 }
 
-.search-box {
-  width: 80%
+/* ===== Desktop จำกัดความกว้าง ===== */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    justify-content: center;
+  }
+
+  body > * {
+    width: 420px;
+  }
 }

@@ -1,4 +1,4 @@
-
+let userId = null;
 const LIFF_ID = "2008999812-I2Dz19pN";
 
 async function loadProfile() {
@@ -10,7 +10,7 @@ async function loadProfile() {
   }
 
   const profile = await liff.getProfile();
-  const userId = profile.userId;
+  userId = profile.userId;
 
   // แสดงข้อมูล LINE ทันที
   document.getElementById("userName").innerText = profile.displayName;
@@ -45,7 +45,7 @@ async function loadProfile() {
 
   // ✅ โหลดประวัติขาย (อย่าให้พังทั้งหน้า)
   try {
-    loadHistory(userId);
+    loadMyOrders();
   } catch (e) {
     console.warn("Load history failed:", e);
   }
@@ -58,8 +58,8 @@ function loadHistory(userId) {
   let totalSales = 0;
   let totalIncome = 0;
 
-  db.ref("orders")
-    .orderByChild("sellerId")
+  db.ref("order")
+    .orderByChild("user_id")
     .equalTo(userId)
     .limitToLast(5)
     .once("value", snap => {
@@ -87,6 +87,49 @@ function loadHistory(userId) {
       document.getElementById("totalIncome").innerText = totalIncome;
       document.getElementById("historyCount").innerText = `${totalSales} รายการ`;
     });
+}
+
+async function loadMyOrders(){
+
+  const list = document.getElementById("historyList");
+  list.innerHTML = "กำลังโหลด...";
+
+  const snap = await db.ref("order")
+                       .orderByChild("user_id")
+                       .equalTo(userId)
+                       .once("value");
+
+  list.innerHTML = "";
+
+  if(!snap.exists()){
+    list.innerHTML = "ยังไม่มีประวัติการขาย";
+    return;
+  }
+
+  let count = 0;
+
+  for (const child of Object.entries(snap.val())) {
+
+    const orderId = child[0];
+    const data = child[1];
+
+    count++;
+
+    // 🔥 โหลดชื่อร้านจาก store
+    const storeSnap = await db.ref("stores/" + data.shop_id).once("value");
+    const storeName = storeSnap.exists() ? storeSnap.val().name : "-";
+
+    list.innerHTML += `
+      <div class="order-card">
+        <div>วันที่: ${data.order_at || "-"}</div>
+        <div>ร้าน: ${storeName}</div>
+        <div>สถานะ: ${data.status}</div>
+      </div>
+    `;
+  }
+
+  document.getElementById("historyCount").innerText = `${count} รายการ`;
+  document.getElementById("totalSales").innerText = count;
 }
 
 loadProfile();

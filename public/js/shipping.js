@@ -1,22 +1,18 @@
-function getStoreId(){
-  const params = new URLSearchParams(window.location.search);
-  return params.get("storeId");
-}
+const params = new URLSearchParams(window.location.search);
+const storeId = params.get("storeId");
+
+console.log("storeId:", storeId);
 
 function goShipping(){
-  const storeId = getStoreId();
-
   localStorage.setItem("storeId", storeId);
   localStorage.setItem("needShipping","true");
 
-  location.href = "sale-shipping-form.html";
+  location.href = `sale-shipping-form.html?storeId=${storeId}`;
 }
 
 function goNoShipping(){
-  const storeId = getStoreId();
-
   localStorage.setItem("storeId", storeId);
   localStorage.setItem("needShipping","false");
 
-  location.href = "sale-form.html";
+  location.href = `sale-form.html?storeId=${storeId}`;
 }
