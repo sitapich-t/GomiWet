@@ -7,54 +7,21 @@
     <title>GomiWet | คำนวณราคา</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/price.css">
+    <link rel="stylesheet" href="css/calculate.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
 
 <body class="container">
-
     <!-- 🧮 CALCULATOR -->
     <div id="calc" class="page">
         <div class="header">
             <div class="icon_frame">
-                <img class="icon" src="assets/nav_icons/calculator.png" />
+                <img class="icon" src="./assets/nav_icons/calculator.png" />
             </div>
             <h2>คำนวณราคา</h2>
         </div>
         <h4>เลือกประเภทเศษอาหารที่ต้องการขาย</h4>
-        <div class="card_frame">
-            <div class="card" onclick="selectFoodType(0)">
-                <strong>ข้าว</strong>
-                <img class="bigIcon" src="assets/types/rice.png" />
-                <p data-price-index="0">-</p>
-            </div>
-            <div class="card" onclick="selectFoodType(1)">
-                <strong>ผัก</strong>
-                <img class="bigIcon" src="assets/types/vegetable.png" />
-                <p data-price-index="1">-</p>
-            </div>
-            <div class="card" onclick="selectFoodType(2)">
-                <strong>กระดูก</strong>
-                <img class="bigIcon" src="assets/types/bone.png" />
-                <p data-price-index="2">-</p>
-            </div>
-            <div class="card" onclick="selectFoodType(3)">
-                <strong>เศษอาหารปรุงสุก</strong>
-                <img class="bigIcon" src="assets/types/cooking.png" />
-                <p data-price-index="3">-</p>
-            </div>
-            <div class="card" onclick="selectFoodType(4)">
-                <strong>เนื้อสัตว์</strong>
-                <img class="bigIcon" src="assets/types/meat.png" />
-                <p data-price-index="4">-</p>
-            </div>
-            <div class="card" onclick="selectFoodType(5)">
-                <strong>เศษอาหารที่ปนกัน</strong>
-                <img class="bigIcon" src="assets/types/mix.png" />
-                <p data-price-index="5">-</p>
-            </div>
-        </div>
+        <div class="card_frame" id="cardFrame"></div>
         <div class="calcCard">
             <div>
                 <strong>กรอกนํ้าหนัก:</strong>
@@ -95,15 +62,15 @@
             </table>
         </div>
     </div>
+
     <div id="bottom-nav"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-    <script src="js/firebase.js"></script> <!-- init firebase + db -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
     <script src="js/load-bottom-nav.js"></script>
-    <script src="js/calculate.js"></script> <!-- ใช้ db -->
-</body>
 
+    <script src="js/calculate.js"></script>
+</body>
 
 </html>

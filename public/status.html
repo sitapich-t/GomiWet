@@ -1,35 +1,173 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-  <meta charset="UTF-8">
-  <title>สถานะการขนส่ง</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="css/cal-style.css">
-  <link rel="stylesheet" href="css/bottom-nav.css">
+<meta charset="UTF-8">
+<title>GomiWet | สถานะการขนส่ง</title>
+<link rel="stylesheet" href="css/calculate.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
 </head>
 
-<body class="container">
+<body>
 
-  <!-- 🚚 TRACKING -->
-  <div id="track" class="page">
-    <div class="header">
-      <div class="icon_frame">
-        <img class="icon" src="assets/nav_icons/truck.png" />
-      </div>
-      <h2>สถานะการขาย</h2>
-    </div>
-    <div class="card">
-      <input id="trackInput" placeholder="กรอกเลขพัสดุ">
-      <button class="primary" onclick="trackParcel()">ติดตาม</button>
-      <div id="trackResult"></div>
-    </div>
-  </div>
+<!-- 🚚 TRACKING -->
+    <div id="track" class="page">
+        <div class="header">
+            <div class="icon_frame">
+                <img class="icon" src="assets/nav_icons/truck.png" />
+            </div>
+            <h2>สถานะการขาย</h2>
+        </div>
 
-  <div id="bottom-nav"></div>
-  <script src="js/load-bottom-nav.js"></script>
-  <script src="js/status.js"></script>
+        <div class="container">
+            <div class="delivery" >
+                <div class="task">
+                    <strong>รายการที่กำลังดำเนินการ</strong>
+                    <span id="in_processItems">0 รายการ</span>
+                </div>
+
+                <div class="content" id="in_process">
+                    <p id="no_inprocess">ขณะนี้ไม่มีรายการที่กำลังดำเนินการ</p>
+                    <!-- <div class="content_header">
+                        <h4>ชื่อร้าน</h4>
+                        <a>รหัสการขาย: ORDXXXXXXXXXX-XXXX</a>
+                    </div>
+                    <p>
+                        วันที่: 01/01/2024 <br>
+                        เวลาเรียกรถ: 12:00 น. <br>
+                        สถานะ: รถกำลังมารับเศษอาหาร <br>
+                        คนขับ: นาย สมชาย ทองดี<br>
+                    </p>
+                    <button class="primary" onclick="goto('order_details')">ดูรายละเอียด</button> -->
+                </div>
+
+            </div>
+
+            <div class="delivery" >
+                <div class="task">
+                    <strong>รายการที่เสร็จสิ้นแล้ว</strong>
+                    <span id="finishedItems">0 รายการ</span>
+                </div>
+                <div class="content" id="finished">
+                    <div class="content_header">
+                        <h4>ชื่อร้าน</h4>
+                        <a>รหัสการขาย: ORDXXXXXXXXXX-XXXX</a>
+                    </div>
+                    <p>
+                        วันที่: 01/01/2024 <br>
+                        เวลาเรียกรถ: 12:00 น. <br>
+                        สถานะ: รถกำลังมารับเศษอาหาร <br>
+                        คนขับ: นาย สมชาย ทองดี<br>
+                    </p>
+                    <button class="primary" onclick="goto('order_details')">ดูรายละเอียด</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- 📋 ORDER DETAILS (หลังกดปุ่มดูรายละเอียดจะมาหน้านี้) -->
+    <div id="order_details" class="page">
+        <div class="container">
+            <button onclick="goto('track')">← กลับ</button>
+            <div class="order_header">
+                <strong>รายละเอียดการขาย</strong> 
+                <p>รหัสการขาย: -</p>
+            </div>
+            <div class="timeline">
+                <h4 class="subTopic">สถานะการขาย</h4>
+                <div class="state" data-status="order_received">
+                    <div class="circle" id="circle_order_received">
+                        <img src="assets/icons/doc.png" alt="doc icon"/>
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_order_received">ได้รับรายการขายแล้ว</h4>
+                        <p id="date_order_received">xx/xx/xxx</p>
+                        <p id="time_order_received">xx:xx น.</p>
+                    </div>
+                </div>
+                <div class="state" data-status="picked_up">
+                    <div class="circle" id="circle_picked_up">
+                        <img src="assets/icons/doc.png" alt="doc icon" />
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_picked_up">รถมารับเศษอาหาร</h4>
+                        <p id="date_picked_up">xx/xx/xxx</p>
+                        <p id="time_picked_up">xx:xx น.</p>
+                    </div>
+                </div>
+                <div class="state" data-status="inbound">
+                    <div class="circle" id="circle_inbound">
+                        <img src="assets/icons/doc.png" alt="doc icon" />
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_inbound">ถึงโกดังและคัดแยก</h4>
+                        <p id="date_inbound">xx/xx/xxx</p>
+                        <p id="time_inbound">xx:xx น.</p>
+                    </div>
+                </div>
+                <div class="state" data-status="evaluated">
+                    <div class="circle" id="circle_evaluated">
+                        <img src="assets/icons/doc.png" alt="doc icon" />
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_evaluated">ประเมินราคา</h4>
+                        <p id="date_evaluated">xx/xx/xxx</p>
+                        <p id="time_evaluated">xx:xx น.</p>
+                    </div>
+                </div>
+                <div class="state" data-status="sold">
+                    <div class="circle" id="circle_sold">
+                        <img src="assets/icons/doc.png" alt="doc icon" />
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_sold">ขายให้ร้านค้า</h4>
+                        <p id="date_sold">xx/xx/xxx</p>
+                        <p id="time_sold">xx:xx น.</p>
+                    </div>
+                </div>
+                <div class="state" data-status="paid">
+                    <div class="circle" id="circle_paid">
+                            <img src="assets/icons/doc.png" alt="doc icon" />
+                    </div>
+                    <div class="state_details">
+                        <h4 id="name_paid">จ่ายเงิน</h4>
+                        <p id="date_paid">xx/xx/xxx</p>
+                        <p id="time_paid">xx:xx น.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="subTopic">รายละเอียดการขาย</h4>
+            <div class="content">
+                <h4>ข้อมูลการขาย</h4>
+                <p><b>ผู้ขาย:</b> <span id="seller_name">-</span></p>
+                <p><b>เบอร์โทรศัพท์:</b> <span id="seller_phone">-</span></p>
+                <p><b>ที่อยู่:</b> <span id="seller_address">-</span></p>
+                <p><b>ประเภทเศษอาหาร:</b> <span id="food_types">-</span></p>
+                <p><b>วันเวลาที่ทำรายการ:</b> <span id="order_datetime">-</span></p>
+
+                
+            </div>
+            <div class="content">
+                <h4>ข้อมูลการขนส่ง</h4>
+                <p><b>วันเวลาที่เข้ารับเศษอาหาร:</b> <span id="pickup_datetime">-</span></p>
+                <p><b>ระยะทาง:</b> <span id="distance">-</span></p>
+                <p><b>ค่าขนส่ง:</b> <span id="shipping_cost">-</span></p>
+                <h4>ข้อมูลคนขับ</h4>
+                <p><b>ชื่อ:</b> <span id="driver_name">-</span></p>
+                <p><b>เบอร์โทรศัพท์:</b> <span id="driver_phone">-</span></p>
+                <p><b>ทะเบียนรถ:</b> <span id="driver_license">-</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="bottom-nav"></div>
+    <script src="js/load-bottom-nav.js"></script>
+
+<script src="js/status.js"></script>
 </body>
-
 </html>

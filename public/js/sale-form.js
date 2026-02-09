@@ -4,8 +4,6 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 const params = new URLSearchParams(window.location.search);
 const storeId = params.get("storeId");
 
-console.log("storeId:", storeId);
-
 document.addEventListener("DOMContentLoaded", async () => {
 
   await liff.init({ liffId: LIFF_ID });
@@ -64,7 +62,7 @@ async function loadWasteTypes() {
 
     if (acceptedWasteIds.includes(w.key)) {
 
-      wasteTypes.push({ id: w.key, name: w.val().name });
+      wasteTypes.push({ id: w.key, name: w.val().category });
 
       list.innerHTML += `
         <div class="waste-row">
@@ -89,8 +87,6 @@ function limitOneInput(current){
 }
 
 async function submitSale(){
-  console.log("submit clicked")
-
   const shopId = storeId;
   const userId = await getUserId();
 
@@ -98,37 +94,65 @@ async function submitSale(){
   const time = document.getElementById("time").value;
   const note = document.getElementById("note").value;
 
-  let items = [];
+  // -------------------------
+  // หา waste ที่ผู้ใช้เลือก
+  // -------------------------
+  let selectedWaste = null;
 
-  wasteTypes.forEach(w=>{
-    const weight = document.getElementById(`w_${w.id}`).value;
-    if(weight && weight > 0){
-      items.push({
-        waste_id:w.id,
-        weight:weight
-      });
+  wasteTypes.forEach(w => {
+    const input = document.getElementById(`w_${w.id}`);
+    if(input && input.value){
+      selectedWaste = {
+        waste_id: w.id,
+        weight: Number(input.value)
+      };
     }
   });
 
+  if(!selectedWaste){
+    alert("กรุณาเลือกประเภทเศษอาหาร");
+    return;
+  }
+
+  // -------------------------
+  // ดึงข้อมูล waste ทั้ง object
+  // -------------------------
+  const priceSnap = await db
+  .ref(`food_waste_types/${selectedWaste.waste_id}/price`)
+  .once("value");
+
+const pricePerKg = Number(priceSnap.val()) || 0;
+const totalPrice = selectedWaste.weight * pricePerKg;
+
+console.log("Waste:", selectedWaste.waste_id);
+console.log("Price:", pricePerKg);
+console.log("Total:", totalPrice);
+  
+  // -------------------------
+  // สร้าง order
+  // -------------------------
   const orderRef = db.ref("order").push();
 
   await orderRef.set({
-    user_id:userId,
-    shop_id:shopId,
-    order_at:`${date} ${time}`,
-    status:"กำลังขนส่ง",
-    note:note
+    user_id: userId,
+    shop_id: shopId,
+    order_at: `${date} ${time}`,
+    status: "กำลังขนส่ง",
+    note,
+    total_price: totalPrice
   });
 
-  for(const i of items){
-    await db.ref("order_items").push({
-      order_id:orderRef.key,
-      waste_id:i.waste_id,
-      weight:i.weight
-    });
-  }
+  // -------------------------
+  // บันทึก order_items
+  // -------------------------
+  await db.ref("order_items").push({
+    order_id: orderRef.key,
+    waste_id: selectedWaste.waste_id,
+    weight: selectedWaste.weight,
+    price_per_kg: pricePerKg,
+    total_price: totalPrice
+  });
   
   alert("บันทึกสำเร็จ");
-  location.href="home.html";
+  location.href = "home.html";
 }
-

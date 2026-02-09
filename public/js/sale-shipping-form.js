@@ -1,8 +1,8 @@
 let wasteTypes = [];
 const LIFF_ID = "2008999812-I2Dz19pN";
 
-const COMPANY_LAT = 13.54062;
-const COMPANY_LNG = 99.963823;
+const COMPANY_LAT = 14.024777585012503;
+const COMPANY_LNG = 99.97828225092593;
 
 let currentLat = null;
 let currentLng = null;
@@ -71,7 +71,7 @@ async function loadWasteTypes() {
 
     if (acceptedWasteIds.includes(w.key)) {
 
-      wasteTypes.push({ id: w.key, name: w.val().name });
+      wasteTypes.push({ id: w.key, name: w.val().category });
 
       list.innerHTML += `
         <div class="waste-row">
@@ -93,54 +93,6 @@ function limitOneInput(current){
       i.value = "";
     }
   });
-}
-
-async function submitSale(){
-
-  if(currentLat === null || currentLng === null){
-    alert("กรุณากดใช้ตำแหน่งปัจจุบันก่อน");
-    return;
-  }
-
-  const shopId = storeId;
-  const userId = await getUserId();
-  const address = document.getElementById("address").value;
-
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-  const note = document.getElementById("note").value;
-
-  distanceKm = calculateDistance(
-    COMPANY_LAT,
-    COMPANY_LNG,
-    currentLat,
-    currentLng
-  );
-
-  shippingFee = 0;
-  if(distanceKm > 1){
-    shippingFee = Math.ceil(distanceKm - 1) * 5;
-  }
-
-  const orderRef = db.ref("order").push();
-
-  await orderRef.set({
-    user_id: userId,
-    shop_id: shopId,
-    order_at: `${date} ${time}`,
-    status: shippingFee > 0 ? "รอชำระเงิน" : "กำลังขนส่ง",
-    note,
-    address,
-    distance_km: distanceKm,
-    shipping_fee: shippingFee
-  });
-
-  if(shippingFee > 0){
-    location.href = `payment.html?orderId=${orderRef.key}`;
-  } else {
-    alert("บันทึกสำเร็จ");
-    location.href = "home.html";
-  }
 }
 
 function getCurrentLocation(){
@@ -166,8 +118,8 @@ function getCurrentLocation(){
     );
 
     shippingFee = 0;
-    if(distanceKm > 1){
-      shippingFee = Math.ceil(distanceKm - 1) * 5;
+    if(distanceKm > 10){
+      shippingFee = Math.ceil(distanceKm - 10) * 5;
     }
 
     document.getElementById("shippingText").innerText =
@@ -191,4 +143,106 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
+}
+
+async function submitSale(){
+
+  if(currentLat === null || currentLng === null){
+    alert("กรุณากดใช้ตำแหน่งปัจจุบันก่อน");
+    return;
+  }
+
+  const shopId = storeId;
+  const userId = await getUserId();
+  const address = document.getElementById("address").value;
+
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const note = document.getElementById("note").value;
+
+  // -------------------------
+  // หา waste ที่ผู้ใช้เลือก
+  // -------------------------
+  let selectedWaste = null;
+
+  wasteTypes.forEach(w => {
+    const input = document.getElementById(`w_${w.id}`);
+    if(input && input.value){
+      selectedWaste = {
+        waste_id: w.id,
+        weight: Number(input.value)
+      };
+    }
+  });
+
+  if(!selectedWaste){
+    alert("กรุณาเลือกประเภทเศษอาหาร");
+    return;
+  }
+
+  // -------------------------
+  // ดึงข้อมูล waste ทั้ง object
+  // -------------------------
+  const priceSnap = await db
+  .ref(`food_waste_types/${selectedWaste.waste_id}/price`)
+  .once("value");
+
+const pricePerKg = Number(priceSnap.val()) || 0;
+const totalPrice = selectedWaste.weight * pricePerKg;
+
+console.log("Waste:", selectedWaste.waste_id);
+console.log("Price:", pricePerKg);
+console.log("Total:", totalPrice);
+  // -------------------------
+  // คำนวณระยะทาง
+  // -------------------------
+  distanceKm = calculateDistance(
+    COMPANY_LAT,
+    COMPANY_LNG,
+    currentLat,
+    currentLng
+  );
+
+  shippingFee = 0;
+  if(distanceKm > 1){
+    shippingFee = Math.ceil(distanceKm - 1) * 5;
+  }
+
+  // -------------------------
+  // สร้าง order
+  // -------------------------
+  const orderRef = db.ref("order").push();
+
+  await orderRef.set({
+    user_id: userId,
+    shop_id: shopId,
+    order_at: `${date} ${time}`,
+    status: shippingFee > 0 ? "รอชำระเงิน" : "กำลังขนส่ง",
+    note,
+    address,
+    distance_km: distanceKm,
+    shipping_fee: shippingFee,
+    total_price: totalPrice
+  });
+
+  // -------------------------
+  // บันทึก order_items
+  // -------------------------
+  await db.ref("order_items").push({
+    order_id: orderRef.key,
+    waste_id: selectedWaste.waste_id,
+    weight: selectedWaste.weight,
+    price_per_kg: pricePerKg,
+    total_price: totalPrice
+  });
+
+  // -------------------------
+  // redirect
+  // -------------------------
+  if(shippingFee > 0){
+    location.href = `payment.html?orderId=${orderRef.key}`;
+  }else{
+    alert("บันทึกสำเร็จ");
+    location.href = "home.html";
+  }
 }
