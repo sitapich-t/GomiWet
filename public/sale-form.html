@@ -1,49 +1,61 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<title>GomiWet | กรอกข้อมูลการขาย</title>
-<link rel="stylesheet" href="css/sale-form.css">
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <meta charset="UTF-8">
+  <title>GomiWet | กรอกข้อมูลการขาย</title>
+  <link rel="stylesheet" href="css/sale-form.css">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <div class="card">
-    <label>เลือกวันเดือนปี</label>
-    <input type="date" id="date">
-  </div>
+    <div class="card">
+      <h3>เลือกวันเดือนปี</h3>
+      <input type="date" id="date">
+    </div>
 
-  <div class="card">
-    <label>เวลา</label>
-    <input type="time" id="time">
-  </div>
+    <div class="card">
+      <h3>เวลา</h3>
+      <input type="time" id="time">
+    </div>
 
-  <div class="card">
-    <h3>ประเภทเศษอาหาร / น้ำหนัก (กก.)</h3>
-    <p style="color:#888;font-size:14px">
-      * สามารถกรอกได้ครั้งละ 1 ประเภทเท่านั้น
-    </p>
-    <div id="wasteList"></div>
-  </div>
+    <div class="card">
+      <h3>ประเภทเศษอาหาร / น้ำหนัก (กก.)</h3>
+      <p style="color:#888;font-size:14px">
+        * สามารถกรอกได้ครั้งละ 1 ประเภทเท่านั้น
+      </p>
+      <div id="wasteList"></div>
+    </div>
 
-  <div class="card">
-    <label>หมายเหตุ</label>
-    <textarea id="note" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
-  </div>
+    <div class="card">
+      <h3>หมายเหตุ</h3>
+      <textarea id="note" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+    </div>
 
-  <button type="button" class="submit-btn" onclick="submitSale()">
-    ยืนยันการขาย
-  </button>
+    <button type="button" class="submit-btn" onclick="submitSale()">
+      ยืนยันการขาย
+    </button>
 
-</div>
+    <div id="qrModal" class="qr-modal">
+      <div class="qr-content">
+        <h3>แสดงคิวอาร์โค้ด</h3>
+        <div id="qrBox"></div>
+        <p>แสดง QR นี้ให้ร้านสแกน</p>
+        <button onclick="closeQR()">ปิด</button>
+      </div>
+    </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-<script src="js/firebase.js"></script>
-<script src="js/sale-form.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/sale-form.js"></script>
+
 </body>
+
+
 </html>

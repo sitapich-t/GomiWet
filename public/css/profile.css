@@ -13,7 +13,7 @@ body {
 }
 
 .profile-header {
-  background: #12c6c2;
+  background: #00BEC4;
   padding: clamp(16px, 5vw, 24px);
 }
 
@@ -155,3 +155,10 @@ body {
   }
 }
 
+.order-card{
+  transition: .2s;
+}
+.order-card:hover{
+  transform: scale(1.02);
+  background:#fafafa;
+}

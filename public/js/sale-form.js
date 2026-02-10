@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // set default date/time
   const now = new Date();
+
   document.getElementById("date").value =
     now.toISOString().split("T")[0];
 
@@ -30,13 +30,13 @@ async function getUserId(){
 }
 
 async function loadWasteTypes() {
+
   const list = document.getElementById("wasteList");
   list.innerHTML = "กำลังโหลด...";
 
-  // 1️⃣ ดึง waste_id ที่ร้านนี้รับซื้อ
   const acceptedSnap = await db.ref("shop_accepted")
     .orderByChild("shop_id")
-    .equalTo(Number(storeId))   // ถ้า storeId เป็น string
+    .equalTo(Number(storeId))
     .once("value");
 
   const acceptedWasteIds = [];
@@ -45,19 +45,16 @@ async function loadWasteTypes() {
     acceptedWasteIds.push(String(s.val().waste_id));
   });
 
-  // ถ้าร้านไม่รับซื้ออะไรเลย
   if (acceptedWasteIds.length === 0) {
     list.innerHTML = "ร้านนี้ไม่รับซื้อเศษอาหาร";
     return;
   }
 
-  // 2️⃣ โหลดประเภทเศษอาหารทั้งหมด
   const wasteSnap = await db.ref("food_waste_types").once("value");
 
   list.innerHTML = "";
   wasteTypes = [];
 
-  // 3️⃣ แสดงเฉพาะที่ร้านรับซื้อ
   wasteSnap.forEach(w => {
 
     if (acceptedWasteIds.includes(w.key)) {
@@ -86,17 +83,23 @@ function limitOneInput(current){
   });
 }
 
+function closeQR(){
+  document.getElementById("qrModal").style.display = "none";
+}
+
 async function submitSale(){
+
   const shopId = storeId;
   const userId = await getUserId();
+  const deliveryType = localStorage.getItem("delivery_type")
 
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
   const note = document.getElementById("note").value;
 
-  // -------------------------
-  // หา waste ที่ผู้ใช้เลือก
-  // -------------------------
+  const pickupDateTime = new Date(`${date}T${time}`);
+  const expire = new Date(pickupDateTime.getTime() + 15*60000);
+
   let selectedWaste = null;
 
   wasteTypes.forEach(w => {
@@ -114,37 +117,27 @@ async function submitSale(){
     return;
   }
 
-  // -------------------------
-  // ดึงข้อมูล waste ทั้ง object
-  // -------------------------
   const priceSnap = await db
-  .ref(`food_waste_types/${selectedWaste.waste_id}/price`)
-  .once("value");
+    .ref(`food_waste_types/${selectedWaste.waste_id}/price`)
+    .once("value");
 
-const pricePerKg = Number(priceSnap.val()) || 0;
-const totalPrice = selectedWaste.weight * pricePerKg;
+  const pricePerKg = Number(priceSnap.val()) || 0;
+  const totalPrice = selectedWaste.weight * pricePerKg;
 
-console.log("Waste:", selectedWaste.waste_id);
-console.log("Price:", pricePerKg);
-console.log("Total:", totalPrice);
-  
-  // -------------------------
-  // สร้าง order
-  // -------------------------
   const orderRef = db.ref("order").push();
 
   await orderRef.set({
     user_id: userId,
     shop_id: shopId,
     order_at: `${date} ${time}`,
-    status: "กำลังขนส่ง",
+    pickup_time: pickupDateTime.toISOString(),
+    qr_expire_at: expire.toISOString(),
+    delivery_type: deliveryType,
+    status: "ได้รับคำสั่งซื้อ",
     note,
     total_price: totalPrice
   });
 
-  // -------------------------
-  // บันทึก order_items
-  // -------------------------
   await db.ref("order_items").push({
     order_id: orderRef.key,
     waste_id: selectedWaste.waste_id,
@@ -152,7 +145,22 @@ console.log("Total:", totalPrice);
     price_per_kg: pricePerKg,
     total_price: totalPrice
   });
-  
-  alert("บันทึกสำเร็จ");
-  location.href = "home.html";
+
+  // แสดง QR
+document.getElementById("qrModal").style.display = "flex";
+
+const qrBox = document.getElementById("qrBox");
+qrBox.innerHTML = "";
+
+// สร้าง canvas
+const canvas = document.createElement("canvas");
+qrBox.appendChild(canvas);
+
+// generate QR
+QRCode.toCanvas(canvas, orderRef.key, {
+  width: 200
+}, function (error) {
+  if (error) console.error(error);
+});
+
 }

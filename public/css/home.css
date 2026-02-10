@@ -1,6 +1,6 @@
 /* ===== Header ===== */
 .header-blue {
-  background: #00bec4;
+  background: #00BEC4;
   padding: 20px 16px 40px;
 }
 
@@ -101,20 +101,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .store-name {
   font-size: 16px;
   margin: 0;
   font-weight: 600;
+  flex: 1
 }
 
 .badge-yellow {
   background: #ffc400;
   padding: 4px 12px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* address */
@@ -128,7 +131,7 @@
 }
 
 .store-address i {
-  color: #00c853;
+  color: #00BEC4;
   font-size: 14px;
 }
 
@@ -162,13 +165,13 @@ hr {
 }
 
 .sell-count {
-  color: #00c853;
+  color: #00BEC4;
   font-size: 12px;
   font-weight: 500;
 }
 
 .sell-btn {
-  background: #14c614;
+  background: #00BEC4;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -178,7 +181,7 @@ hr {
 }
 
 .sell-btn:hover {
-  background: #10a810;
+  background: #00BEC4;
 }
 
 /* ===== Desktop จำกัดความกว้าง ===== */

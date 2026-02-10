@@ -45,7 +45,7 @@ textarea {
 .submit-btn {
   width: 100%;
   padding: 14px;
-  background: #2ecc71;
+  background: #00BEC4;
   color: white;
   border: none;
   font-size: 16px;
@@ -53,5 +53,5 @@ textarea {
 }
 
 .submit-btn:hover {
-  background: #27ae60;
+  background: #00BEC4;
 }

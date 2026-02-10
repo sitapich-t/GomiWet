@@ -155,14 +155,20 @@ async function loadUserOrders(userId) {
     });
 }
 
-// ================== INIT ==================
-try {
-    if (!auth || !auth.currentUser) {
-        // DEV MODE
-        loadUserOrders('U4ea11ac1926aecf3fb62406f5f2759b6');
-    } else {
-        loadUserOrders(auth.currentUser.uid);
+window.goto = function(pageId){
+
+    // ซ่อนทุก page
+    document.querySelectorAll('.page').forEach(p=>{
+        p.style.display = 'none';
+    });
+
+    // แสดง page ที่ต้องการ
+    const target = document.getElementById(pageId);
+    if(target){
+        target.style.display = 'block';
     }
-} catch (e) {
-    console.warn(e);
-}
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    goto("track");   // เปิดหน้า list เป็นหน้าแรก
+});

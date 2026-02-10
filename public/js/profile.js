@@ -84,7 +84,11 @@ function loadHistory(userId) {
     });
 }
 
-async function loadMyOrders(){
+function openOrder(orderId){
+  window.location.href = `order-status.html?orderId=${orderId}`;
+}
+
+async function loadMyOrders(shopId){
 
   const list = document.getElementById("historyList");
   list.innerHTML = "กำลังโหลด...";
@@ -116,7 +120,8 @@ async function loadMyOrders(){
     const storeName = storeSnap.exists() ? storeSnap.val().shop_name : "-";
 
     list.innerHTML += `
-      <div class="order-card">
+      <div class="order-card" onclick="openOrder('${orderId}')"
+       style="cursor:pointer">
         <div>วันที่: ${data.order_at || "-"}</div>
         <div>ร้าน: ${storeName}</div>
         <div>สถานะ: ${data.status}</div>

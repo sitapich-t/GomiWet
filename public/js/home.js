@@ -6,6 +6,7 @@ let allStores = [];
 let categoriesMap = {};
 let userCoords = null;
 let storeMarkers = [];
+let wasteTypes = [];
 
 async function checkLogin() {
     try {
@@ -77,6 +78,54 @@ async function loadCategories() {
   }, {});
 }
 
+async function loadWasteTypes() {
+  const list = document.getElementById("wasteList");
+  list.innerHTML = "กำลังโหลด...";
+
+  // 1️⃣ ดึง waste_id ที่ร้านนี้รับซื้อ
+  const acceptedSnap = await db.ref("shop_accepted")
+    .orderByChild("shop_id")
+    .equalTo(Number(storeId))   // ถ้า storeId เป็น string
+    .once("value");
+
+  const acceptedWasteIds = [];
+
+  acceptedSnap.forEach(s => {
+    acceptedWasteIds.push(String(s.val().waste_id));
+  });
+
+  // ถ้าร้านไม่รับซื้ออะไรเลย
+  if (acceptedWasteIds.length === 0) {
+    list.innerHTML = "ร้านนี้ไม่รับซื้อเศษอาหาร";
+    return;
+  }
+
+  // 2️⃣ โหลดประเภทเศษอาหารทั้งหมด
+  const wasteSnap = await db.ref("food_waste_types").once("value");
+
+  list.innerHTML = "";
+  wasteTypes = [];
+
+  // 3️⃣ แสดงเฉพาะที่ร้านรับซื้อ
+  wasteSnap.forEach(w => {
+
+    if (acceptedWasteIds.includes(w.key)) {
+
+      wasteTypes.push({ id: w.key, name: w.val().category });
+
+      list.innerHTML += `
+        <div class="waste-row">
+          <span>${w.val().category}</span>
+          <input type="number"
+                 class="waste-input"
+                 id="w_${w.key}"
+                 placeholder="กก."
+                 oninput="limitOneInput(this)">
+        </div>
+      `;
+    }
+  });
+}
 
 async function loadStores() {
   await loadCategories(); // 🔥 สำคัญ ต้องโหลดหมวดก่อน
@@ -127,13 +176,16 @@ function renderStores(stores) {
       <div class="store-card">
         <div class="card-header">
           <h2 class="store-name">${store.shop_name}</h2>
+          <span class="badge-yellow">${store.category_name}</span>
         </div>
 
-        <div class="store-address">
-          👤 เจ้าของร้าน: ${store.owner_name} ${store.owner_surname}
+        <div class="store-types" id="waste-types-${store.id}">
+          ${
+            wasteTypes.length
+            ? wasteTypes.map(w => `<span class="type-pill">${w}</span>`).join("")
+            : `<span class="type-pill">ไม่ระบุ</span>`
+          }
         </div>
-
-        <p>📦 หมวด: ${store.category_name}</p>
 
         <div class="store-distance">
           📍 ${distanceInfo}

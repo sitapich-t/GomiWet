@@ -12,7 +12,12 @@ h2 {
 }
 
 .page {
+  display: none;
   padding-bottom: 70px;
+}
+
+.page.active {
+    display: block;
 }
 
 .page h4{
@@ -227,7 +232,7 @@ h2 {
   border-radius: 12px;
 }
 .completed{
-  background-color: #00BEC4;
+  background-color: #1b761d;
 }
 .circle{
   height: 40px;

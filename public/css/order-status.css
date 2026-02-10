@@ -1,0 +1,67 @@
+body{
+    font-family: "IBM Plex Sans Thai Looped", "Prompt", sans-serif;
+    background:#f5f6fa;
+    margin:0;
+    padding:20px;
+}
+
+/* Title */
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#2d3436;
+}
+
+/* Card */
+#orderInfo{
+    max-width:500px;
+    margin:auto;
+    background:#ffffff;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    line-height:1.8;
+    font-size:16px;
+}
+
+/* Label */
+#orderInfo p{
+    margin:8px 0;
+    border-bottom:1px dashed #eee;
+    padding-bottom:6px;
+}
+
+/* status badge (optional ถ้าจะใส่ class เพิ่มทีหลัง) */
+.status{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:8px;
+    font-size:14px;
+    color:white;
+}
+
+.status.processing{
+    background:#f39c12;
+}
+
+.status.success{
+    background:#00BEC4;
+}
+
+.status.cancel{
+    background:#d63031;
+}
+
+.back-btn{
+    background:#eeeeee;
+    border:none;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:14px;
+    cursor:pointer;
+    margin-bottom:10px;
+}
+
+.back-btn:hover{
+    background:#ddd;
+}

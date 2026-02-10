@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>GomiWet | สถานะการขนส่ง</title>
-<link rel="stylesheet" href="css/calculate.css">
+<link rel="stylesheet" href="css/status.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -74,14 +74,14 @@
         <div class="container">
             <button onclick="goto('track')">← กลับ</button>
             <div class="order_header">
-                <strong>รายละเอียดการขาย</strong> 
+                <strong>รายละเอียดการขาย</strong>
                 <p>รหัสการขาย: -</p>
             </div>
             <div class="timeline">
                 <h4 class="subTopic">สถานะการขาย</h4>
                 <div class="state" data-status="order_received">
                     <div class="circle" id="circle_order_received">
-                        <img src="assets/icons/doc.png" alt="doc icon"/>
+                        <img src="assets/icons/doc.png" alt="doc icon" />
                     </div>
                     <div class="state_details">
                         <h4 id="name_order_received">ได้รับรายการขายแล้ว</h4>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="state" data-status="paid">
                     <div class="circle" id="circle_paid">
-                            <img src="assets/icons/doc.png" alt="doc icon" />
+                        <img src="assets/icons/doc.png" alt="doc icon" />
                     </div>
                     <div class="state_details">
                         <h4 id="name_paid">จ่ายเงิน</h4>
@@ -150,7 +150,7 @@
                 <p><b>ประเภทเศษอาหาร:</b> <span id="food_types">-</span></p>
                 <p><b>วันเวลาที่ทำรายการ:</b> <span id="order_datetime">-</span></p>
 
-                
+
             </div>
             <div class="content">
                 <h4>ข้อมูลการขนส่ง</h4>
@@ -164,7 +164,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="bottom-nav"></div>
     <script src="js/load-bottom-nav.js"></script>
 

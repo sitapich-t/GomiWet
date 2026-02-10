@@ -155,6 +155,7 @@ async function submitSale(){
   const shopId = storeId;
   const userId = await getUserId();
   const address = document.getElementById("address").value;
+  const deliveryType = localStorage.getItem("delivery_type")
 
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
@@ -216,8 +217,9 @@ console.log("Total:", totalPrice);
   await orderRef.set({
     user_id: userId,
     shop_id: shopId,
+    delivery_type: deliveryType,
     order_at: `${date} ${time}`,
-    status: shippingFee > 0 ? "รอชำระเงิน" : "กำลังขนส่ง",
+    status: shippingFee > 0 ? "รอชำระเงิน" : "รอขนส่งเข้ารับ",
     note,
     address,
     distance_km: distanceKm,

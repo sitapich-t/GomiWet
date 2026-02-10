@@ -1,6 +1,6 @@
 body{
   margin:0;
-  font-family: "Prompt", sans-serif;
+  font-family: "IBM Plex Sans Thai Looped", "Prompt", sans-serif;
   background:#f5f7fb;
   display:flex;
   flex-direction:column;
@@ -57,19 +57,19 @@ body{
 }
 
 .btn.primary{
-  background:#3a8bfd;
+  background:#00BEC4;
   color:white;
   border:none;
 }
 
 .btn.primary:hover{
-  background:#2f76db;
+  background:#00BEC4;
 }
 
 .btn.outline{
   background:white;
-  border:2px solid #3a8bfd;
-  color:#3a8bfd;
+  border:2px solid #00BEC4;
+  color:#00BEC4;
 }
 
 .btn.outline:hover{
