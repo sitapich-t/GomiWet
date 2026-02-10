@@ -2,26 +2,54 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 1. เริ่มต้นระบบ LIFF
+
     await liff.init({ liffId: LIFF_ID });
 
     const loginBtn = document.getElementById("loginBtn");
 
-    // 2. เช็คว่าล็อกอินหรือยัง?
     if (!liff.isLoggedIn()) {
-      // ถ้ายังไม่ล็อกอิน: ให้แสดงปุ่ม Login และรอให้ผู้ใช้กด
-      loginBtn.style.display = "block"; 
-      loginBtn.onclick = () => {
-        liff.login();
-      };
-    } else {
-      // 3. ถ้าล็อกอินแล้ว (หรือเพิ่งกลับมาจากหน้า Login ของ LINE):
-      // ทำการ Redirect ไปหน้า home.html ทันทีโดยไม่ต้องรอคลิก
-      window.location.href = "home.html";
+      loginBtn.style.display = "block";
+      loginBtn.onclick = () => liff.login();
+      return;
     }
 
-  } catch (error) {
-    console.error("LIFF init error:", error);
-    alert("LIFF init ไม่สำเร็จ หรือเกิดข้อผิดพลาด");
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
+
+    const userRef = db.ref("users/" + userId);
+    const sellerRef = db.ref("sellers/" + userId);
+
+    const [userSnap, sellerSnap] = await Promise.all([
+      userRef.once("value"),
+      sellerRef.once("value")
+    ]);
+
+    if (!userSnap.exists()) {
+      await userRef.set({
+        display_name: profile.displayName,
+        picture_url: profile.pictureUrl || "",
+        role: "seller",
+        created_at: new Date().toISOString()
+      });
+    }
+
+    if (!sellerSnap.exists()) {
+      await sellerRef.set({
+        user_id: userId,
+        display_name: profile.displayName,
+        address: "",
+        phone: "",
+        registered_at: new Date().toISOString()
+      });
+    }
+
+    if (!window.__LOGGED_IN__) {
+      window.__LOGGED_IN__ = true;
+      location.replace("home.html");
+    }
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    alert("เกิดข้อผิดพลาดในการ Login");
   }
 });

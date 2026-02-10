@@ -14,4 +14,4 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-window.db = firebase.database();
+const db = firebase.database();

@@ -1,7 +1,8 @@
 let userId = null;
 const LIFF_ID = "2008999812-I2Dz19pN";
 
-async function loadProfile() {
+async function loadProfile(){
+
   await liff.init({ liffId: LIFF_ID });
 
   if (!liff.isLoggedIn()) {
@@ -12,43 +13,37 @@ async function loadProfile() {
   const profile = await liff.getProfile();
   userId = profile.userId;
 
-  // แสดงข้อมูล LINE ทันที
-  document.getElementById("userName").innerText = profile.displayName;
-  document.getElementById("userImg").src =
-    profile.pictureUrl || "https://via.placeholder.com/80";
+  /* ====================
+     USERS
+  ==================== */
 
-  const userRef = db.ref(`users/${userId}`);
+  const userSnap = await db.ref("users/" + userId).once("value");
+  const user = userSnap.val();
 
-  // ✅ สร้าง user ถ้ายังไม่มี
-  userRef.once("value").then(snapshot => {
-    if (!snapshot.exists()) {
-      userRef.set({
-        displayName: profile.displayName,
-        pictureUrl: profile.pictureUrl || "",
-        phone: "",
-        address: "",
-        createdAt: Date.now()
-      });
-    }
-  }).catch(err => {
-    console.error("CREATE USER ERROR:", err);
-  });
+  if(user){
+    document.getElementById("userName").innerText =
+      user.display_name || "-";
 
-  // ✅ โหลดข้อมูล user
-  userRef.on("value", snap => {
-    const data = snap.val();
-    if (!data) return;
-
-    document.getElementById("userPhone").innerText = data.phone || "-";
-    document.getElementById("userAddress").innerText = data.address || "-";
-  });
-
-  // ✅ โหลดประวัติขาย (อย่าให้พังทั้งหน้า)
-  try {
-    loadMyOrders();
-  } catch (e) {
-    console.warn("Load history failed:", e);
+    document.getElementById("userImg").src =
+      user.picture_url || "https://via.placeholder.com/80";
   }
+
+  /* ====================
+     SELLERS
+  ==================== */
+
+  const sellerSnap = await db.ref("sellers/" + userId).once("value");
+  const seller = sellerSnap.val();
+
+  if(seller){
+    document.getElementById("userPhone").innerText =
+      seller.phone || "-";
+
+    document.getElementById("userAddress").innerText =
+      seller.address || "-";
+  }
+
+  loadMyOrders(userId);
 }
 
 function loadHistory(userId) {
