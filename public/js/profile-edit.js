@@ -23,7 +23,7 @@ async function loadProfile() {
     document.getElementById("userImg").src =
       profile.pictureUrl || "https://via.placeholder.com/80";
 
-    const userRef = db.ref(`users/${currentUserId}`);
+    const userRef = db.ref(`sellers/${currentUserId}`);
 
     // โหลดข้อมูลจาก DB
     userRef.on("value").then(snapshot => {
@@ -36,11 +36,11 @@ async function loadProfile() {
       } else {
         // ถ้ายังไม่มี user → สร้างอัตโนมัติ
         userRef.set({
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl || "",
+          display_name: profile.displayName,
+          picture_url: profile.pictureUrl || "",
           phone: "",
           address: "",
-          createdAt: Date.now()
+          created_at: Date.now()
         });
       }
     });
@@ -60,10 +60,10 @@ function saveProfile() {
   const phone = document.getElementById("phoneInput").value.trim();
   const address = document.getElementById("addressInput").value.trim();
 
-  db.ref(`users/${currentUserId}`).update({
+  db.ref(`sellers/${currentUserId}`).update({
     phone,
     address,
-    updatedAt: Date.now()
+    updated_at: Date.now()
   })
   .then(() => {
     alert("บันทึกข้อมูลสำเร็จ");

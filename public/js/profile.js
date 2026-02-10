@@ -102,6 +102,7 @@ async function loadMyOrders(){
   }
 
   let count = 0;
+  let totalIncome = 0;
 
   for (const child of Object.entries(snap.val())) {
 
@@ -109,6 +110,7 @@ async function loadMyOrders(){
     const data = child[1];
 
     count++;
+    totalIncome += data.total_price || 0;
 
     const storeSnap = await db.ref("shops/" + data.shop_id).once("value");
     const storeName = storeSnap.exists() ? storeSnap.val().shop_name : "-";
@@ -118,12 +120,14 @@ async function loadMyOrders(){
         <div>วันที่: ${data.order_at || "-"}</div>
         <div>ร้าน: ${storeName}</div>
         <div>สถานะ: ${data.status}</div>
+        <div>ยอด: ฿${data.total_price || 0}</div>
       </div>
     `;
   }
 
   document.getElementById("historyCount").innerText = `${count} รายการ`;
   document.getElementById("totalSales").innerText = count;
+  document.getElementById("totalIncome").innerText = totalIncome;
 }
 
 loadProfile();
