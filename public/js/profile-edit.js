@@ -29,6 +29,8 @@ async function loadProfile() {
     userRef.on("value").then(snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
+        document.getElementById("nameInput").value =
+          data.fullname || "";
         document.getElementById("phoneInput").value =
           data.phone || "";
         document.getElementById("addressInput").value =
@@ -38,6 +40,7 @@ async function loadProfile() {
         userRef.set({
           display_name: profile.displayName,
           picture_url: profile.pictureUrl || "",
+          fullname: "",
           phone: "",
           address: "",
           created_at: Date.now()
@@ -57,10 +60,12 @@ function saveProfile() {
     return;
   }
 
+  const fullname = document.getElementById("nameInput").value.trim();
   const phone = document.getElementById("phoneInput").value.trim();
   const address = document.getElementById("addressInput").value.trim();
 
   db.ref(`sellers/${currentUserId}`).update({
+    fullname,
     phone,
     address,
     updated_at: Date.now()

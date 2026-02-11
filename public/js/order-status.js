@@ -6,7 +6,7 @@ function goBack(){
 }
 
 async function loadOrderStatus() {
-  const snap = await db.ref("orders/" + orderId).once("value");
+  const snap = await db.ref("order/" + orderId).once("value");
 
   if (!snap.exists()) {
     document.getElementById("orderInfo").innerText = "ไม่พบคำสั่งขาย";

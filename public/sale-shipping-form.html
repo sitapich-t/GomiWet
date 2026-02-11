@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>GomiWet | กรอกข้อมูลการขาย</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กรอกข้อมูลการขายต้องการขนส่ง | GomiWet</title>
     <link rel="stylesheet" href="css/sale-form.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -24,11 +25,11 @@
 
         <div class="card">
             <label>ที่อยู่รับสินค้า</label>
-            <input type="text" id="address" placeholder="กรอกที่อยู่ หรือใช้ตำแหน่งปัจจุบัน">
+            <input type="text" id="address" placeholder="ใช้ตำแหน่งปัจจุบัน">
             <button type="button" onclick="getCurrentLocation()">ใช้ตำแหน่งปัจจุบัน</button>
+            <input type="text" id="addressDetail" placeholder="บ้านเลขที่ หมู่ ซอย เพิ่มเติม">
             <p id="shippingText"></p>
         </div>
-
 
         <div class="card">
             <h3>ประเภทเศษอาหาร / น้ำหนัก (กก.)</h3>

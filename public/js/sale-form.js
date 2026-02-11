@@ -4,6 +4,26 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 const params = new URLSearchParams(window.location.search);
 const storeId = params.get("storeId");
 
+async function generateDisplayOrderId() {
+
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+
+  const dateKey = `${yyyy}${mm}${dd}`;
+
+  const counterRef = db.ref(`order_counters/${dateKey}`);
+
+  const result = await counterRef.transaction(current => {
+    return (current || 0) + 1;
+  });
+
+  const runningNumber = String(result.snapshot.val()).padStart(4, '0');
+
+  return `ORD${dateKey}-${runningNumber}`;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
   await liff.init({ liffId: LIFF_ID });
@@ -83,10 +103,6 @@ function limitOneInput(current){
   });
 }
 
-function closeQR(){
-  document.getElementById("qrModal").style.display = "none";
-}
-
 async function submitSale(){
 
   const shopId = storeId;
@@ -96,9 +112,6 @@ async function submitSale(){
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
   const note = document.getElementById("note").value;
-
-  const pickupDateTime = new Date(`${date}T${time}`);
-  const expire = new Date(pickupDateTime.getTime() + 15*60000);
 
   let selectedWaste = null;
 
@@ -124,19 +137,19 @@ async function submitSale(){
   const pricePerKg = Number(priceSnap.val()) || 0;
   const totalPrice = selectedWaste.weight * pricePerKg;
 
+  const displayId = await generateDisplayOrderId();
   const orderRef = db.ref("order").push();
 
   await orderRef.set({
+    display_id: displayId,
     user_id: userId,
     shop_id: shopId,
-    order_at: `${date} ${time}`,
-    pickup_time: pickupDateTime.toISOString(),
-    qr_expire_at: expire.toISOString(),
+    order_at: firebase.database.ServerValue.TIMESTAMP,
+    pickup_at: `${date} ${time}`,
     delivery_type: deliveryType,
-    status: "ได้รับคำสั่งซื้อ",
+    status: "order_received",
     note,
     total_price: totalPrice,
-    qr_data: orderRef.key
   });
 
   await db.ref("order_items").push({
@@ -147,19 +160,6 @@ async function submitSale(){
     total_price: totalPrice
   });
 
-  // แสดง QR
-  document.getElementById("qrModal").style.display = "flex";
-
-  const qrBox = document.getElementById("qrBox");
-  qrBox.innerHTML = "";
-
-// สร้าง canvas
-  const canvas = document.createElement("canvas");
-  qrBox.appendChild(canvas);
-
-// generate QR
-  QRCode.toCanvas(canvas, orderRef.key, {width: 200}, function (error) {
-    if (error) console.error(error);
-  });
-  
+   alert("บันทึกสำเร็จ");
+   location.href = "home.html";
 }

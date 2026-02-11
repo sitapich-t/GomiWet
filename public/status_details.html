@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดการขาย | GomiWet</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/status_details.css">
+</head>
+
+<body>
+    <div class="page-layout">
+        <!-- Header with Back Button -->
+        <div class="header-bar">
+            <button class="back-btn" onclick="location.href='status.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>รายละเอียดการขาย</h2>
+            <div class="header-spacer"></div>
+        </div>
+        
+        <!-- Order ID Card -->
+        <div class="order-id-card">
+            <div class="order-id-label">รหัสการขาย</div>
+            <div class="order-id-value" id="order_id_display">-</div>
+        </div>
+
+
+        <!-- Timeline Section -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fas fa-route"></i>
+                สถานะการดำเนินการ
+            </h3>
+            <div class="timeline">
+                <!-- Order Received -->
+                <div class="timeline-item" data-status="order_received">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_order_received">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_order_received">ได้รับรายการขายแล้ว</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_order_received">xx/xx/xxx</span>
+                            <span id="time_order_received">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Picked Up -->
+                <div class="timeline-item" data-status="picked_up">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_picked_up">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_picked_up">รถมารับเศษอาหาร</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_picked_up">xx/xx/xxx</span>
+                            <span id="time_picked_up">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inbound -->
+                <div class="timeline-item" data-status="inbound">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_inbound">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_inbound">ถึงโกดังและคัดแยก</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_inbound">xx/xx/xxx</span>
+                            <span id="time_inbound">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evaluated -->
+                <div class="timeline-item" data-status="evaluated">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_evaluated">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_evaluated">ประเมินราคา</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_evaluated">xx/xx/xxx</span>
+                            <span id="time_evaluated">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sold -->
+                <div class="timeline-item" data-status="sold">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_sold">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_sold">ขายให้ร้านค้า</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_sold">xx/xx/xxx</span>
+                            <span id="time_sold">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paid -->
+                <div class="timeline-item" data-status="paid">
+                    <div class="timeline-marker">
+                        <div class="timeline-icon" id="circle_paid">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title" id="name_paid">จ่ายเงิน</h4>
+                        <div class="timeline-datetime">
+                            <span id="date_paid">xx/xx/xxx</span>
+                            <span id="time_paid">xx:xx น.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Details Section -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                ข้อมูลการขาย
+            </h3>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">ผู้ขาย</span>
+                    <span class="info-value" id="seller_name">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">เบอร์โทรศัพท์</span>
+                    <span class="info-value" id="seller_phone">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ที่อยู่</span>
+                    <span class="info-value" id="seller_address">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ประเภทเศษอาหาร</span>
+                    <span class="info-value" id="food_types">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">วันเวลาที่ทำรายการ</span>
+                    <span class="info-value" id="order_datetime">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Details Section -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fas fa-shipping-fast"></i>
+                ข้อมูลการขนส่ง
+            </h3>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">วันเวลาที่รับเศษอาหาร</span>
+                    <span class="info-value" id="pickup_datetime">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ระยะทาง</span>
+                    <span class="info-value" id="distance">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ค่าขนส่ง</span>
+                    <span class="info-value highlight" id="shipping_cost">-</span>
+                </div>
+            </div>
+
+            <h4 class="subsection-title">ข้อมูลคนขับ</h4>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">ชื่อ</span>
+                    <span class="info-value" id="driver_name">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">เบอร์โทรศัพท์</span>
+                    <span class="info-value" id="driver_phone">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ทะเบียนรถ</span>
+                    <span class="info-value" id="driver_license">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estimation Section -->
+        <div class="section" id="estimation_section">
+            <h3 class="section-title">
+                <i class="fas fa-calculator"></i>
+                ข้อมูลการประเมินราคา
+            </h3>
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">ประเภทเศษอาหารที่ขาย</span>
+                    <span class="info-value" id="estimation_category">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">น้ำหนักเศษอาหาร</span>
+                    <span class="info-value" id="estimation_weight">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ราคาที่ประเมินได้</span>
+                    <span class="info-value highlight" id="estimation_price">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="section" id="payout_section">
+            <h3 class="section-title">
+                <i class="fas fa-wallet"></i>
+                ข้อมูลการจ่ายเงิน
+            </h3>
+            <div class="info-card payment-card">
+                <div class="info-row">
+                    <span class="info-label">ช่องทาง (เลขที่บัญชี)</span>
+                    <span class="info-value" id="payout_bank_account_number">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ชื่อผู้รับ</span>
+                    <span class="info-value" id="payout_bank_name">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ยอดเงิน</span>
+                    <span class="info-value amount" id="payout_amount">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">วัน-เวลาที่โอน</span>
+                    <span class="info-value" id="payout_at">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="bottom-nav"></div>
+    </div>
+
+    
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/load-bottom-nav.js"></script>
+    <script src="js/status_details.js"></script>
+</body>
+
+</html>

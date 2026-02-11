@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await sellerRef.set({
         user_id: userId,
         display_name: profile.displayName,
+        fullname: "",
         address: "",
         phone: "",
         registered_at: new Date().toISOString()

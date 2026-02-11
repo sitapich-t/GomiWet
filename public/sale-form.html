@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>GomiWet | กรอกข้อมูลการขาย</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>กรอกข้อมูลการขาย | GomiWet</title>
   <link rel="stylesheet" href="css/sale-form.css">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -39,16 +40,6 @@
     <button type="button" class="submit-btn" onclick="submitSale()">
       ยืนยันการขาย
     </button>
-
-    <div id="qrModal" class="qr-modal">
-      <div class="qr-content">
-        <h3>แสดงคิวอาร์โค้ด</h3>
-        <div id="qrBox"></div>
-        <p>แสดง QR นี้ให้ร้านสแกน</p>
-
-        <button onclick="closeQR()">ปิด</button>
-      </div>
-    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>

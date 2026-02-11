@@ -1,174 +1,258 @@
-// ================== CONFIG ==================
+// ==================== Global Variables ====================
+let currentUserId = 'U4ea11ac1926aecf3fb62406f5f2759b6'; // TODO: แก้เป็น real user ID จาก auth
+let ongoingOrders = []; // รายการที่กำลังดำเนินการ
+let allShops = {};
+
+// ==================== Status Labels ====================
 const STATUS_LABEL = {
-    order_received: 'ได้รับคำสั่งซื้อ',
-    picked_up: 'กำลังรับเศษอาหาร',
-    inbound: 'ถึงโกดัง',
-    evaluated: 'ประเมินราคา',
-    sold: 'ขายแล้ว',
-    completed: 'จ่ายเงินแล้ว'
+	'order_received': 'ได้รับคำสั่งซื้อ',
+	'picked_up': 'กำลังส่งไปโกดัง',
+	'inbound': 'ถึงโกดังและคัดแยก',
+	'sorted': 'คัดแยกเสร็จสิ้น',
+	'evaluated': 'ประเมินราคา',
+	'outbound': 'กำลังขาย',
+	'sold': 'ขายให้ผู้ซื้อ',
+	'completed': 'จ่ายเงินเสร็จสิ้น'
 };
 
-const STATUS_ORDER = [
-    'order_received',
-    'picked_up',
-    'inbound',
-    'evaluated',
-    'sold',
-    'paid',
-    'completed'
-];
+// ==================== Format Date/Time ====================
+function formatDate(dateValue) {
+	if (!dateValue) return '-';
 
-// ================== GLOBAL ==================
-let shopsMap = {};
-let paymentsMap = {};
-let logisticsMap = {};
-let schedulesMap = {};
-let driversMap = {};
-let allOrders = [];
-let currentOrder = null;
+	// ถ้าเป็น number (timestamp)
+	if (typeof dateValue === 'number') {
+		const d = new Date(dateValue);
+		const dd = String(d.getDate()).padStart(2, '0');
+		const mm = String(d.getMonth() + 1).padStart(2, '0');
+		const yy = String(d.getFullYear()).slice(-2);
+		return `${dd}/${mm}/${yy}`;
+	}
 
-// ================== HELPERS ==================
-function formatDateTime(dt) {
-    if (!dt) return '-';
-    const [d, t] = dt.split(' ');
-    return `${d} ${t || ''}`;
+	// ถ้าเป็น string แบบเดิม
+	if (typeof dateValue === 'string') {
+		const parts = dateValue.split(' ')[0].split('-');
+		if (parts.length === 3) {
+			return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
+		}
+	}
+
+	return '-';
 }
 
-// ================== PAYMENT ==================
-window.goToPayment = function(orderNo) {
-    window.location.href = `payment.html?order_no=${orderNo}`;
-};
+function formatTime(dateValue) {
+	if (!dateValue) return '-';
 
-// ================== VIEW DETAILS ==================
-window.viewOrderDetails = function(orderNo) {
-    const order = allOrders.find(o => String(o.order_no) === String(orderNo));
-    if (!order) return;
+	if (typeof dateValue === 'number') {
+		const d = new Date(dateValue);
+		const h = String(d.getHours()).padStart(2, '0');
+		const m = String(d.getMinutes()).padStart(2, '0');
+		return `${h}:${m} น.`;
+	}
 
-    currentOrder = order;
+	if (typeof dateValue === 'string') {
+		const timePart = dateValue.split(' ')[1];
+		if (timePart) {
+			const [h, m] = timePart.split(':');
+			return `${h}:${m} น.`;
+		}
+	}
 
-    document.querySelector('.order_header p').textContent =
-        `รหัสการขาย: ORD-${orderNo}`;
+	return '-';
+}
 
-    // toggle pay button
-    const paySection = document.getElementById('pay_section');
-    if (paySection) {
-        paySection.style.display =
-            order.payment_status !== 'paid' ? 'block' : 'none';
-    }
+// ==================== Create Order ID ====================
+function createOrderId(orderNo, orderAt) {
+	const dateStr = orderAt || '';
+	let dateFormatted = '';
+	if (dateStr) {
+		const dateParts = dateStr.split(' ')[0].split('-');
+		if (dateParts.length === 3) {
+			dateFormatted = dateParts.join('');
+		}
+	}
+	const orderKeyPadded = String(orderNo).padStart(4, '0');
+	return dateFormatted ? `ORD${dateFormatted}-${orderKeyPadded}` : `ORD-${orderKeyPadded}`;
+}
 
-    document.getElementById('seller_address').textContent = order.address || '-';
-    document.getElementById('order_datetime').textContent = formatDateTime(order.order_at);
-    document.getElementById('distance').textContent = order.distance_km
-        ? `${order.distance_km.toFixed(2)} กม.` : '-';
-    document.getElementById('shipping_cost').textContent =
-        order.shipping_fee ? `${order.shipping_fee} บาท` : '-';
+// ==================== Load Firebase Data ====================
+async function loadFirebaseData() {
+	console.log('🔄 Loading Firebase data for user:', currentUserId);
 
-    goto('order_details');
-};
+	try {
+		// ✅ ใช้ orderByChild+equalTo ดึงเฉพาะ order ของ user คนนี้
+		//    แทนการดึง order ทั้งหมดแล้วกรอง client-side
+		const [orderSnap, shopsSnap] = await Promise.all([
+			db.ref('order')
+				.orderByChild('user_id')
+				.equalTo(currentUserId)
+				.once('value'),
+			db.ref('shops').once('value')
+		]);
 
-// ================== RENDER CARD ==================
-function renderOrderCard(o) {
-    const shopName = shopsMap[String(o.shop_id)] || 'ร้านค้า';
-    const unpaid = o.payment_status !== 'paid';
+		const orderData = orderSnap.val() || {};
+		const shopsData = shopsSnap.val() || {};
 
-    return `
-    <div class="order_card">
-        <div class="content_header">
-            <h4>${shopName}</h4>
-            <a>รหัสการขาย: ORD-${o.order_no}</a>
+		// กรองเฉพาะ status ไม่ใช่ completed (filter เล็กนี้ทำ client-side ได้เลย)
+		ongoingOrders = Object.entries(orderData)
+			.filter(([key, order]) => order && order.status !== 'completed')
+			.map(([key, order]) => ({
+				...order,
+				order_id: key
+			}));
+
+		// Build shops map
+		allShops = shopsData;
+
+		console.log('✅ Data loaded:', {
+			ongoingOrders: ongoingOrders.length,
+			shops: Object.keys(allShops).length
+		});
+
+		return true;
+	} catch (error) {
+		console.error('❌ Error loading Firebase data:', error);
+		return false;
+	}
+}
+
+// ==================== Get Status Progress ====================
+function getStatusProgress(status) {
+	const statusOrder = [
+		'order_received',
+		'picked_up',
+		'inbound',
+		'sorted',
+		'evaluated',
+		'outbound',
+		'sold'
+	];
+
+	const currentIndex = statusOrder.indexOf(status);
+	const totalSteps = statusOrder.length;
+	const progress = currentIndex >= 0 ? ((currentIndex + 1) / totalSteps) * 100 : 0;
+
+	return {
+		progress: Math.round(progress),
+		currentStep: currentIndex + 1,
+		totalSteps: totalSteps
+	};
+}
+
+// ==================== Render Order Card ====================
+function renderOrderCard(order) {
+    const orderId = order.display_id;
+	const shopName = allShops[order.shop_id] ? allShops[order.shop_id].shop_name : 'ร้านค้า';
+	const date = formatDate(order.order_at);
+	const time = formatTime(order.order_at);
+	const statusText = STATUS_LABEL[order.status] || order.status;
+	const deliveryType = order.delivery_type === 'pickup' ? 'รับที่หน้าบ้าน' : 'ส่งเอง';
+	const bookedDate = formatDate(order.pickup_at);
+
+	// คำนวณ progress
+	const statusInfo = getStatusProgress(order.status);
+
+	return `
+        <div class="order-card" onclick="viewOrderDetails('${order.order_id}')">
+            <div class="order-header">
+                <h4>${shopName}</h4>
+                <span class="order-id">${orderId}</span>
+            </div>
+            
+            <div class="status-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${statusInfo.progress}%"></div>
+                </div>
+                <div class="status-text">
+                    <span class="current-status">${statusText}</span>
+                    <span class="progress-info">ขั้นที่ ${statusInfo.currentStep}/${statusInfo.totalSteps}</span>
+                </div>
+            </div>
+            
+            <div class="order-details">
+                <p><strong>วันที่สั่ง:</strong> ${date} ${time}</p>
+                <p><strong>กำหนดส่ง:</strong> ${bookedDate}</p>
+                <p><strong>ประเภท:</strong> ${deliveryType}</p>
+            </div>
+            
+            <button class="btn-view-details" onclick="event.stopPropagation(); viewOrderDetails(${order.order_id})">
+                ดูรายละเอียด
+            </button>
         </div>
-
-        <p>
-            วันที่: ${o.order_at || '-'} <br>
-            สถานะ: ${o.status} <br>
-            สถานะการชำระเงิน:
-            <b style="color:${unpaid ? 'red' : 'green'}">
-                ${unpaid ? 'ยังไม่ชำระเงิน' : 'ชำระแล้ว'}
-            </b>
-        </p>
-
-        <button class="primary"
-            onclick="viewOrderDetails('${o.order_no}')">
-            ดูรายละเอียด
-        </button>
-
-        ${
-            unpaid
-            ? `<button class="danger"
-                onclick="goToPayment('${o.order_no}')">
-                💳 ชำระเงิน
-              </button>`
-            : ''
-        }
-    </div>`;
+    `;
 }
 
-// ================== UPDATE UI ==================
-function updateOrdersUI(inProcess, finished) {
-    document.getElementById('in_processItems').innerText =
-        `${inProcess.length} รายการ`;
-    document.getElementById('finishedItems').innerText =
-        `${finished.length} รายการ`;
+// ==================== Display Orders ====================
+function displayOrders() {
+	const resultDiv = document.getElementById('trackResult');
 
-    document.getElementById('in_process').innerHTML =
-        inProcess.length
-            ? inProcess.map(renderOrderCard).join('')
-            : '<p>ไม่มีรายการ</p>';
+	if (!resultDiv) {
+		console.warn('trackResult element not found');
+		return;
+	}
 
-    document.getElementById('finished').innerHTML =
-        finished.length
-            ? finished.map(renderOrderCard).join('')
-            : '<p>ยังไม่มีรายการ</p>';
+	if (ongoingOrders.length === 0) {
+		resultDiv.innerHTML = `
+            <div class="no-orders">
+                <div class="no-orders-icon">📦</div>
+                <h3>ไม่มีรายการที่กำลังดำเนินการ</h3>
+                <p>คุณไม่มีรายการขายที่กำลังดำเนินการในขณะนี้</p>
+            </div>
+        `;
+		return;
+	}
+
+	// เรียงตาม order_at (ล่าสุดก่อน)
+	const sortedOrders = [...ongoingOrders].sort((a, b) => {
+		const dateA = new Date(a.order_at || 0);
+		const dateB = new Date(b.order_at || 0);
+		return dateB - dateA;
+	});
+
+	const ordersHTML = sortedOrders.map(order => renderOrderCard(order)).join('');
+
+	resultDiv.innerHTML = `
+        <div class="orders-list">
+            <h3>รายการกำลังดำเนินการ (${ongoingOrders.length} รายการ)</h3>
+            ${ordersHTML}
+        </div>
+    `;
 }
 
-// ================== LOAD ORDERS ==================
-async function loadUserOrders(userId) {
-
-    // โหลดร้านค้า
-    const shopsSnap = await get(ref(db, 'shops'));
-    const shops = shopsSnap.val() || {};
-    Object.keys(shops).forEach(k => {
-        shopsMap[k] = shops[k].shop_name || shops[k].name;
-    });
-
-    // โหลด orders
-    onValue(ref(db, 'orders'), snap => {
-        const val = snap.val() || {};
-        allOrders = Object.keys(val).map(k => ({
-            order_no: k,
-            ...val[k]
-        }));
-
-        const myOrders = allOrders.filter(o =>
-            String(o.user_id) === String(userId)
-        );
-
-        const inProcess = myOrders.filter(o =>
-            o.payment_status !== 'paid'
-        );
-
-        const finished = myOrders.filter(o =>
-            o.payment_status === 'paid'
-        );
-
-        updateOrdersUI(inProcess, finished);
-    });
-}
-
-window.goto = function(pageId){
-
-    // ซ่อนทุก page
-    document.querySelectorAll('.page').forEach(p=>{
-        p.style.display = 'none';
-    });
-
-    // แสดง page ที่ต้องการ
-    const target = document.getElementById(pageId);
-    if(target){
-        target.style.display = 'block';
-    }
+// ==================== View Order Details ====================
+window.viewOrderDetails = function (orderId) {
+	console.log('📦 Viewing order details:', orderId);
+	window.location.href = `status_details.html?order_id=${orderId}`;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    goto("track");   // เปิดหน้า list เป็นหน้าแรก
+// ==================== Initialize ====================
+async function initStatusPage() {
+	console.log('🚀 Initializing status page...');
+
+	// โหลดข้อมูลจาก Firebase
+	const loaded = await loadFirebaseData();
+
+	if (!loaded) {
+		console.error('❌ Failed to load data');
+		const resultDiv = document.getElementById('trackResult');
+		if (resultDiv) {
+			resultDiv.innerHTML = `
+                <div class="error-message">
+                    <p>⚠️ ไม่สามารถโหลดข้อมูลได้</p>
+                    <button onclick="location.reload()">ลองอีกครั้ง</button>
+                </div>
+            `;
+		}
+		return;
+	}
+
+	// แสดงรายการที่กำลังดำเนินการ
+	displayOrders();
+
+	console.log('✅ Status page initialized');
+}
+
+// ==================== Event Listeners ====================
+document.addEventListener('DOMContentLoaded', () => {
+	console.log('📄 DOM loaded, initializing status page...');
+	initStatusPage();
 });

@@ -6,12 +6,33 @@ const COMPANY_LNG = 99.97828225092593;
 
 let currentLat = null;
 let currentLng = null;
+let geoAddressData = null;
 
 let shippingFee = 0;
 let distanceKm = 0;
 
 const params = new URLSearchParams(window.location.search);
 const storeId = params.get("storeId");
+
+async function generateDisplayOrderId() {
+
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+
+  const dateKey = `${yyyy}${mm}${dd}`;
+
+  const counterRef = db.ref(`order_counters/${dateKey}`);
+
+  const result = await counterRef.transaction(current => {
+    return (current || 0) + 1;
+  });
+
+  const runningNumber = String(result.snapshot.val()).padStart(4, '0');
+
+  return `ORD${dateKey}-${runningNumber}`;
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -95,20 +116,41 @@ function limitOneInput(current){
   });
 }
 
-function getCurrentLocation(){
+async function getCurrentLocation(){
 
   if(!navigator.geolocation){
     alert("อุปกรณ์ไม่รองรับ GPS");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(pos => {
+  navigator.geolocation.getCurrentPosition(async (pos) => {
 
     currentLat = pos.coords.latitude;
     currentLng = pos.coords.longitude;
 
-    document.getElementById("address").value =
-      `Lat:${currentLat}, Lng:${currentLng}`;
+    try {
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=${currentLat}&lon=${currentLng}`
+      );
+
+      const data = await response.json();
+      const addr = data.address;
+
+      geoAddressData = {
+        province: addr.state || addr.province || addr.region || "",
+        district: addr.county || addr.city || "",
+        subDistrict: addr.suburb || addr.town || addr.village || "",
+        postalCode: addr.postcode || "",
+        road: addr.road || "",
+        fullAddress: data.display_name || ""
+      };
+
+      document.getElementById("address").value = geoAddressData.fullAddress;
+
+    } catch(e){
+      alert("ไม่สามารถแปลงที่อยู่ได้");
+    }
 
     distanceKm = calculateDistance(
       COMPANY_LAT,
@@ -129,6 +171,7 @@ function getCurrentLocation(){
     alert("ไม่สามารถดึงตำแหน่งได้");
   });
 }
+
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -155,15 +198,15 @@ async function submitSale(){
   const shopId = storeId;
   const userId = await getUserId();
   const address = document.getElementById("address").value;
+  const addressDetail = document.getElementById("addressDetail").value;
   const deliveryType = localStorage.getItem("delivery_type")
 
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
   const note = document.getElementById("note").value;
 
-  // -------------------------
-  // หา waste ที่ผู้ใช้เลือก
-  // -------------------------
+  const fullAddress = addressDetail ? `${addressDetail}, ${address}` : address;
+
   let selectedWaste = null;
 
   wasteTypes.forEach(w => {
@@ -181,22 +224,13 @@ async function submitSale(){
     return;
   }
 
-  // -------------------------
-  // ดึงข้อมูล waste ทั้ง object
-  // -------------------------
   const priceSnap = await db
   .ref(`food_waste_types/${selectedWaste.waste_id}/price`)
   .once("value");
 
-const pricePerKg = Number(priceSnap.val()) || 0;
-const totalPrice = selectedWaste.weight * pricePerKg;
+  const pricePerKg = Number(priceSnap.val()) || 0;
+  const totalPrice = selectedWaste.weight * pricePerKg;
 
-console.log("Waste:", selectedWaste.waste_id);
-console.log("Price:", pricePerKg);
-console.log("Total:", totalPrice);
-  // -------------------------
-  // คำนวณระยะทาง
-  // -------------------------
   distanceKm = calculateDistance(
     COMPANY_LAT,
     COMPANY_LNG,
@@ -208,28 +242,40 @@ console.log("Total:", totalPrice);
   if(distanceKm > 0.1){
     shippingFee = Math.ceil(distanceKm - 0.1) * 5;
   }
+  
+  if(!geoAddressData){
+    alert("กรุณากดใช้ตำแหน่งปัจจุบันก่อน");
+    return;
+  }
 
-  // -------------------------
-  // สร้าง order
-  // -------------------------
+  const displayId = await generateDisplayOrderId();
   const orderRef = db.ref("order").push();
 
   await orderRef.set({
+    display_id: displayId,
     user_id: userId,
     shop_id: shopId,
     delivery_type: deliveryType,
-    order_at: `${date} ${time}`,
-    status: shippingFee > 0 ? "รอชำระเงิน" : "รอขนส่งเข้ารับ",
+    order_at: firebase.database.ServerValue.TIMESTAMP,
+    pickup_at: `${date} ${time}`,
+    status: shippingFee > 0 ? "waiting_payment" : "order_received",
     note,
-    address,
+    address: {
+      full: fullAddress,
+      detail: addressDetail,
+      lat: currentLat,
+      lng: currentLng,
+      province: geoAddressData?.province || '',
+      district: geoAddressData?.district || '',
+      subDistrict: geoAddressData?.subDistrict || '',
+      postalCode: geoAddressData?.postalCode || '',
+      road: geoAddressData?.road || ''
+    },
     distance_km: distanceKm,
     shipping_fee: shippingFee,
     total_price: totalPrice
   });
 
-  // -------------------------
-  // บันทึก order_items
-  // -------------------------
   await db.ref("order_items").push({
     order_id: orderRef.key,
     waste_id: selectedWaste.waste_id,
@@ -238,9 +284,23 @@ console.log("Total:", totalPrice);
     total_price: totalPrice
   });
 
-  // -------------------------
-  // redirect
-  // -------------------------
+  await db.ref(`pickup_addresses/${orderRef.key}`).set({
+    order_id: orderRef.key,
+    address: {
+      full: fullAddress,
+      detail: addressDetail,
+      lat: currentLat,
+      lng: currentLng,
+      province: geoAddressData?.province || '',
+      district: geoAddressData?.district || '',
+      subDistrict: geoAddressData?.subDistrict || '',
+      postalCode: geoAddressData?.postalCode || '',
+      road: geoAddressData?.road || ''
+    },
+    distance_km: distanceKm,
+    shipping_fee: shippingFee,
+  })
+
   if(shippingFee > 0){
     location.href = `payment.html?orderId=${orderRef.key}`;
   }else{

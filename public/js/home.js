@@ -180,52 +180,62 @@ async function renderStores(stores) {
   storeMarkers.forEach(m => map.removeLayer(m));
   storeMarkers = [];
 
-  for (const store of stores) {
+  const storeCards = await Promise.all(
+    stores.map(async (store) => {
 
-    let distanceInfo = "กรุณาเปิด GPS";
-    if (userCoords && store.latitude && store.longitude) {
-      const dist = calculateDistance(
-        userCoords.lat,
-        userCoords.lng,
-        store.latitude,
-        store.longitude
-      );
-      distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กม.`;
-    }
+      let distanceInfo = "กรุณาเปิด GPS";
+      if (userCoords && store.latitude && store.longitude) {
+        const dist = calculateDistance(
+          userCoords.lat,
+          userCoords.lng,
+          store.latitude,
+          store.longitude
+        );
+        distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กม.`;
+      }
 
-    // 🔥 โหลด waste ของร้านนี้
-    const wasteList = await getWasteTypesByShop(store.id);
+      if (store.latitude && store.longitude) {
+        const marker = L.marker([store.latitude, store.longitude])
+          .addTo(map)
+          .bindPopup(`<b>${store.shop_name}</b>`);
 
-    storeList.innerHTML += `
-      <div class="store-card">
-        <div class="card-header">
-          <h2 class="store-name">${store.shop_name}</h2>
-          <span class="badge-yellow">${store.category_name}</span>
+        storeMarkers.push(marker);
+      }
+      
+      const wasteList = await getWasteTypesByShop(store.id);
+
+      return `
+        <div class="store-card">
+          <div class="store-header">
+            <h2 class="store-name">${store.shop_name}</h2>
+            <span class="badge-yellow">${store.category_name}</span>
+          </div>
+
+          <div class="store-types">
+            ${
+              wasteList.length
+                ? wasteList.map(w => `<span class="type-pill">${w}</span>`).join("")
+                : `<span class="type-pill">ไม่รับเศษอาหาร</span>`
+            }
+          </div>
+
+          <div class="store-distance">
+            📍 ${distanceInfo}
+          </div>
+
+          <div class="card-footer">
+            📞 ${store.telephone}
+            <button class="sell-btn" onclick="startSell('${store.id}')">
+              ขาย
+            </button>
+          </div>
         </div>
+      `;
+    })
+  );
 
-        <div class="store-types">
-          ${
-            wasteList.length
-              ? wasteList.map(w => `<span class="type-pill">${w}</span>`).join("")
-              : `<span class="type-pill">ไม่รับเศษอาหาร</span>`
-          }
-        </div>
-
-        <div class="store-distance">
-          📍 ${distanceInfo}
-        </div>
-
-        <div class="card-footer">
-          📞 ${store.telephone}
-          <button class="sell-btn" onclick="startSell('${store.id}')">
-            ขาย
-          </button>
-        </div>
-      </div>
-    `;
-  }
+  storeList.innerHTML = storeCards.join("");
 }
-
 
 function startSell(storeId) {
   console.log("CLICK SELL:", storeId);

@@ -35,33 +35,38 @@ async function loadAllOrders(){
     return;
   }
 
-  snap.forEach(child => {
-    const d = child.val();
+  const orders = Object.entries(snap.val())
+    .map(([id, data]) => ({ id, ...data }))
+    .sort((a, b) => new Date(b.order_at) - new Date(a.order_at));
+
+  for (const order of orders) {
+
+    const storeSnap = await db.ref("shops/" + order.shop_id).once("value");
+    const storeName = storeSnap.exists()
+      ? storeSnap.val().shop_name
+      : "-";
 
     list.innerHTML += `
-  <div class="order-card">
-    <div class="order-row">
-      <span>วันที่</span>
-      <span>${d.order_at}</span>
-    </div>
-
-    <div class="order-row">
-      <span>สถานะ</span>
-      <span class="order-status status-${d.status}">
-        ${d.status}
-      </span>
-    </div>
-
-    <div class="order-row">
-      <span>ยอดรวม</span>
-      <span class="order-price">
-        ฿${Number(d.total_price).toFixed(2)}
-      </span>
-    </div>
-  </div>
-`;
-
-  });
+      <div class="order-card">
+        <div class="order-row">
+          <span>วันที่</span>
+          <span>${order.order_at || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>ร้านค้า</span>
+          <span>${storeName || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>สถานะ</span>
+          <span>${order.status || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>ยอด</span>
+          <span class="order-price">฿${Number(order.total_price).toFixed(2) || "-"}</span>
+        </div>
+      </div>
+    `;
+  }
 }
 
 init();

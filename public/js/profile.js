@@ -1,6 +1,18 @@
 let userId = null;
 const LIFF_ID = "2008999812-I2Dz19pN";
 
+const STATUS_LABEL = { 
+  order_received: 'ได้รับรายการขายแล้ว', 
+  picked_up: 'รถมารับเศษอาหาร', 
+  inbound: 'ถึงโกดังและคัดแยก', 
+  sorted: 'ถึงโกดังและคัดแยก', 
+  evaluated: 'ประเมินราคา', 
+  outbound: 'กำลังขาย', 
+  sold: 'ขายให้ร้านค้า', 
+  paid: 'จ่ายเงิน', 
+  completed: 'เสร็จสิ้น' 
+};
+
 async function loadProfile(){
 
   await liff.init({ liffId: LIFF_ID });
@@ -89,59 +101,88 @@ function openAllOrders(){
 }
 
 function openOrder(orderId){
-  window.location.href = `order-status.html?orderId=${orderId}`;
+  window.location.href = `status_detail.html?orderId=${orderId}`;
 }
 
-async function loadMyOrders(shopId){
+async function loadMyOrders() {
 
   const list = document.getElementById("historyList");
   list.innerHTML = "กำลังโหลด...";
 
+  /* ==========================
+     1️⃣ ดึงทั้งหมดเพื่อคำนวณ
+  ========================== */
+
+  const allSnap = await db.ref("order")
+    .orderByChild("user_id")
+    .equalTo(userId)
+    .once("value");
+
+  let totalCount = 0;
+  let totalIncome = 0;
+
+  if (allSnap.exists()) {
+    allSnap.forEach(child => {
+      totalCount++;
+      totalIncome += child.val().total_price || 0;
+    });
+  }
+
+  document.getElementById("historyCount").innerText = `${totalCount} รายการ`;
+  document.getElementById("totalSales").innerText = totalCount;
+  document.getElementById("totalIncome").innerText =
+    Number(totalIncome).toFixed(2);
+
+  /* ==========================
+     2️⃣ ดึงแค่ 10 รายการล่าสุด
+  ========================== */
+
   const snap = await db.ref("order")
-                       .orderByChild("user_id")
-                       .equalTo(userId)
-                       .limitToLast(10)
-                       .once("value");
+    .orderByChild("user_id")
+    .equalTo(userId)
+    .limitToLast(10)
+    .once("value");
 
   list.innerHTML = "";
 
-  if(!snap.exists()){
+  if (!snap.exists()) {
     list.innerHTML = "ยังไม่มีประวัติการขาย";
     return;
   }
 
-   const orders = Object.entries(snap.val())
-                       .map(([id,data]) => ({id,...data}))
-                       .sort((a,b)=> new Date(b.order_at) - new Date(a.order_at));
+  const orders = Object.entries(snap.val())
+    .map(([id, data]) => ({ id, ...data }))
+    .sort((a, b) => new Date(b.order_at) - new Date(a.order_at));
 
-  let count = 0;
-  let totalIncome = 0;
+  for (const order of orders) {
 
-  for (const child of Object.entries(snap.val())) {
-
-    const orderId = child[0];
-    const data = child[1];
-
-    count++;
-    totalIncome += data.total_price || 0;
-
-    const storeSnap = await db.ref("shops/" + data.shop_id).once("value");
-    const storeName = storeSnap.exists() ? storeSnap.val().shop_name : "-";
+    const storeSnap = await db.ref("shops/" + order.shop_id).once("value");
+    const storeName = storeSnap.exists()
+      ? storeSnap.val().shop_name
+      : "-";
 
     list.innerHTML += `
-      <div class="order-card" onclick="openOrder('${orderId}')"
-       style="cursor:pointer">
-        <div>วันที่: ${data.order_at || "-"}</div>
-        <div>ร้าน: ${storeName}</div>
-        <div>สถานะ: ${data.status}</div>
-        <div>ยอด: ฿${Number(data.total_price || 0).toFixed(2)}</div>
+      <div class="order-card" onclick="openOrder('${order.id}')" style="cursor:pointer">
+        <div class="order-row">
+          <span>วันที่</span>
+          <span>${order.pickup_at || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>ร้านค้า</span>
+          <span>${storeName || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>สถานะ</span>
+          <span>${STATUS_LABEL[order.status] || order.status || "-"}</span>
+        </div>
+        <div class="order-row">
+          <span>ยอด</span>
+          <span class="order-price">฿${Number(order.total_price).toFixed(2) || "-"}</span>
+        </div>
       </div>
     `;
   }
-
-  document.getElementById("historyCount").innerText = `${count} รายการ`;
-  document.getElementById("totalSales").innerText = count;
-  document.getElementById("totalIncome").innerText = Number(totalIncome).toFixed(2);
 }
+
 
 loadProfile();
