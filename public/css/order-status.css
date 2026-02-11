@@ -65,3 +65,23 @@ h2{
 .back-btn:hover{
     background:#ddd;
 }
+
+.qr-box {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.qr-box img {
+  width: 220px;
+  height: 220px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.qr-box p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}

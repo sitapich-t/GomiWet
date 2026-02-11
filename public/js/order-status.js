@@ -5,34 +5,24 @@ function goBack(){
   history.back();   // 🔙 กลับหน้าที่แล้ว
 }
 
-async function loadOrder(){
+async function loadOrderStatus() {
+  const snap = await db.ref("orders/" + orderId).once("value");
 
-  if(!orderId){
-    document.getElementById("orderInfo").innerHTML = "ไม่พบ order";
+  if (!snap.exists()) {
+    document.getElementById("orderInfo").innerText = "ไม่พบคำสั่งขาย";
     return;
   }
 
-  const snap = await db.ref("order/" + orderId).once("value");
-
-  if(!snap.exists()){
-    document.getElementById("orderInfo").innerHTML = "ไม่พบข้อมูล";
-    return;
-  }
-
-  const data = snap.val();
-
-  const shopSnap = await db.ref("shops/" + data.shop_id).once("value");
-  const shopName = shopSnap.exists()
-        ? shopSnap.val().shop_name
-        : "-";
+  const order = snap.val();
 
   document.getElementById("orderInfo").innerHTML = `
-      <p>รหัส: ${orderId}</p>
-      <p>ร้าน: ${shopName}</p>
-      <p>วันที่: ${data.order_at || "-"}</p>
-      <p>สถานะ: ${data.status}</p>
-      <p>ยอดเงิน: ฿${data.total_price || 0}</p>
+    <p>สถานะ: <b>${order.status}</b></p>
+    <p>ร้านรับซื้อ: ${order.shop_id}</p>
   `;
+
+  const canvas = document.getElementById("orderQR");
+
+  QRCode.toCanvas(canvas, order.qr_data, { width: 200 });
 }
 
-loadOrder();
+document.addEventListener("DOMContentLoaded", loadOrderStatus);

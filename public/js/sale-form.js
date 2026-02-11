@@ -135,7 +135,8 @@ async function submitSale(){
     delivery_type: deliveryType,
     status: "ได้รับคำสั่งซื้อ",
     note,
-    total_price: totalPrice
+    total_price: totalPrice,
+    qr_data: orderRef.key
   });
 
   await db.ref("order_items").push({
@@ -147,20 +148,18 @@ async function submitSale(){
   });
 
   // แสดง QR
-document.getElementById("qrModal").style.display = "flex";
+  document.getElementById("qrModal").style.display = "flex";
 
-const qrBox = document.getElementById("qrBox");
-qrBox.innerHTML = "";
+  const qrBox = document.getElementById("qrBox");
+  qrBox.innerHTML = "";
 
 // สร้าง canvas
-const canvas = document.createElement("canvas");
-qrBox.appendChild(canvas);
+  const canvas = document.createElement("canvas");
+  qrBox.appendChild(canvas);
 
 // generate QR
-QRCode.toCanvas(canvas, orderRef.key, {
-  width: 200
-}, function (error) {
-  if (error) console.error(error);
-});
-
+  QRCode.toCanvas(canvas, orderRef.key, {width: 200}, function (error) {
+    if (error) console.error(error);
+  });
+  
 }

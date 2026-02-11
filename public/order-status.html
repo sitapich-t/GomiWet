@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<title>สถานะคำสั่งขาย</title>
-<link rel="stylesheet" href="css/order-status.css">
+    <meta charset="UTF-8">
+    <title>สถานะคำสั่งขาย</title>
+    <link rel="stylesheet" href="css/order-status.css">
 </head>
+
 <body>
 
     <button class="back-btn" onclick="goBack()">← กลับ</button>
-<h2>สถานะคำสั่งขาย</h2>
+    <div class="order-status">
+        <h2>สถานะคำสั่งขาย</h2>
 
-<div id="orderInfo">กำลังโหลด...</div>
+        <div id="orderInfo">กำลังโหลด...</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="js/firebase.js"></script>
-<script src="js/order-status.js"></script>
+        <canvas id="orderQR"></canvas>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/order-status.js"></script>
 
 </body>
+
 </html>

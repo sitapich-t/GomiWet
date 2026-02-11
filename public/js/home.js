@@ -78,6 +78,31 @@ async function loadCategories() {
   }, {});
 }
 
+async function getWasteTypesByShop(shopId) {
+  const acceptedSnap = await db.ref("shop_accepted")
+    .orderByChild("shop_id")
+    .equalTo(Number(shopId))
+    .once("value");
+
+  if (!acceptedSnap.exists()) return [];
+
+  const wasteIds = [];
+  acceptedSnap.forEach(s => {
+    wasteIds.push(String(s.val().waste_id));
+  });
+
+  const wasteSnap = await db.ref("food_waste_types").once("value");
+  const result = [];
+
+  wasteSnap.forEach(w => {
+    if (wasteIds.includes(w.key)) {
+      result.push(w.val().category);
+    }
+  });
+
+  return result;
+}
+
 async function loadWasteTypes() {
   const list = document.getElementById("wasteList");
   list.innerHTML = "กำลังโหลด...";
@@ -148,18 +173,16 @@ async function loadStores() {
   renderStores(allStores);
 }
 
-function renderStores(stores) {
+async function renderStores(stores) {
   const storeList = document.getElementById("storeList");
   storeList.innerHTML = "";
 
-  // ลบ marker เก่า
   storeMarkers.forEach(m => map.removeLayer(m));
   storeMarkers = [];
 
-  stores.forEach(store => {
-    let distanceInfo = "กรุณาเปิด GPS";
-    let distanceValue = null;
+  for (const store of stores) {
 
+    let distanceInfo = "กรุณาเปิด GPS";
     if (userCoords && store.latitude && store.longitude) {
       const dist = calculateDistance(
         userCoords.lat,
@@ -167,11 +190,12 @@ function renderStores(stores) {
         store.latitude,
         store.longitude
       );
-      distanceValue = dist;
       distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กม.`;
     }
 
-    // 🟢 การ์ดร้าน
+    // 🔥 โหลด waste ของร้านนี้
+    const wasteList = await getWasteTypesByShop(store.id);
+
     storeList.innerHTML += `
       <div class="store-card">
         <div class="card-header">
@@ -179,11 +203,11 @@ function renderStores(stores) {
           <span class="badge-yellow">${store.category_name}</span>
         </div>
 
-        <div class="store-types" id="waste-types-${store.id}">
+        <div class="store-types">
           ${
-            wasteTypes.length
-            ? wasteTypes.map(w => `<span class="type-pill">${w}</span>`).join("")
-            : `<span class="type-pill">ไม่ระบุ</span>`
+            wasteList.length
+              ? wasteList.map(w => `<span class="type-pill">${w}</span>`).join("")
+              : `<span class="type-pill">ไม่รับเศษอาหาร</span>`
           }
         </div>
 
@@ -199,21 +223,9 @@ function renderStores(stores) {
         </div>
       </div>
     `;
-
-    // 📍 marker ร้าน
-    if (store.latitude && store.longitude) {
-      const marker = L.marker([store.latitude, store.longitude])
-        .addTo(map)
-        .bindPopup(`
-          <b>${store.shop_name}</b><br/>
-          ${distanceInfo}<br/>
-          📞 ${store.telephone}
-        `);
-
-      storeMarkers.push(marker);
-    }
-  });
+  }
 }
+
 
 function startSell(storeId) {
   console.log("CLICK SELL:", storeId);

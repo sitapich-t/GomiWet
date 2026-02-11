@@ -84,6 +84,10 @@ function loadHistory(userId) {
     });
 }
 
+function openAllOrders(){
+  location.href = "all-orders.html";
+}
+
 function openOrder(orderId){
   window.location.href = `order-status.html?orderId=${orderId}`;
 }
@@ -96,6 +100,7 @@ async function loadMyOrders(shopId){
   const snap = await db.ref("order")
                        .orderByChild("user_id")
                        .equalTo(userId)
+                       .limitToLast(10)
                        .once("value");
 
   list.innerHTML = "";
@@ -104,6 +109,10 @@ async function loadMyOrders(shopId){
     list.innerHTML = "ยังไม่มีประวัติการขาย";
     return;
   }
+
+   const orders = Object.entries(snap.val())
+                       .map(([id,data]) => ({id,...data}))
+                       .sort((a,b)=> new Date(b.order_at) - new Date(a.order_at));
 
   let count = 0;
   let totalIncome = 0;
@@ -125,14 +134,14 @@ async function loadMyOrders(shopId){
         <div>วันที่: ${data.order_at || "-"}</div>
         <div>ร้าน: ${storeName}</div>
         <div>สถานะ: ${data.status}</div>
-        <div>ยอด: ฿${data.total_price || 0}</div>
+        <div>ยอด: ฿${Number(data.total_price || 0).toFixed(2)}</div>
       </div>
     `;
   }
 
   document.getElementById("historyCount").innerText = `${count} รายการ`;
   document.getElementById("totalSales").innerText = count;
-  document.getElementById("totalIncome").innerText = totalIncome;
+  document.getElementById("totalIncome").innerText = Number(totalIncome).toFixed(2);
 }
 
 loadProfile();

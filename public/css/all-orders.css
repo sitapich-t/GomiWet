@@ -1,0 +1,111 @@
+/* ===== PAGE BASE ===== */
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans Thai Looped", sans-serif;
+  background: #f4f6f8;
+}
+
+.container {
+  padding: 16px;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ===== ORDER LIST ===== */
+#orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== ORDER CARD ===== */
+.order-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+/* ===== ORDER ROW ===== */
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+.order-row:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== STATUS ===== */
+.order-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ตัวอย่างสีสถานะ */
+.status-waiting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-success {
+  background: #d1f5e0;
+  color: #0f5132;
+}
+
+.status-cancel {
+  background: #f8d7da;
+  color: #842029;
+}
+
+/* ===== PRICE ===== */
+.order-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00BEC4;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-text {
+  text-align: center;
+  color: #999;
+  margin-top: 40px;
+}
+
+.back-btn{
+    background:#eeeeee;
+    border:none;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:14px;
+    cursor:pointer;
+    margin-bottom:10px;
+}
+
+.back-btn:hover{
+    background:#ddd;
+}

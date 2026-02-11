@@ -22,6 +22,7 @@ body {
 
 /* === login page === */
 .card {
+  padding: clamp(16px, 5vw, 24px);
   background: #00BEC4;
   width: 100%;
   max-width: 360px;

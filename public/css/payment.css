@@ -33,7 +33,7 @@ h2 {
 
 #fee {
   font-weight: bold;
-  color: #28a745;
+  color: #00BEC4;
 }
 
 button {
@@ -43,12 +43,12 @@ button {
   border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
-  background: #28a745;
+  background: #00BEC4;
   color: white;
   cursor: pointer;
   transition: 0.2s;
 }
 
 button:hover {
-  background: #23913d;
+  background: #00BEC4;
 }

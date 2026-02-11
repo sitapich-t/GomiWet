@@ -118,8 +118,8 @@ function getCurrentLocation(){
     );
 
     shippingFee = 0;
-    if(distanceKm > 10){
-      shippingFee = Math.ceil(distanceKm - 10) * 5;
+    if(distanceKm > 0.1){
+      shippingFee = Math.ceil(distanceKm - 0.1) * 5;
     }
 
     document.getElementById("shippingText").innerText =
@@ -205,8 +205,8 @@ console.log("Total:", totalPrice);
   );
 
   shippingFee = 0;
-  if(distanceKm > 1){
-    shippingFee = Math.ceil(distanceKm - 1) * 5;
+  if(distanceKm > 0.1){
+    shippingFee = Math.ceil(distanceKm - 0.1) * 5;
   }
 
   // -------------------------
