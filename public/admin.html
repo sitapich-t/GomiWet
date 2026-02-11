@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - จัดการคำสั่งขาย</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f7fb;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .order-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 6px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #00BEC4;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .history {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    hr {
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h2>จัดการคำสั่งขายทั้งหมด</h2>
+<div id="ordersContainer">กำลังโหลด...</div>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAeuc1i5qjKd42_dKpNez4w7KnGnsB7E9c",
+  authDomain: "gomi-wet.firebaseapp.com",
+  databaseURL: "https://gomiwet-2ba6e-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "gomiwet-2ba6e",
+  storageBucket: "gomiwet-2ba6e.firebasestorage.app",
+  messagingSenderId: "583759356106",
+  appId: "1:583759356106:web:7192049c957472f822d433"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const STATUS_OPTIONS = {
+  order_received: "ได้รับคำสั่งซื้อ",
+  picked_up: "กำลังส่งไปโกดัง",
+  inbound: "ถึงโกดังและคัดแยก",
+  sorted: "คัดแยกเสร็จสิ้น",
+  evaluated: "ประเมินราคา",
+  outbound: "กำลังขาย",
+  sold: "ขายให้ผู้ซื้อ",
+  completed: "จ่ายเงินเสร็จสิ้น"
+};
+
+let drivers = {};
+let cars = {};
+
+function formatDateTime(timestamp) {
+  if (!timestamp) return "-";
+  const d = new Date(timestamp);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  const hour = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hour}:${min}`;
+}
+
+async function loadDriversAndCars() {
+  const [driverSnap, carSnap] = await Promise.all([
+    db.ref("delivery_emps").once("value"),
+    db.ref("delivery_cars").once("value")
+  ]);
+
+  drivers = driverSnap.val() || {};
+  cars = carSnap.val() || {};
+}
+
+async function loadAllOrdersRealtime() {
+
+  await loadDriversAndCars();
+  const container = document.getElementById("ordersContainer");
+
+  db.ref("order").on("value", async snapshot => {
+
+    if (!snapshot.exists()) {
+      container.innerHTML = "ไม่มีคำสั่งขาย";
+      return;
+    }
+
+    const orders = snapshot.val();
+    container.innerHTML = "";
+
+    for (let orderId in orders) {
+
+      const order = orders[orderId];
+
+      const card = document.createElement("div");
+      card.className = "order-card";
+
+      card.innerHTML = `
+        <p><b>${order.display_id || orderId}</b></p>
+        <p>สถานะปัจจุบัน: <b>${STATUS_OPTIONS[order.status] || order.status}</b></p>
+
+        <hr>
+
+        <h4>💰 บันทึกการจ่ายเงิน</h4>
+
+        <input type="text" id="accname-${orderId}" placeholder="ชื่อเจ้าของบัญชี"><br><br>
+        <input type="text" id="accno-${orderId}" placeholder="เลขบัญชี"><br><br>
+        <input type="number" id="amount-${orderId}" placeholder="ยอดที่โอน"><br><br>
+        <input type="datetime-local" id="paidat-${orderId}"><br><br>
+
+        <button onclick="recordPayment('${orderId}')">
+          บันทึกการจ่ายเงิน
+        </button>
+
+        <hr>
+
+        <select id="status-${orderId}">
+          ${Object.keys(STATUS_OPTIONS).map(status => `
+            <option value="${status}" ${order.status === status ? "selected" : ""}>
+              ${STATUS_OPTIONS[status]}
+            </option>
+          `).join("")}
+        </select>
+
+        <button onclick="updateStatus('${orderId}')">
+          อัปเดตสถานะ
+        </button>
+      `;
+
+      container.appendChild(card);
+    }
+
+  });
+}
+
+async function recordPayment(orderId) {
+
+  const accName = document.getElementById("accname-" + orderId).value;
+  const accNo = document.getElementById("accno-" + orderId).value;
+  const amount = document.getElementById("amount-" + orderId).value;
+  const paidAtInput = document.getElementById("paidat-" + orderId).value;
+
+  if (!accName || !accNo || !amount || !paidAtInput) {
+    alert("กรุณากรอกข้อมูลให้ครบ");
+    return;
+  }
+
+  const paidTimestamp = new Date(paidAtInput).getTime();
+
+  const bankRef = db.ref("bank_accounts").push();
+  const payoutRef = db.ref("seller_payouts").push();
+
+  const updates = {};
+
+  // 1️⃣ เพิ่มบัญชีธนาคาร
+  updates[`bank_accounts/${bankRef.key}`] = {
+    account_name: accName,
+    account_number: accNo,
+    created_at: Date.now()
+  };
+
+  // 2️⃣ เพิ่มรายการจ่ายเงิน
+  updates[`seller_payouts/${payoutRef.key}`] = {
+    order_id: orderId,
+    bank_account_id: bankRef.key,
+    amount: Number(amount),
+    paid_at: paidTimestamp,
+    created_at: Date.now()
+  };
+
+  // 3️⃣ อัปเดต order
+  updates[`order/${orderId}/payment_status`] = "paid";
+  updates[`order/${orderId}/status`] = "completed";
+  updates[`order/${orderId}/status_history/completed`] = Date.now();
+
+  await db.ref().update(updates);
+
+  alert("บันทึกการจ่ายเงินเรียบร้อย ✅");
+}
+
+async function updateStatus(orderId) {
+
+  const newStatus = document.getElementById("status-" + orderId).value;
+
+  const updates = {};
+  updates[`order/${orderId}/status`] = newStatus;
+  updates[`order/${orderId}/status_history/${newStatus}`] = Date.now();
+
+  await db.ref().update(updates);
+
+  alert("อัปเดตสถานะเรียบร้อย ✅");
+}
+
+loadAllOrdersRealtime();
+
+</script>
+
+</body>
+</html>

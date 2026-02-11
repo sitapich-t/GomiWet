@@ -7,6 +7,11 @@ let shippingFee = 0;
 
 async function loadOrder(){
 
+  if(!orderId){
+    alert("ไม่พบ orderId");
+    return;
+  }
+
   const snap = await db.ref("order/" + orderId).once("value");
 
   if(!snap.exists()){
@@ -17,14 +22,22 @@ async function loadOrder(){
   const data = snap.val();
   shippingFee = data.shipping_fee || 0;
 
-  document.getElementById("fee").innerText = shippingFee;
+  document.getElementById("fee").innerText = shippingFee + " บาท";
 }
 
 async function payNow(){
 
+  if(!orderId){
+    alert("ไม่พบ orderId");
+    return;
+  }
+
+  const now = Date.now();
+
   await db.ref("order/" + orderId).update({
     payment_status: "paid",
-    status: "รอรับสินค้า"
+    status: "order_received",
+    "status_history/order_received": now
   });
 
   alert("ชำระเงินเรียบร้อย");

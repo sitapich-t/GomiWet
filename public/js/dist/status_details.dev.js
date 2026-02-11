@@ -23,7 +23,8 @@ var STATUS_LABEL = {
   'evaluated': 'ประเมินราคา',
   'outbound': 'กำลังขาย',
   'sold': 'ขายให้ผู้ซื้อ',
-  'completed': 'จ่ายเงินเสร็จสิ้น'
+  'paid': 'จ่ายเงินเสร็จสิ้น',
+  'completed': 'ทำรายการเสร็จสิ้น'
 }; // Status order for determining which statuses are "reached"
 // Each entry = the timeline step, and which DB statuses count as having completed it
 
@@ -252,7 +253,7 @@ function hideSection(id) {
 
 
 function loadFirebaseData(orderId) {
-  var _ref3, _ref4, paymentSnap, foodWasteSnap, bankSnap, paymentData, paymentId, logisticData, selfDropSnap, logisticEntry, schedSnap, sched, driverSnap, deliveryType, pickupLogistic, logisticPk, inboundSnap, inboundData, selfEntry, selfDropPk, _inboundSnap, _inboundData, inboundPks, _i2, _inboundPks, inboundPk, wsSnap, wsData, sortPks, _i3, _sortPks, sortPk, peSnap, peData, estimatePks, _i4, _estimatePks, estimatePk, obSnap, obData, outboundPks, _i5, _outboundPks, outboundPk, spSnap, spData;
+  var _ref3, _ref4, paymentSnap, foodWasteSnap, bankSnap, paymentData, paymentId, logisticData, selfDropSnap, logisticEntry, schedSnap, sched, driverSnap, deliveryType, pickupLogistic, logisticPk, inboundSnap, inboundData, selfEntry, selfDropPk, _inboundSnap, _inboundData, inboundPks, _i2, _inboundPks, inboundPk, wsSnap, wsData, sortPks, _i3, _sortPks, sortPk, peSnap, peData, estimatePks, _i4, _estimatePks, estimatePk, obSnap, obData, outboundPks, _i5, _outboundPks, outboundPk, spSnap;
 
   return regeneratorRuntime.async(function loadFirebaseData$(_context3) {
     while (1) {
@@ -506,25 +507,24 @@ function loadFirebaseData(orderId) {
 
         case 105:
           if (!(_i5 < _outboundPks.length)) {
-            _context3.next = 115;
+            _context3.next = 114;
             break;
           }
 
           outboundPk = _outboundPks[_i5];
           _context3.next = 109;
-          return regeneratorRuntime.awrap(db.ref('seller_payouts').orderByChild('outbound_id').equalTo(parseInt(outboundPk)).once('value'));
+          return regeneratorRuntime.awrap(db.ref('seller_payouts').orderByChild('order_id').equalTo(orderId).once('value'));
 
         case 109:
           spSnap = _context3.sent;
-          spData = spSnap.val() || {};
-          Object.assign(sellerPayoutsMap, spData);
+          sellerPayoutsMap = spSnap.val() || {};
 
-        case 112:
+        case 111:
           _i5++;
           _context3.next = 105;
           break;
 
-        case 115:
+        case 114:
           console.log('✅ Firebase chain loaded:', {
             payments: Object.keys(paymentsMap).length,
             logistics: Object.keys(logisticsMap).length,
@@ -537,18 +537,18 @@ function loadFirebaseData(orderId) {
           });
           return _context3.abrupt("return", true);
 
-        case 119:
-          _context3.prev = 119;
+        case 118:
+          _context3.prev = 118;
           _context3.t0 = _context3["catch"](1);
           console.error('❌ Error loading Firebase data:', _context3.t0);
           return _context3.abrupt("return", false);
 
-        case 123:
+        case 122:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[1, 119]]);
+  }, null, null, [[1, 118]]);
 } // ==================== Get Order ====================
 
 
@@ -594,23 +594,45 @@ function getOrderFromFirebase(orderId) {
 
 
 function getTimelineDateTime(orderId, timelineStep, deliveryType) {
-  var payment, paymentId, logistic, lgData, inbound, _logistic, _lgData, _inbound, pe, _lgData2, logisticPk, inboundSnap, inboundData, inboundPk, wsSnap, wsData, sortPk, peSnap, peData, ob, _lgData3, _logisticPk, _inboundSnap2, _inboundData2, _inboundPk, _wsSnap, _wsData, _sortPk, _peSnap, _peData, pePk, obSnap, obData, sp, _lgData4, _logisticPk2, _inboundSnap3, _inboundData3, _inboundPk2, _wsSnap2, _wsData2, _sortPk2, _peSnap2, _peData2, _pePk, _obSnap, _obData, obPk, spSnap, spData;
-
+  var ts, payment, paymentId, pe, ob, sp;
   return regeneratorRuntime.async(function getTimelineDateTime$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
         case 0:
+          _context5.prev = 0;
+
+          if (!(currentOrder && currentOrder.status_history)) {
+            _context5.next = 6;
+            break;
+          }
+
+          ts = currentOrder.status_history[timelineStep];
+
+          if (!ts) {
+            _context5.next = 6;
+            break;
+          }
+
+          console.log("\u2705 timeline[".concat(timelineStep, "] from status_history:"), ts);
+          return _context5.abrupt("return", {
+            date: formatDateToDDMMYYYY(ts),
+            time: formatTimeToHHMM(ts)
+          });
+
+        case 6:
+          // ================================
+          // ถ้าไม่มีใน status_history ค่อย fallback
+          // ================================
           payment = paymentsMap[String(orderId)];
-          paymentId = payment ? payment.payment_id : null;
-          _context5.prev = 2;
+          paymentId = payment ? payment.payment_id : null; // --- order_received ---
 
           if (!(timelineStep === 'order_received')) {
-            _context5.next = 8;
+            _context5.next = 11;
             break;
           }
 
           if (!(currentOrder && currentOrder.order_at)) {
-            _context5.next = 6;
+            _context5.next = 11;
             break;
           }
 
@@ -619,229 +641,29 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
             time: formatTimeToHHMM(currentOrder.order_at)
           });
 
-        case 6:
-          _context5.next = 155;
-          break;
-
-        case 8:
-          if (!(timelineStep === 'picked_up')) {
-            _context5.next = 27;
-            break;
-          }
-
-          if (!(deliveryType === 'pickup')) {
-            _context5.next = 21;
-            break;
-          }
-
-          // From logistic.pickup_at
-          logistic = Object.values(logisticsMap).find(function (l) {
-            return l && l.payment_id == paymentId && l.schedule_id != null;
-          }); // fallback: query logistic by payment_id
-
-          if (!((!logistic || !logistic.pickup_at) && paymentId)) {
-            _context5.next = 16;
-            break;
-          }
-
-          _context5.next = 14;
-          return regeneratorRuntime.awrap(getLogisticsByPayment(paymentId));
-
-        case 14:
-          lgData = _context5.sent;
-          logistic = Object.values(lgData).find(function (l) {
-            return l && l.pickup_at;
-          }) || logistic;
-
-        case 16:
-          if (!(logistic && logistic.pickup_at)) {
-            _context5.next = 19;
-            break;
-          }
-
-          console.log('✅ timeline[picked_up] from logistic:', logistic.pickup_at);
-          return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(logistic.pickup_at),
-            time: formatTimeToHHMM(logistic.pickup_at)
-          });
-
-        case 19:
-          _context5.next = 25;
-          break;
-
-        case 21:
-          if (!(deliveryType === 'dropoff')) {
-            _context5.next = 25;
-            break;
-          }
-
-          // From inbound_food_waste.inbound_at (drop-off route)
-          inbound = Object.values(inboundFoodWasteMap)[0];
-
-          if (!(inbound && inbound.inbound_at)) {
-            _context5.next = 25;
-            break;
-          }
-
-          return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(inbound.inbound_at),
-            time: formatTimeToHHMM(inbound.inbound_at)
-          });
-
-        case 25:
-          _context5.next = 155;
-          break;
-
-        case 27:
-          if (!(timelineStep === 'inbound')) {
-            _context5.next = 46;
-            break;
-          }
-
-          if (!(deliveryType === 'pickup')) {
-            _context5.next = 40;
-            break;
-          }
-
-          // From logistic.delivered_at
-          _logistic = Object.values(logisticsMap).find(function (l) {
-            return l && l.payment_id == paymentId && l.schedule_id != null;
-          });
-
-          if (!((!_logistic || !_logistic.delivered_at) && paymentId)) {
-            _context5.next = 35;
-            break;
-          }
-
-          _context5.next = 33;
-          return regeneratorRuntime.awrap(getLogisticsByPayment(paymentId));
-
-        case 33:
-          _lgData = _context5.sent;
-          _logistic = Object.values(_lgData).find(function (l) {
-            return l && l.delivered_at;
-          }) || _logistic;
-
-        case 35:
-          if (!(_logistic && _logistic.delivered_at)) {
-            _context5.next = 38;
-            break;
-          }
-
-          console.log('✅ timeline[inbound] from logistic:', _logistic.delivered_at);
-          return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(_logistic.delivered_at),
-            time: formatTimeToHHMM(_logistic.delivered_at)
-          });
-
-        case 38:
-          _context5.next = 44;
-          break;
-
-        case 40:
-          if (!(deliveryType === 'dropoff')) {
-            _context5.next = 44;
-            break;
-          }
-
-          // From inbound_food_waste.inbound_at
-          _inbound = Object.values(inboundFoodWasteMap)[0];
-
-          if (!(_inbound && _inbound.inbound_at)) {
-            _context5.next = 44;
-            break;
-          }
-
-          return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(_inbound.inbound_at),
-            time: formatTimeToHHMM(_inbound.inbound_at)
-          });
-
-        case 44:
-          _context5.next = 155;
-          break;
-
-        case 46:
+        case 11:
           if (!(timelineStep === 'evaluated')) {
-            _context5.next = 77;
+            _context5.next = 15;
             break;
           }
 
           pe = Object.values(priceEstimationMap).find(function (p) {
             return p && p.estimate_at;
-          }); // fallback: try to query price_estimation chain from payment -> inbound -> waiting_sort -> price_estimation
+          });
 
-          if (!(!pe && paymentId)) {
-            _context5.next = 72;
-            break;
-          }
-
-          _context5.next = 51;
-          return regeneratorRuntime.awrap(getLogisticsByPayment(paymentId));
-
-        case 51:
-          _lgData2 = _context5.sent;
-          logisticPk = Object.keys(_lgData2)[0];
-
-          if (!logisticPk) {
-            _context5.next = 72;
-            break;
-          }
-
-          console.log('🔎 evaluated fallback logisticPk:', logisticPk);
-          _context5.next = 57;
-          return regeneratorRuntime.awrap(db.ref('inbound_food_waste').orderByChild('logistic_id').equalTo(parseInt(logisticPk)).once('value'));
-
-        case 57:
-          inboundSnap = _context5.sent;
-          inboundData = inboundSnap.val() || {};
-          inboundPk = Object.keys(inboundData)[0];
-
-          if (!inboundPk) {
-            _context5.next = 72;
-            break;
-          }
-
-          _context5.next = 63;
-          return regeneratorRuntime.awrap(db.ref('waiting_sort').orderByChild('inbound_id').equalTo(parseInt(inboundPk)).once('value'));
-
-        case 63:
-          wsSnap = _context5.sent;
-          wsData = wsSnap.val() || {};
-          sortPk = Object.keys(wsData)[0];
-
-          if (!sortPk) {
-            _context5.next = 72;
-            break;
-          }
-
-          _context5.next = 69;
-          return regeneratorRuntime.awrap(db.ref('price_estimation').orderByChild('sort_id').equalTo(parseInt(sortPk)).once('value'));
-
-        case 69:
-          peSnap = _context5.sent;
-          peData = peSnap.val() || {};
-          pe = Object.values(peData)[0] || pe;
-
-        case 72:
           if (!(pe && pe.estimate_at)) {
-            _context5.next = 75;
+            _context5.next = 15;
             break;
           }
 
-          console.log('✅ timeline[evaluated] from price_estimation:', pe.estimate_at);
           return _context5.abrupt("return", {
             date: formatDateToDDMMYYYY(pe.estimate_at),
             time: formatTimeToHHMM(pe.estimate_at)
           });
 
-        case 75:
-          _context5.next = 155;
-          break;
-
-        case 77:
+        case 15:
           if (!(timelineStep === 'sold')) {
-            _context5.next = 114;
+            _context5.next = 19;
             break;
           }
 
@@ -849,205 +671,54 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
             return o && o.delivered_at;
           });
 
-          if (!(!ob && paymentId)) {
-            _context5.next = 109;
+          if (!(ob && ob.delivered_at)) {
+            _context5.next = 19;
             break;
           }
 
-          _context5.next = 82;
-          return regeneratorRuntime.awrap(getLogisticsByPayment(paymentId));
-
-        case 82:
-          _lgData3 = _context5.sent;
-          _logisticPk = Object.keys(_lgData3)[0];
-
-          if (!_logisticPk) {
-            _context5.next = 109;
-            break;
-          }
-
-          console.log('🔎 sold fallback logisticPk:', _logisticPk);
-          _context5.next = 88;
-          return regeneratorRuntime.awrap(db.ref('inbound_food_waste').orderByChild('logistic_id').equalTo(parseInt(_logisticPk)).once('value'));
-
-        case 88:
-          _inboundSnap2 = _context5.sent;
-          _inboundData2 = _inboundSnap2.val() || {};
-          _inboundPk = Object.keys(_inboundData2)[0];
-
-          if (!_inboundPk) {
-            _context5.next = 109;
-            break;
-          }
-
-          _context5.next = 94;
-          return regeneratorRuntime.awrap(db.ref('waiting_sort').orderByChild('inbound_id').equalTo(parseInt(_inboundPk)).once('value'));
-
-        case 94:
-          _wsSnap = _context5.sent;
-          _wsData = _wsSnap.val() || {};
-          _sortPk = Object.keys(_wsData)[0];
-
-          if (!_sortPk) {
-            _context5.next = 109;
-            break;
-          }
-
-          _context5.next = 100;
-          return regeneratorRuntime.awrap(db.ref('price_estimation').orderByChild('sort_id').equalTo(parseInt(_sortPk)).once('value'));
-
-        case 100:
-          _peSnap = _context5.sent;
-          _peData = _peSnap.val() || {};
-          pePk = Object.keys(_peData)[0];
-
-          if (!pePk) {
-            _context5.next = 109;
-            break;
-          }
-
-          _context5.next = 106;
-          return regeneratorRuntime.awrap(db.ref('outbound_food_waste').orderByChild('estimate_id').equalTo(parseInt(pePk)).once('value'));
-
-        case 106:
-          obSnap = _context5.sent;
-          obData = obSnap.val() || {};
-          ob = Object.values(obData)[0] || ob;
-
-        case 109:
-          if (!ob) {
-            _context5.next = 112;
-            break;
-          }
-
-          console.log('✅ timeline[sold] from outbound:', ob.delivered_at);
           return _context5.abrupt("return", {
             date: formatDateToDDMMYYYY(ob.delivered_at),
             time: formatTimeToHHMM(ob.delivered_at)
           });
 
-        case 112:
-          _context5.next = 155;
-          break;
-
-        case 114:
+        case 19:
           if (!(timelineStep === 'paid')) {
-            _context5.next = 155;
+            _context5.next = 23;
             break;
           }
 
           sp = Object.values(sellerPayoutsMap).find(function (s) {
-            return s && s.payout_at;
+            return s && s.paid_at;
           });
 
-          if (!(!sp && paymentId)) {
-            _context5.next = 152;
+          if (!(sp && sp.paid_at)) {
+            _context5.next = 23;
             break;
           }
 
-          _context5.next = 119;
-          return regeneratorRuntime.awrap(getLogisticsByPayment(paymentId));
-
-        case 119:
-          _lgData4 = _context5.sent;
-          _logisticPk2 = Object.keys(_lgData4)[0];
-
-          if (!_logisticPk2) {
-            _context5.next = 152;
-            break;
-          }
-
-          console.log('🔎 paid fallback logisticPk:', _logisticPk2);
-          _context5.next = 125;
-          return regeneratorRuntime.awrap(db.ref('inbound_food_waste').orderByChild('logistic_id').equalTo(parseInt(_logisticPk2)).once('value'));
-
-        case 125:
-          _inboundSnap3 = _context5.sent;
-          _inboundData3 = _inboundSnap3.val() || {};
-          _inboundPk2 = Object.keys(_inboundData3)[0];
-
-          if (!_inboundPk2) {
-            _context5.next = 152;
-            break;
-          }
-
-          _context5.next = 131;
-          return regeneratorRuntime.awrap(db.ref('waiting_sort').orderByChild('inbound_id').equalTo(parseInt(_inboundPk2)).once('value'));
-
-        case 131:
-          _wsSnap2 = _context5.sent;
-          _wsData2 = _wsSnap2.val() || {};
-          _sortPk2 = Object.keys(_wsData2)[0];
-
-          if (!_sortPk2) {
-            _context5.next = 152;
-            break;
-          }
-
-          _context5.next = 137;
-          return regeneratorRuntime.awrap(db.ref('price_estimation').orderByChild('sort_id').equalTo(parseInt(_sortPk2)).once('value'));
-
-        case 137:
-          _peSnap2 = _context5.sent;
-          _peData2 = _peSnap2.val() || {};
-          _pePk = Object.keys(_peData2)[0];
-
-          if (!_pePk) {
-            _context5.next = 152;
-            break;
-          }
-
-          _context5.next = 143;
-          return regeneratorRuntime.awrap(db.ref('outbound_food_waste').orderByChild('estimate_id').equalTo(parseInt(_pePk)).once('value'));
-
-        case 143:
-          _obSnap = _context5.sent;
-          _obData = _obSnap.val() || {};
-          obPk = Object.keys(_obData)[0];
-
-          if (!obPk) {
-            _context5.next = 152;
-            break;
-          }
-
-          _context5.next = 149;
-          return regeneratorRuntime.awrap(db.ref('seller_payouts').orderByChild('outbound_id').equalTo(parseInt(obPk)).once('value'));
-
-        case 149:
-          spSnap = _context5.sent;
-          spData = spSnap.val() || {};
-          sp = Object.values(spData)[0] || sp;
-
-        case 152:
-          if (!sp) {
-            _context5.next = 155;
-            break;
-          }
-
-          console.log('✅ timeline[paid] from seller_payouts:', sp.payout_at);
           return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(sp.payout_at),
-            time: formatTimeToHHMM(sp.payout_at)
+            date: formatDateToDDMMYYYY(sp.paid_at),
+            time: formatTimeToHHMM(sp.paid_at)
           });
 
-        case 155:
-          _context5.next = 160;
+        case 23:
+          _context5.next = 28;
           break;
 
-        case 157:
-          _context5.prev = 157;
-          _context5.t0 = _context5["catch"](2);
+        case 25:
+          _context5.prev = 25;
+          _context5.t0 = _context5["catch"](0);
           console.error("\u274C Error getting datetime for ".concat(timelineStep, ":"), _context5.t0);
 
-        case 160:
+        case 28:
           return _context5.abrupt("return", null);
 
-        case 161:
+        case 29:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[2, 157]]);
+  }, null, null, [[0, 25]]);
 } // ==================== Populate Timeline ====================
 
 
@@ -1184,7 +855,7 @@ function populateOrderTimeline(order) {
 
 
 function populateOrderDetails(order) {
-  var orderId, currentStatus, deliveryType, order_Id, sellerName, sellerPhone, address, userSnap, user, sellerSnap, sellerData, seller, a, pickupAddr, foodTypes, orderItemSnap, orderItemData, items, categories, orderDateTime;
+  var orderId, currentStatus, deliveryType, order_Id, sellerName, sellerPhone, sellerSnap, seller, pickupSnap, pickupData, address, a, foodTypes, orderItemSnap, orderItemData, items, categories, orderDateTime;
   return regeneratorRuntime.async(function populateOrderDetails$(_context7) {
     while (1) {
       switch (_context7.prev = _context7.next) {
@@ -1206,80 +877,45 @@ function populateOrderDetails(order) {
           setText('order_id_display', order_Id); // === SECTION: ข้อมูลการขาย (always shown once order_received) ===
 
           if (!isStepReached('order_received', currentStatus)) {
-            _context7.next = 46;
+            _context7.next = 39;
             break;
           }
 
-          showSection('order_details_section'); // Seller info
+          showSection('order_details_section'); // ===== SELLER =====
 
           sellerName = '-';
           sellerPhone = '-';
-          address = '-';
+          _context7.next = 14;
+          return regeneratorRuntime.awrap(db.ref("sellers/".concat(order.user_id)).once('value'));
 
-          if (!order.user_id) {
-            _context7.next = 19;
-            break;
-          }
-
-          _context7.next = 16;
-          return regeneratorRuntime.awrap(db.ref("users/".concat(order.user_id)).once('value'));
-
-        case 16:
-          userSnap = _context7.sent;
-          user = userSnap.val();
-
-          if (user) {
-            sellerName = "".concat(user.name || '', " ").concat(user.surname || '').trim() || '-';
-            sellerPhone = user.telephone || '-';
-          }
-
-        case 19:
-          if (!((sellerName === '-' || sellerPhone === '-') && order.user_id)) {
-            _context7.next = 26;
-            break;
-          }
-
-          _context7.next = 22;
-          return regeneratorRuntime.awrap(db.ref('sellers').orderByChild('user_id').equalTo(order.user_id).once('value'));
-
-        case 22:
+        case 14:
           sellerSnap = _context7.sent;
-          sellerData = sellerSnap.val() || {};
-          seller = Object.values(sellerData)[0];
+          seller = sellerSnap.val();
 
           if (seller) {
-            if (sellerName === '-' && seller.fullname) {
-              sellerName = "".concat(seller.fullname || '', " ").concat(seller.surname || '').trim() || sellerName;
-            }
-
-            if (sellerPhone === '-' && seller.telephone) {
-              sellerPhone = seller.telephone;
-            } // Also use seller.address as fallback for address
-
-
-            if ((!address || address === '-') && seller.address) {
-              a = seller.address;
-              address = [a.address_detail, a.sub_district, a.district, a.province, a.postal_code].filter(Boolean).join(' ');
-            }
+            sellerName = seller.fullname || '-';
+            sellerPhone = seller.phone || '-';
           }
 
-        case 26:
-          _context7.next = 28;
-          return regeneratorRuntime.awrap(getPickupAddress(orderId));
+          _context7.next = 19;
+          return regeneratorRuntime.awrap(db.ref("pickup_addresses/".concat(orderId)).once('value'));
 
-        case 28:
-          pickupAddr = _context7.sent;
+        case 19:
+          pickupSnap = _context7.sent;
+          pickupData = pickupSnap.val();
+          address = '-';
 
-          if (pickupAddr) {
-            address = [pickupAddr.address, pickupAddr.sub_district, pickupAddr.district, pickupAddr.province, pickupAddr.postal_code].filter(Boolean).join(' ');
+          if (pickupData && pickupData.address) {
+            a = pickupData.address;
+            address = [a.detail, a.road, a.subDistrict, a.district, a.province, a.postalCode].filter(Boolean).join(' ');
           } // Food types from order_items
 
 
           foodTypes = '-';
-          _context7.next = 33;
+          _context7.next = 26;
           return regeneratorRuntime.awrap(db.ref('order_items').orderByChild('order_id').equalTo(orderId).once('value'));
 
-        case 33:
+        case 26:
           orderItemSnap = _context7.sent;
           orderItemData = orderItemSnap.val() || {};
           items = Object.values(orderItemData).filter(Boolean);
@@ -1304,86 +940,86 @@ function populateOrderDetails(order) {
           setText('seller_address', address);
           setText('food_types', foodTypes);
           setText('order_datetime', orderDateTime);
-          _context7.next = 47;
+          _context7.next = 40;
           break;
 
-        case 46:
+        case 39:
           hideSection('order_details_section');
 
-        case 47:
+        case 40:
           if (!isStepReached('order_received', currentStatus)) {
-            _context7.next = 61;
+            _context7.next = 54;
             break;
           }
 
           showSection('shipping_section'); // Driver info (always shown from order_received onward)
 
-          _context7.next = 51;
+          _context7.next = 44;
           return regeneratorRuntime.awrap(populateDriverInfo());
 
-        case 51:
+        case 44:
           if (!isStepReached('picked_up', currentStatus)) {
-            _context7.next = 56;
+            _context7.next = 49;
             break;
           }
 
-          _context7.next = 54;
+          _context7.next = 47;
           return regeneratorRuntime.awrap(populateShippingDetails(orderId, deliveryType));
 
-        case 54:
-          _context7.next = 59;
+        case 47:
+          _context7.next = 52;
           break;
 
-        case 56:
+        case 49:
           setText('pickup_datetime', '-');
           setText('distance', '-');
           setText('shipping_cost', '-');
+
+        case 52:
+          _context7.next = 55;
+          break;
+
+        case 54:
+          hideSection('shipping_section');
+
+        case 55:
+          if (!isStepReached('evaluated', currentStatus)) {
+            _context7.next = 61;
+            break;
+          }
+
+          showSection('estimation_section');
+          _context7.next = 59;
+          return regeneratorRuntime.awrap(populateEstimationDetails());
 
         case 59:
           _context7.next = 62;
           break;
 
         case 61:
-          hideSection('shipping_section');
+          hideSection('estimation_section');
 
         case 62:
-          if (!isStepReached('evaluated', currentStatus)) {
+          if (!isStepReached('paid', currentStatus)) {
             _context7.next = 68;
             break;
           }
 
-          showSection('estimation_section');
+          showSection('payout_section');
           _context7.next = 66;
-          return regeneratorRuntime.awrap(populateEstimationDetails());
+          return regeneratorRuntime.awrap(populatePayoutDetails(orderId));
 
         case 66:
           _context7.next = 69;
           break;
 
         case 68:
-          hideSection('estimation_section');
-
-        case 69:
-          if (!isStepReached('paid', currentStatus)) {
-            _context7.next = 75;
-            break;
-          }
-
-          showSection('payout_section');
-          _context7.next = 73;
-          return regeneratorRuntime.awrap(populatePayoutDetails());
-
-        case 73:
-          _context7.next = 76;
-          break;
-
-        case 75:
           hideSection('payout_section');
 
-        case 76:
+        case 69:
           console.log('✅ Order details populated');
 
-        case 77:
+        case 70:
         case "end":
           return _context7.stop();
       }
@@ -1393,16 +1029,21 @@ function populateOrderDetails(order) {
 
 
 function populateDriverInfo() {
-  var deliveryType, payment, logistic, schedule, driver, driverName;
+  var driverId, carPlate, driverSnap, driver, fullName, carSnap, car;
   return regeneratorRuntime.async(function populateDriverInfo$(_context8) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
-          // For dropoff orders there is no driver, show placeholders
-          deliveryType = currentOrder ? currentOrder.delivery_type : 'pickup';
+          if (currentOrder) {
+            _context8.next = 2;
+            break;
+          }
 
-          if (!(deliveryType === 'dropoff')) {
-            _context8.next = 6;
+          return _context8.abrupt("return");
+
+        case 2:
+          if (!(currentOrder.delivery_type === 'dropoff')) {
+            _context8.next = 7;
             break;
           }
 
@@ -1411,11 +1052,12 @@ function populateDriverInfo() {
           setText('driver_license', '-');
           return _context8.abrupt("return");
 
-        case 6:
-          payment = paymentsMap[String(currentOrder.order_id)];
+        case 7:
+          driverId = currentOrder.assigned_driver;
+          carPlate = currentOrder.assigned_car; // ถ้ายังไม่ได้ assign
 
-          if (payment) {
-            _context8.next = 12;
+          if (!(!driverId || !carPlate)) {
+            _context8.next = 14;
             break;
           }
 
@@ -1424,49 +1066,38 @@ function populateDriverInfo() {
           setText('driver_license', '-');
           return _context8.abrupt("return");
 
-        case 12:
-          logistic = Object.values(logisticsMap).find(function (l) {
-            return l && l.payment_id == payment.payment_id && l.schedule_id != null;
-          });
+        case 14:
+          _context8.next = 16;
+          return regeneratorRuntime.awrap(db.ref("delivery_emps/".concat(driverId)).once("value"));
 
-          if (!(!logistic || !logistic.schedule_id)) {
-            _context8.next = 18;
-            break;
-          }
-
-          setText('driver_name', 'ยังไม่มีข้อมูล');
-          setText('driver_phone', '-');
-          setText('driver_license', '-');
-          return _context8.abrupt("return");
-
-        case 18:
-          schedule = schedulesMap[logistic.schedule_id];
-
-          if (!(!schedule || !schedule.delivery_id)) {
-            _context8.next = 24;
-            break;
-          }
-
-          setText('driver_name', 'ยังไม่มีข้อมูล');
-          setText('driver_phone', '-');
-          setText('driver_license', '-');
-          return _context8.abrupt("return");
-
-        case 24:
-          driver = driversMap[schedule.delivery_id];
+        case 16:
+          driverSnap = _context8.sent;
+          driver = driverSnap.val();
 
           if (driver) {
-            driverName = "".concat(driver.title || '', " ").concat(driver.name || '', " ").concat(driver.surname || '').trim() || 'ยังไม่มีข้อมูล';
-            setText('driver_name', driverName);
+            fullName = "".concat(driver.title || '', " ").concat(driver.name || '', " ").concat(driver.surname || '').trim();
+            setText('driver_name', fullName || '-');
             setText('driver_phone', driver.telephone || '-');
-            setText('driver_license', schedule.license_plate || '-');
           } else {
-            setText('driver_name', 'ยังไม่มีข้อมูล');
+            setText('driver_name', '-');
             setText('driver_phone', '-');
-            setText('driver_license', '-');
+          } // ===== ดึงข้อมูลรถ =====
+
+
+          _context8.next = 21;
+          return regeneratorRuntime.awrap(db.ref("delivery_cars/".concat(carPlate)).once("value"));
+
+        case 21:
+          carSnap = _context8.sent;
+          car = carSnap.val();
+
+          if (car) {
+            setText('driver_license', car.license_plate || carPlate);
+          } else {
+            setText('driver_license', carPlate);
           }
 
-        case 26:
+        case 24:
         case "end":
           return _context8.stop();
       }
@@ -1476,17 +1107,21 @@ function populateDriverInfo() {
 
 
 function populateShippingDetails(orderId, deliveryType) {
-  var payment, logistic, dateStr, pickupAddr, rateSnap, rate, inbound, _dateStr;
+  var orderSnap, order, dateStr, _dateStr;
 
   return regeneratorRuntime.async(function populateShippingDetails$(_context9) {
     while (1) {
       switch (_context9.prev = _context9.next) {
         case 0:
           _context9.prev = 0;
-          payment = paymentsMap[String(orderId)];
+          _context9.next = 3;
+          return regeneratorRuntime.awrap(db.ref("order/".concat(orderId)).once("value"));
 
-          if (payment) {
-            _context9.next = 7;
+        case 3:
+          orderSnap = _context9.sent;
+
+          if (orderSnap.exists()) {
+            _context9.next = 9;
             break;
           }
 
@@ -1495,147 +1130,87 @@ function populateShippingDetails(orderId, deliveryType) {
           setText('shipping_cost', '-');
           return _context9.abrupt("return");
 
-        case 7:
-          if (!(deliveryType === 'pickup')) {
-            _context9.next = 30;
-            break;
-          }
+        case 9:
+          order = orderSnap.val(); // ===== PICKUP =====
 
-          // pickup_datetime from logistic.pickup_at
-          logistic = Object.values(logisticsMap).find(function (l) {
-            return l && l.payment_id == payment.payment_id && l.schedule_id != null;
-          });
-
-          if (logistic && logistic.pickup_at) {
-            dateStr = "".concat(formatDateToDDMMYYYY(logistic.pickup_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(logistic.pickup_at));
-            setText('pickup_datetime', dateStr);
-          } else {
-            setText('pickup_datetime', '-');
-          } // Distance from pickup_addresses (use helper)
-
-
-          _context9.next = 12;
-          return regeneratorRuntime.awrap(getPickupAddress(orderId));
-
-        case 12:
-          pickupAddr = _context9.sent;
-
-          if (!(pickupAddr && pickupAddr.distance != null)) {
-            _context9.next = 26;
-            break;
-          }
-
-          setText('distance', "".concat(pickupAddr.distance, " \u0E01\u0E21.")); // Shipping cost from pickup_rate via rate_id
-
-          if (!pickupAddr.rate_id) {
-            _context9.next = 23;
-            break;
-          }
-
-          _context9.next = 18;
-          return regeneratorRuntime.awrap(db.ref("pickup_rate/".concat(pickupAddr.rate_id)).once('value'));
-
-        case 18:
-          rateSnap = _context9.sent;
-          rate = rateSnap.val();
-
-          if (rate && rate.price != null) {
-            setText('shipping_cost', rate.price === 0 ? 'ฟรี' : "".concat(rate.price, " \u0E1A\u0E32\u0E17"));
-          } else {
-            setText('shipping_cost', '-');
-          }
-
-          _context9.next = 24;
-          break;
-
-        case 23:
-          setText('shipping_cost', '-');
-
-        case 24:
-          _context9.next = 28;
-          break;
-
-        case 26:
-          setText('distance', '-');
-          setText('shipping_cost', '-');
-
-        case 28:
-          _context9.next = 31;
-          break;
-
-        case 30:
-          if (deliveryType === 'dropoff') {
-            // pickup_datetime from inbound_food_waste.inbound_at (drop-off label)
-            inbound = Object.values(inboundFoodWasteMap)[0];
-
-            if (inbound && inbound.inbound_at) {
-              _dateStr = "".concat(formatDateToDDMMYYYY(inbound.inbound_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(inbound.inbound_at), " (drop-off)");
-              setText('pickup_datetime', _dateStr);
+          if (deliveryType === 'pickup') {
+            // วันเวลารับของ
+            if (order.pickup_at) {
+              dateStr = "".concat(formatDateToDDMMYYYY(order.pickup_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(order.pickup_at));
+              setText('pickup_datetime', dateStr);
             } else {
               setText('pickup_datetime', '-');
+            } // ระยะทาง
+
+
+            if (order.distance_km != null) {
+              setText('distance', "".concat(order.distance_km.toFixed(2), " \u0E01\u0E21."));
+            } else {
+              setText('distance', '-');
+            } // ค่าขนส่ง
+
+
+            if (order.shipping_fee != null) {
+              setText('shipping_cost', order.shipping_fee === 0 ? 'ฟรี' : "".concat(order.shipping_fee, " \u0E1A\u0E32\u0E17"));
+            } else {
+              setText('shipping_cost', '-');
+            }
+          } // ===== DROPOFF =====
+          else if (deliveryType === 'dropoff') {
+              if (order.pickup_at) {
+                _dateStr = "".concat(formatDateToDDMMYYYY(order.pickup_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(order.pickup_at), " (drop-off)");
+                setText('pickup_datetime', _dateStr);
+              } else {
+                setText('pickup_datetime', '-');
+              }
+
+              setText('distance', '-');
+              setText('shipping_cost', 'ฟรี');
             }
 
-            setText('distance', '-');
-            setText('shipping_cost', '-');
-          }
-
-        case 31:
-          _context9.next = 36;
+          _context9.next = 16;
           break;
 
-        case 33:
-          _context9.prev = 33;
+        case 13:
+          _context9.prev = 13;
           _context9.t0 = _context9["catch"](0);
           console.error('❌ Error populating shipping details:', _context9.t0);
 
-        case 36:
+        case 16:
         case "end":
           return _context9.stop();
       }
     }
-  }, null, null, [[0, 33]]);
+  }, null, null, [[0, 13]]);
 } // ==================== Populate Estimation Details ====================
 
 
 function populateEstimationDetails() {
-  var pe, _pe, estimatePk, peData, ws, sortId, wsEntry, fw, category, weight, price;
-
+  var orderId, snap, estimation, wasteSnap, waste, category, weight, price;
   return regeneratorRuntime.async(function populateEstimationDetails$(_context10) {
     while (1) {
       switch (_context10.prev = _context10.next) {
         case 0:
           _context10.prev = 0;
-          // Get first completed price_estimation
-          pe = Object.entries(priceEstimationMap).find(function (_ref11) {
-            var _ref12 = _slicedToArray(_ref11, 2),
-                k = _ref12[0],
-                v = _ref12[1];
 
-            return v && v.sort_id;
-          });
-
-          if (pe) {
-            _context10.next = 7;
+          if (!(!currentOrder || !currentOrder.order_id)) {
+            _context10.next = 4;
             break;
           }
 
-          setText('estimation_category', '-');
-          setText('estimation_weight', '-');
-          setText('estimation_price', '-');
+          console.warn("❌ ไม่มี order_id");
           return _context10.abrupt("return");
+
+        case 4:
+          orderId = currentOrder.order_id;
+          _context10.next = 7;
+          return regeneratorRuntime.awrap(db.ref("order_items").orderByChild("order_id").equalTo(orderId).once("value"));
 
         case 7:
-          _pe = _slicedToArray(pe, 2), estimatePk = _pe[0], peData = _pe[1]; // Get corresponding waiting_sort entry
+          snap = _context10.sent;
 
-          ws = Object.values(waitingSortMap).find(function (w) {
-            return w && w.inbound_id != null;
-          }); // The waiting_sort pk is sort_id in price_estimation
-
-          sortId = peData.sort_id;
-          wsEntry = waitingSortMap[String(sortId)];
-
-          if (wsEntry) {
-            _context10.next = 16;
+          if (snap.exists()) {
+            _context10.next = 13;
             break;
           }
 
@@ -1644,43 +1219,62 @@ function populateEstimationDetails() {
           setText('estimation_price', '-');
           return _context10.abrupt("return");
 
+        case 13:
+          estimation = Object.values(snap.val())[0];
+          _context10.next = 16;
+          return regeneratorRuntime.awrap(db.ref("food_waste_types/".concat(estimation.waste_id)).once("value"));
+
         case 16:
-          // Get food_waste category from waste_id
-          fw = foodWasteTypesMap[String(wsEntry.waste_id)];
-          category = fw ? fw.category : '-';
-          weight = wsEntry.weight != null ? "".concat(wsEntry.weight, " \u0E01\u0E01.") : '-';
-          price = fw && fw.price != null && wsEntry.weight != null ? "".concat((fw.price * wsEntry.weight).toFixed(2), " \u0E1A\u0E32\u0E17") : '-';
+          wasteSnap = _context10.sent;
+          waste = wasteSnap.val();
+          category = waste ? waste.category : "-";
+          weight = estimation.weight ? "".concat(estimation.weight, " \u0E01\u0E01.") : "-";
+          price = estimation.total_price ? "".concat(estimation.total_price.toFixed(2), " \u0E1A\u0E32\u0E17") : "-";
           setText('estimation_category', category);
           setText('estimation_weight', weight);
           setText('estimation_price', price);
-          _context10.next = 28;
+          _context10.next = 29;
           break;
 
-        case 25:
-          _context10.prev = 25;
+        case 26:
+          _context10.prev = 26;
           _context10.t0 = _context10["catch"](0);
-          console.error('❌ Error populating estimation details:', _context10.t0);
+          console.error("❌ estimation error:", _context10.t0);
 
-        case 28:
+        case 29:
         case "end":
           return _context10.stop();
       }
     }
-  }, null, null, [[0, 25]]);
+  }, null, null, [[0, 26]]);
 } // ==================== Populate Payout Details ====================
 
 
-function populatePayoutDetails() {
-  var sp, bank;
+function populatePayoutDetails(orderId) {
+  var payoutSnap, payoutData, bankData, bankSnap;
   return regeneratorRuntime.async(function populatePayoutDetails$(_context11) {
     while (1) {
       switch (_context11.prev = _context11.next) {
         case 0:
           _context11.prev = 0;
-          sp = Object.values(sellerPayoutsMap)[0];
 
-          if (sp) {
-            _context11.next = 8;
+          if (orderId) {
+            _context11.next = 4;
+            break;
+          }
+
+          console.warn("❌ ไม่มี orderId");
+          return _context11.abrupt("return");
+
+        case 4:
+          _context11.next = 6;
+          return regeneratorRuntime.awrap(db.ref("seller_payouts").orderByChild("order_id").equalTo(orderId).once("value"));
+
+        case 6:
+          payoutSnap = _context11.sent;
+
+          if (payoutSnap.exists()) {
+            _context11.next = 13;
             break;
           }
 
@@ -1690,33 +1284,49 @@ function populatePayoutDetails() {
           setText('payout_at', '-');
           return _context11.abrupt("return");
 
-        case 8:
-          // Bank account info
-          bank = sp.bank_id ? bankAccountsMap[String(sp.bank_id)] : null;
-          setText('payout_bank_account_number', bank ? bank.bank_account_number || '-' : '-');
-          setText('payout_bank_name', bank ? bank.bank_name || '-' : '-');
-          setText('payout_amount', sp.amount != null ? "".concat(sp.amount, " \u0E1A\u0E32\u0E17") : '-');
+        case 13:
+          payoutData = Object.values(payoutSnap.val())[0]; // 🔹 2. ดึงข้อมูลบัญชีธนาคาร
 
-          if (sp.payout_at) {
-            setText('payout_at', "".concat(formatDateToDDMMYYYY(sp.payout_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(sp.payout_at)));
+          bankData = null;
+
+          if (!payoutData.bank_account_id) {
+            _context11.next = 20;
+            break;
+          }
+
+          _context11.next = 18;
+          return regeneratorRuntime.awrap(db.ref("bank_accounts/" + payoutData.bank_account_id).once("value"));
+
+        case 18:
+          bankSnap = _context11.sent;
+          bankData = bankSnap.val();
+
+        case 20:
+          // 🔹 3. แสดงข้อมูล
+          setText('payout_bank_account_number', bankData ? bankData.account_number || '-' : '-');
+          setText('payout_bank_name', bankData ? bankData.account_name || '-' : '-');
+          setText('payout_amount', payoutData.amount != null ? "".concat(payoutData.amount, " \u0E1A\u0E32\u0E17") : '-');
+
+          if (payoutData.paid_at) {
+            setText('payout_at', "".concat(formatDateToDDMMYYYY(payoutData.paid_at), " \u0E40\u0E27\u0E25\u0E32 ").concat(formatTimeToHHMM(payoutData.paid_at)));
           } else {
             setText('payout_at', '-');
           }
 
-          _context11.next = 18;
+          _context11.next = 29;
           break;
 
-        case 15:
-          _context11.prev = 15;
+        case 26:
+          _context11.prev = 26;
           _context11.t0 = _context11["catch"](0);
           console.error('❌ Error populating payout details:', _context11.t0);
 
-        case 18:
+        case 29:
         case "end":
           return _context11.stop();
       }
     }
-  }, null, null, [[0, 15]]);
+  }, null, null, [[0, 26]]);
 } // ==================== Initialize Page ====================
 
 

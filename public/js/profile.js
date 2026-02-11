@@ -1,16 +1,15 @@
 let userId = null;
 const LIFF_ID = "2008999812-I2Dz19pN";
 
-const STATUS_LABEL = { 
-  order_received: 'ได้รับรายการขายแล้ว', 
-  picked_up: 'รถมารับเศษอาหาร', 
-  inbound: 'ถึงโกดังและคัดแยก', 
-  sorted: 'ถึงโกดังและคัดแยก', 
-  evaluated: 'ประเมินราคา', 
-  outbound: 'กำลังขาย', 
-  sold: 'ขายให้ร้านค้า', 
-  paid: 'จ่ายเงิน', 
-  completed: 'เสร็จสิ้น' 
+const STATUS_LABEL = {
+	'order_received': 'ได้รับคำสั่งซื้อ',
+	'picked_up': 'กำลังส่งไปโกดัง',
+	'inbound': 'ถึงโกดังและคัดแยก',
+	'sorted': 'คัดแยกเสร็จสิ้น',
+	'evaluated': 'ประเมินราคา',
+	'outbound': 'กำลังขาย',
+	'sold': 'ขายให้ผู้ซื้อ',
+	'completed': 'จ่ายเงินเสร็จสิ้น'
 };
 
 async function loadProfile(){
@@ -101,7 +100,7 @@ function openAllOrders(){
 }
 
 function openOrder(orderId){
-  window.location.href = `status_detail.html?orderId=${orderId}`;
+  window.location.href = `order-status.html?orderId=${orderId}`;
 }
 
 async function loadMyOrders() {
