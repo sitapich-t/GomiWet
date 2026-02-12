@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GomiWet Admin Dashboard (Emulator)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Emulator Banner -->
+    <div class="emulator-banner">
+        🔧 FIREBASE EMULATOR MODE <span>localhost:9100</span>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1><span class="logo">🌱</span> GomiWet Admin Dashboard</h1>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span>📦</span>
+                        <span id="totalOrders">0</span>
+                        <span>คำสั่งซื้อ</span>
+                    </div>
+                    <div class="status-item">
+                        <span>⏳</span>
+                        <span id="pendingOrders">0</span>
+                        <span>รอดำเนินการ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 2rem;">
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="incoming">รายการเข้า</button>
+            <button class="tab-btn" data-tab="logistics">จัดการขนส่ง</button>
+            <button class="tab-btn" data-tab="warehouse">โกดัง</button>
+            <button class="tab-btn" data-tab="sorting">คัดแยก</button>
+            <button class="tab-btn" data-tab="pricing">ประเมินราคา</button>
+            <button class="tab-btn" data-tab="outbound">ส่งออก</button>
+            <button class="tab-btn" data-tab="payment">โอนเงิน</button>
+        </nav>
+
+        <div id="tabContent"></div>
+    </div>
+
+    <!-- Modals -->
+    <div id="assignLogisticsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">มอบหมายขนส่ง</h2>
+                <button class="close-btn" onclick="closeModal('assignLogisticsModal')">×</button>
+            </div>
+            <div id="assignLogisticsContent"></div>
+        </div>
+    </div>
+
+    <div id="sortingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">คัดแยกเศษอาหาร</h2>
+                <button class="close-btn" onclick="closeModal('sortingModal')">×</button>
+            </div>
+            <div id="sortingContent"></div>
+        </div>
+    </div>
+
+    <div id="pricingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">ประเมินราคา</h2>
+                <button class="close-btn" onclick="closeModal('pricingModal')">×</button>
+            </div>
+            <div id="pricingContent"></div>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">โอนเงินให้ผู้ขาย</h2>
+                <button class="close-btn" onclick="closeModal('paymentModal')">×</button>
+            </div>
+            <div id="paymentContent"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- ลำดับที่ถูก -->
+    <script src="js/firebase.js"></script><!-- ก่อน -->
+    <script src="js/scripts.js"></script> <!-- หลัง -->
+</body>
+
+</html>

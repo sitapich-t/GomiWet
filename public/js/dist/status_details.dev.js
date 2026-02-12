@@ -594,7 +594,7 @@ function getOrderFromFirebase(orderId) {
 
 
 function getTimelineDateTime(orderId, timelineStep, deliveryType) {
-  var ts, payment, paymentId, pe, ob, sp;
+  var ts, payment, paymentId, pe, ob, payoutSnap, payoutData;
   return regeneratorRuntime.async(function getTimelineDateTime$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -683,42 +683,51 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
 
         case 19:
           if (!(timelineStep === 'paid')) {
-            _context5.next = 23;
+            _context5.next = 27;
             break;
           }
 
-          sp = Object.values(sellerPayoutsMap).find(function (s) {
-            return s && s.paid_at;
-          });
+          _context5.next = 22;
+          return regeneratorRuntime.awrap(db.ref("seller_payouts").orderByChild("order_id").equalTo(orderId).once("value"));
 
-          if (!(sp && sp.paid_at)) {
-            _context5.next = 23;
+        case 22:
+          payoutSnap = _context5.sent;
+
+          if (!payoutSnap.exists()) {
+            _context5.next = 27;
+            break;
+          }
+
+          payoutData = Object.values(payoutSnap.val())[0];
+
+          if (!(payoutData && payoutData.paid_at)) {
+            _context5.next = 27;
             break;
           }
 
           return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(sp.paid_at),
-            time: formatTimeToHHMM(sp.paid_at)
+            date: formatDateToDDMMYYYY(payoutData.paid_at),
+            time: formatTimeToHHMM(payoutData.paid_at)
           });
 
-        case 23:
-          _context5.next = 28;
+        case 27:
+          _context5.next = 32;
           break;
 
-        case 25:
-          _context5.prev = 25;
+        case 29:
+          _context5.prev = 29;
           _context5.t0 = _context5["catch"](0);
           console.error("\u274C Error getting datetime for ".concat(timelineStep, ":"), _context5.t0);
 
-        case 28:
+        case 32:
           return _context5.abrupt("return", null);
 
-        case 29:
+        case 33:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 25]]);
+  }, null, null, [[0, 29]]);
 } // ==================== Populate Timeline ====================
 
 
@@ -1053,8 +1062,8 @@ function populateDriverInfo() {
           return _context8.abrupt("return");
 
         case 7:
-          driverId = currentOrder.assigned_driver;
-          carPlate = currentOrder.assigned_car; // ถ้ายังไม่ได้ assign
+          driverId = currentOrder.driver_id;
+          carPlate = currentOrder.vehicle_id; // ถ้ายังไม่ได้ assign
 
           if (!(!driverId || !carPlate)) {
             _context8.next = 14;
@@ -1186,7 +1195,7 @@ function populateShippingDetails(orderId, deliveryType) {
 
 
 function populateEstimationDetails() {
-  var orderId, snap, estimation, wasteSnap, waste, category, weight, price;
+  var orderId, snap, order, sorting, category, weight, price;
   return regeneratorRuntime.async(function populateEstimationDetails$(_context10) {
     while (1) {
       switch (_context10.prev = _context10.next) {
@@ -1202,9 +1211,10 @@ function populateEstimationDetails() {
           return _context10.abrupt("return");
 
         case 4:
-          orderId = currentOrder.order_id;
+          orderId = currentOrder.order_id; // ✅ ดึงตรง ๆ จาก order/{orderId}
+
           _context10.next = 7;
-          return regeneratorRuntime.awrap(db.ref("order_items").orderByChild("order_id").equalTo(orderId).once("value"));
+          return regeneratorRuntime.awrap(db.ref("order/" + orderId).once("value"));
 
         case 7:
           snap = _context10.sent;
@@ -1220,38 +1230,45 @@ function populateEstimationDetails() {
           return _context10.abrupt("return");
 
         case 13:
-          estimation = Object.values(snap.val())[0];
-          _context10.next = 16;
-          return regeneratorRuntime.awrap(db.ref("food_waste_types/".concat(estimation.waste_id)).once("value"));
+          order = snap.val();
+          sorting = order.sorting;
 
-        case 16:
-          wasteSnap = _context10.sent;
-          waste = wasteSnap.val();
-          category = waste ? waste.category : "-";
-          weight = estimation.weight ? "".concat(estimation.weight, " \u0E01\u0E01.") : "-";
-          price = estimation.total_price ? "".concat(estimation.total_price.toFixed(2), " \u0E1A\u0E32\u0E17") : "-";
+          if (sorting) {
+            _context10.next = 20;
+            break;
+          }
+
+          setText('estimation_category', '-');
+          setText('estimation_weight', '-');
+          setText('estimation_price', '-');
+          return _context10.abrupt("return");
+
+        case 20:
+          category = sorting.label || "-";
+          weight = sorting.weight ? "".concat(sorting.weight, " \u0E01\u0E01.") : "-";
+          price = order.total_estimate ? "".concat(Number(order.total_estimate).toFixed(2), " \u0E1A\u0E32\u0E17") : "-";
           setText('estimation_category', category);
           setText('estimation_weight', weight);
           setText('estimation_price', price);
-          _context10.next = 29;
+          _context10.next = 31;
           break;
 
-        case 26:
-          _context10.prev = 26;
+        case 28:
+          _context10.prev = 28;
           _context10.t0 = _context10["catch"](0);
           console.error("❌ estimation error:", _context10.t0);
 
-        case 29:
+        case 31:
         case "end":
           return _context10.stop();
       }
     }
-  }, null, null, [[0, 26]]);
+  }, null, null, [[0, 28]]);
 } // ==================== Populate Payout Details ====================
 
 
 function populatePayoutDetails(orderId) {
-  var payoutSnap, payoutData, bankData, bankSnap;
+  var payoutSnap, payoutData, sellerId, bankSnap, bankData;
   return regeneratorRuntime.async(function populatePayoutDetails$(_context11) {
     while (1) {
       switch (_context11.prev = _context11.next) {
@@ -1285,24 +1302,31 @@ function populatePayoutDetails(orderId) {
           return _context11.abrupt("return");
 
         case 13:
-          payoutData = Object.values(payoutSnap.val())[0]; // 🔹 2. ดึงข้อมูลบัญชีธนาคาร
+          payoutData = Object.values(payoutSnap.val())[0]; // 2️⃣ ดึง seller_id
 
-          bankData = null;
+          sellerId = payoutData.seller_id;
 
-          if (!payoutData.bank_account_id) {
-            _context11.next = 20;
+          if (sellerId) {
+            _context11.next = 18;
             break;
           }
 
-          _context11.next = 18;
-          return regeneratorRuntime.awrap(db.ref("bank_accounts/" + payoutData.bank_account_id).once("value"));
+          console.warn("❌ ไม่มี seller_id ใน payout");
+          return _context11.abrupt("return");
 
         case 18:
-          bankSnap = _context11.sent;
-          bankData = bankSnap.val();
+          _context11.next = 20;
+          return regeneratorRuntime.awrap(db.ref("bank_accounts").orderByChild("owner_id").equalTo(sellerId).once("value"));
 
         case 20:
-          // 🔹 3. แสดงข้อมูล
+          bankSnap = _context11.sent;
+          bankData = null;
+
+          if (bankSnap.exists()) {
+            bankData = Object.values(bankSnap.val())[0]; // เอาอันแรก
+          } // 4️⃣ แสดงข้อมูล
+
+
           setText('payout_bank_account_number', bankData ? bankData.account_number || '-' : '-');
           setText('payout_bank_name', bankData ? bankData.account_name || '-' : '-');
           setText('payout_amount', payoutData.amount != null ? "".concat(payoutData.amount, " \u0E1A\u0E32\u0E17") : '-');
@@ -1313,20 +1337,20 @@ function populatePayoutDetails(orderId) {
             setText('payout_at', '-');
           }
 
-          _context11.next = 29;
+          _context11.next = 32;
           break;
 
-        case 26:
-          _context11.prev = 26;
+        case 29:
+          _context11.prev = 29;
           _context11.t0 = _context11["catch"](0);
           console.error('❌ Error populating payout details:', _context11.t0);
 
-        case 29:
+        case 32:
         case "end":
           return _context11.stop();
       }
     }
-  }, null, null, [[0, 26]]);
+  }, null, null, [[0, 29]]);
 } // ==================== Initialize Page ====================
 
 

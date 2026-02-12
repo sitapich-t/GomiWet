@@ -409,12 +409,21 @@ async function getTimelineDateTime(orderId, timelineStep, deliveryType) {
 
         // --- paid ---
         if (timelineStep === 'paid') {
-            let sp = Object.values(sellerPayoutsMap).find(s => s && s.paid_at);
-            if (sp && sp.paid_at) {
-                return {
-                    date: formatDateToDDMMYYYY(sp.paid_at),
-                    time: formatTimeToHHMM(sp.paid_at)
-                };
+
+            const payoutSnap = await db.ref("seller_payouts")
+                .orderByChild("order_id")
+                .equalTo(orderId)
+                .once("value");
+
+            if (payoutSnap.exists()) {
+                const payoutData = Object.values(payoutSnap.val())[0];
+
+                if (payoutData && payoutData.paid_at) {
+                    return {
+                        date: formatDateToDDMMYYYY(payoutData.paid_at),
+                        time: formatTimeToHHMM(payoutData.paid_at)
+                    };
+                }
             }
         }
 
@@ -603,8 +612,8 @@ async function populateDriverInfo() {
         return;
     }
 
-    const driverId = currentOrder.assigned_driver;
-    const carPlate = currentOrder.assigned_car;
+    const driverId = currentOrder.driver_id;
+    const carPlate = currentOrder.vehicle_id;
 
     // ถ้ายังไม่ได้ assign
     if (!driverId || !carPlate) {
@@ -721,10 +730,8 @@ async function populateEstimationDetails() {
 
         const orderId = currentOrder.order_id;
 
-        const snap = await db.ref("order_items")
-            .orderByChild("order_id")
-            .equalTo(orderId)
-            .once("value");
+        // ✅ ดึงตรง ๆ จาก order/{orderId}
+        const snap = await db.ref("order/" + orderId).once("value");
 
         if (!snap.exists()) {
             setText('estimation_category', '-');
@@ -733,15 +740,22 @@ async function populateEstimationDetails() {
             return;
         }
 
-        const estimation = Object.values(snap.val())[0];
+        const order = snap.val();
+        const sorting = order.sorting;
 
-        const wasteSnap = await db.ref(`food_waste_types/${estimation.waste_id}`).once("value");
-        const waste = wasteSnap.val();
+        if (!sorting) {
+            setText('estimation_category', '-');
+            setText('estimation_weight', '-');
+            setText('estimation_price', '-');
+            return;
+        }
 
-        const category = waste ? waste.category : "-";
-        const weight = estimation.weight ? `${estimation.weight} กก.` : "-";
-        const price = estimation.total_price
-            ? `${estimation.total_price.toFixed(2)} บาท`
+        const category = sorting.label || "-";
+        const weight = sorting.weight
+            ? `${sorting.weight} กก.`
+            : "-";
+        const price = order.total_estimate
+            ? `${Number(order.total_estimate).toFixed(2)} บาท`
             : "-";
 
         setText('estimation_category', category);
@@ -763,7 +777,7 @@ async function populatePayoutDetails(orderId) {
             return;
         }
 
-        // 🔹 1. หา payout ที่ตรงกับ order_id
+        // 1️⃣ หา payout จาก order_id
         const payoutSnap = await db.ref("seller_payouts")
             .orderByChild("order_id")
             .equalTo(orderId)
@@ -779,15 +793,27 @@ async function populatePayoutDetails(orderId) {
 
         const payoutData = Object.values(payoutSnap.val())[0];
 
-        // 🔹 2. ดึงข้อมูลบัญชีธนาคาร
-        let bankData = null;
+        // 2️⃣ ดึง seller_id
+        const sellerId = payoutData.seller_id;
 
-        if (payoutData.bank_account_id) {
-            const bankSnap = await db.ref("bank_accounts/" + payoutData.bank_account_id).once("value");
-            bankData = bankSnap.val();
+        if (!sellerId) {
+            console.warn("❌ ไม่มี seller_id ใน payout");
+            return;
         }
 
-        // 🔹 3. แสดงข้อมูล
+        // 3️⃣ หา bank account ของ seller
+        const bankSnap = await db.ref("bank_accounts")
+            .orderByChild("owner_id")
+            .equalTo(sellerId)
+            .once("value");
+
+        let bankData = null;
+
+        if (bankSnap.exists()) {
+            bankData = Object.values(bankSnap.val())[0]; // เอาอันแรก
+        }
+
+        // 4️⃣ แสดงข้อมูล
         setText(
             'payout_bank_account_number',
             bankData ? (bankData.account_number || '-') : '-'

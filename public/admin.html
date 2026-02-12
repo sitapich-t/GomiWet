@@ -2,67 +2,348 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - จัดการคำสั่งขาย</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | GomiWet</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+  
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-light: #40916c;
+      --primary-dark: #1b4332;
+      --secondary: #52b788;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
     body {
-      font-family: sans-serif;
-      background: #f5f7fb;
-      padding: 20px;
+      font-family: 'Inter', 'Sarabun', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      margin: 0;
+      line-height: 1.6;
     }
 
-    h2 {
-      margin-bottom: 20px;
+    /* Header Design */
+    .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      padding: 2rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
+    .header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+
+    .tab {
+      border: none;
+      background: none;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--primary);
+      background: #f0fdf4;
+    }
+
+    .tab.active {
+      border-bottom: 3px solid var(--secondary);
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ===== Orders Grid Layout ===== */
+    #ordersContainer {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* มือถือเหลือ 1 คอลัมน์ */
+    @media (max-width: 900px) {
+      #ordersContainer {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== Card ===== */
     .order-card {
       background: white;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+      transition: all 0.25s ease;
     }
 
-    select {
-      padding: 8px;
-      border-radius: 6px;
-      margin-right: 10px;
+    .order-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.08);
     }
 
-    button {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      background: #00BEC4;
-      color: white;
-      cursor: pointer;
+    .order-card h3 {
+      margin: 10px 0;
+      font-size: 20px;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .order-card p {
+      margin: 6px 0;
+      color: #64748b;
     }
 
-    .history {
-      margin-top: 10px;
+    /* ===== Status Badge ===== */
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
       font-size: 13px;
-      color: #666;
+      background: #e5e7eb;
+      color: #334155;
+      margin-bottom: 12px;
     }
 
-    hr {
-      margin: 15px 0;
+
+    /* Buttons */
+    .green-btn {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: auto;
+      transition: background 0.3s ease;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
+
+    .green-btn:hover {
+      background: var(--primary-light);
+    }
+
+    .secondary-btn {
+      background: #f1f5f9;
+      color: var(--text-main);
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Forms */
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 1rem;
+    }
+
+    hr { border: 0; border-top: 1px solid #eee; margin: 1.5rem 0; }
+
+    .empty-msg {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 5rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Sort Radio Custom */
+    .sort-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    
+    /* มือถือเหลือ 1 คอลัมน์ */
+    @media (max-width: 600px) {
+      .sort-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .sort-option {
+      display: block;
+      margin-bottom: 10px;
+      padding: 12px;
+      border: 2px solid #f1f5f9;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sort-option:hover { border-color: var(--secondary); background: #f0fdf4; }
+    input[type="radio"]:checked + b { color: var(--primary); }
   </style>
 </head>
 <body>
 
-<h2>จัดการคำสั่งขายทั้งหมด</h2>
-<div id="ordersContainer">กำลังโหลด...</div>
+  <div class="header">
+    <h1>🌱 GomiWet Admin Dashboard</h1>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(event, 'incoming')">รายการเข้า</button>
+    <button class="tab" onclick="switchTab(event, 'shipping')">จัดการขนส่ง</button>
+    <button class="tab" onclick="switchTab(event, 'warehouse')">โกดัง</button>
+    <button class="tab" onclick="switchTab(event, 'sorting')">คัดแยก</button>
+    <button class="tab" onclick="switchTab(event, 'evaluating')">ประเมินราคา</button>
+    <button class="tab" onclick="switchTab(event, 'selling')">ส่งออก</button>
+    <button class="tab" onclick="switchTab(event, 'payout')">โอนเงิน</button>
+  </div>
+  
+  <div id="ordersContainer"></div>
+
+  <div id="assignModal" class="modal">
+    <div class="modal-box">
+      <h3>🚚 มอบหมายขนส่ง</h3>
+      <div id="assignOrderInfo"></div>
+      <br>
+  
+      <div id="pickupSection">
+        <label>คนขับรถ</label>
+        <select id="driverSelect"><option value="">-- เลือกคนขับ --</option></select>
+        <label>รถ</label>
+        <select id="vehicleSelect"><option value="">-- เลือกรถ --</option></select>
+      </div>
+  
+      <div class="btn-group">
+        <button class="green-btn" onclick="assignTransport()">ยืนยันมอบหมาย</button>
+        <button class="secondary-btn" onclick="closeAssignModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sortModal" class="modal">
+    <div class="modal-box">
+      <h3>🧺 คัดแยกเศษอาหาร</h3>
+      <div id="sortOrderInfo" style="margin-bottom: 15px;"></div>
+      <div id="sortInputs"></div>
+      <div class="btn-group">
+        <button class="green-btn" onclick="saveSorting()">💾 บันทึกการคัดแยก</button>
+        <button class="secondary-btn" onclick="closeSortModal()">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="priceModal" class="modal">
+    <div class="modal-box">
+      <h3>💰 ประเมินราคาหน้าโกดัง</h3>
+      <div id="priceOrderInfo"></div>
+      <div class="btn-group">
+        <button class="green-btn" onclick="confirmPrice()">✅ ยืนยันราคา</button>
+        <button class="secondary-btn" onclick="closePriceModal()">ปิด</button>
+      </div>
+    </div>
+  </div> 
+
+  <div id="paymentModal" class="modal">
+    <div class="modal-box">
+      <h3>💸 บันทึกการโอนเงิน</h3>
+      <div id="paymentOrderInfo"></div>
+      <hr>
+      <label>ชื่อบัญชี</label>
+      <input id="accname-payment" placeholder="ระบุชื่อบัญชี">
+      <label>เลขบัญชี</label>
+      <input id="accno-payment" placeholder="000-0-00000-0">
+      <label>วันเวลาที่โอน</label>
+      <input type="datetime-local" id="paidat-payment">
+  
+      <div class="btn-group">
+        <button class="green-btn" onclick="submitPayment()">ยืนยันการโอน</button>
+        <button class="secondary-btn" onclick="closePaymentModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-
+// --- Configuration & Initialization ---
 const firebaseConfig = {
   apiKey: "AIzaSyAeuc1i5qjKd42_dKpNez4w7KnGnsB7E9c",
   authDomain: "gomi-wet.firebaseapp.com",
@@ -79,158 +360,409 @@ const db = firebase.database();
 const STATUS_OPTIONS = {
   order_received: "ได้รับคำสั่งซื้อ",
   picked_up: "กำลังส่งไปโกดัง",
-  inbound: "ถึงโกดังและคัดแยก",
+  inbound: "ถึงโกดัง/รอคัดแยก",
   sorted: "คัดแยกเสร็จสิ้น",
-  evaluated: "ประเมินราคา",
+  evaluated: "ประเมินราคาแล้ว",
   outbound: "กำลังขาย",
-  sold: "ขายให้ผู้ซื้อ",
-  completed: "จ่ายเงินเสร็จสิ้น"
+  sold: "ขายสำเร็จ",
+  completed: "ชำระเงินเรียบร้อย"
+};
+
+const TAB_FILTER = {
+  incoming: ["order_received"],
+  shipping: ["picked_up"],
+  warehouse: ["inbound"],
+  sorting: ["sorted"],
+  evaluating: ["evaluated"],
+  selling: ["outbound"],
+  payout: ["sold", "completed"]
+};
+
+const SORT_TYPES = {
+  rice: { label: "ข้าว", price: 7 },
+  vegetable: { label: "ผัก", price: 4 },
+  bone: { label: "กระดูก", price: 8 },
+  cooked: { label: "เศษอาหารปรุงสุก", price: 5.5 },
+  meat: { label: "เนื้อสัตว์", price: 5 },
+  mixed: { label: "เศษอาหารที่ปนกัน", price: 2.5 }
 };
 
 let drivers = {};
 let cars = {};
+let allOrders = {};
+let allSellers = {};
+let currentTab = "incoming";
+let currentAssignOrderId = null;
+let currentSortOrderId = null;
+let selectedSortType = null;
+let currentPriceOrderId = null;
+let currentPaymentOrderId = null;
+let currentPaymentUserId = null;
 
-function formatDateTime(timestamp) {
-  if (!timestamp) return "-";
-  const d = new Date(timestamp);
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const year = d.getFullYear();
-  const hour = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
-  return `${day}/${month}/${year} ${hour}:${min}`;
-}
+// โหลด sellers
+firebase.database().ref("sellers").on("value", snapshot => {
+  allSellers = snapshot.val() || {};
+});
 
+// โหลด orders
+firebase.database().ref("order").on("value", snapshot => {
+  allOrders = snapshot.val() || {};
+});
+
+// --- Data Loading ---
 async function loadDriversAndCars() {
   const [driverSnap, carSnap] = await Promise.all([
     db.ref("delivery_emps").once("value"),
     db.ref("delivery_cars").once("value")
   ]);
-
   drivers = driverSnap.val() || {};
   cars = carSnap.val() || {};
 }
 
-async function loadAllOrdersRealtime() {
-
-  await loadDriversAndCars();
+function loadAllOrdersRealtime() {
+  loadDriversAndCars();
   const container = document.getElementById("ordersContainer");
 
-  db.ref("order").on("value", async snapshot => {
-
+  db.ref("order").on("value", snapshot => {
     if (!snapshot.exists()) {
-      container.innerHTML = "ไม่มีคำสั่งขาย";
+      container.innerHTML = '<div class="empty-msg">ยังไม่มีรายการข้อมูล</div>';
       return;
     }
-
-    const orders = snapshot.val();
-    container.innerHTML = "";
-
-    for (let orderId in orders) {
-
-      const order = orders[orderId];
-
-      const card = document.createElement("div");
-      card.className = "order-card";
-
-      card.innerHTML = `
-        <p><b>${order.display_id || orderId}</b></p>
-        <p>สถานะปัจจุบัน: <b>${STATUS_OPTIONS[order.status] || order.status}</b></p>
-
-        <hr>
-
-        <h4>💰 บันทึกการจ่ายเงิน</h4>
-
-        <input type="text" id="accname-${orderId}" placeholder="ชื่อเจ้าของบัญชี"><br><br>
-        <input type="text" id="accno-${orderId}" placeholder="เลขบัญชี"><br><br>
-        <input type="number" id="amount-${orderId}" placeholder="ยอดที่โอน"><br><br>
-        <input type="datetime-local" id="paidat-${orderId}"><br><br>
-
-        <button onclick="recordPayment('${orderId}')">
-          บันทึกการจ่ายเงิน
-        </button>
-
-        <hr>
-
-        <select id="status-${orderId}">
-          ${Object.keys(STATUS_OPTIONS).map(status => `
-            <option value="${status}" ${order.status === status ? "selected" : ""}>
-              ${STATUS_OPTIONS[status]}
-            </option>
-          `).join("")}
-        </select>
-
-        <button onclick="updateStatus('${orderId}')">
-          อัปเดตสถานะ
-        </button>
-      `;
-
-      container.appendChild(card);
-    }
-
+    allOrders = snapshot.val();
+    renderOrders();
   });
 }
 
-async function recordPayment(orderId) {
+// --- Rendering ---
+function renderOrders() {
 
-  const accName = document.getElementById("accname-" + orderId).value;
-  const accNo = document.getElementById("accno-" + orderId).value;
-  const amount = document.getElementById("amount-" + orderId).value;
-  const paidAtInput = document.getElementById("paidat-" + orderId).value;
+  const container = document.getElementById("ordersContainer");
+  container.innerHTML = "";
 
-  if (!accName || !accNo || !amount || !paidAtInput) {
-    alert("กรุณากรอกข้อมูลให้ครบ");
-    return;
+  const allowedStatus = TAB_FILTER[currentTab];
+
+  if (!allOrders) return;
+
+  const orderArray = Object.entries(allOrders);
+
+  orderArray.sort((a, b) => {
+    const timeA = a[1].order_at || 0;
+    const timeB = b[1].order_at || 0;
+    return timeB - timeA;
+  });
+
+  for (let [orderId, order] of orderArray) {
+
+    if (!allowedStatus.includes(order.status)) continue;
+
+    let actionButton = "";
+
+    if (order.status === "order_received") {
+
+      if (order.delivery_type === "pickup") {
+        actionButton = `
+          <button class="green-btn"
+            onclick="openAssignModal('${orderId}')">
+            🚚 มอบหมายขนส่ง
+          </button>
+        `;
+      }
+    
+      if (order.delivery_type === "dropoff") {
+        actionButton = `
+          <button class="green-btn"
+            onclick="markInbound('${orderId}')">
+            🏭 ถึงโกดัง
+          </button>
+        `;
+      }
+    }    
+
+    if (order.status === "picked_up") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="markInbound('${orderId}')">
+          🏭 ถึงโกดัง
+        </button>
+      `;
+    }
+
+    if (order.status === "inbound") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="openSortModal('${orderId}')">
+          🧺 คัดแยก
+        </button>
+      `;
+    }
+
+    if (order.status === "sorted") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="openPriceModal('${orderId}')">
+          💰 ประเมินราคา
+        </button>
+      `;
+    }
+
+    if (order.status === "evaluated") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="markOutbound('${orderId}')">
+          🚛 ส่งออกไปผู้ซื้อ
+        </button>
+      `;
+    }
+
+    if (order.status === "outbound") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="markSold('${orderId}')">
+          📦 ส่งถึงผู้ซื้อ
+        </button>
+      `;
+    }
+
+    if (order.status === "sold") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="openPaymentForm('${orderId}')">
+          💸 โอนเงิน
+        </button>
+      `;
+    }
+
+    const card = document.createElement("div");
+    card.className = "order-card";
+    const seller = allSellers?.[order.user_id] || {};
+
+    card.innerHTML = `
+      <div class="status-badge">
+        ${STATUS_OPTIONS[order.status] || "-"}
+      </div>
+
+      <h3>ID: ${order.display_id || orderId}</h3>
+      <p>ประเภท: ${order.delivery_type === "pickup" ? "รับที่บ้าน" : "ลูกค้ามาส่ง"}</p>
+      <p>ผู้ขาย: ${seller.fullname || "ไม่ระบุ"}</p>
+      <p>น้ำหนักรวม: ${order.total_estimate || 0} กก.</p>
+
+      ${actionButton}
+    `;
+
+    container.appendChild(card);
   }
 
-  const paidTimestamp = new Date(paidAtInput).getTime();
+  if (container.innerHTML === "") {
+    container.innerHTML = "ไม่มีรายการในหมวดนี้";
+  }
+}
 
-  const bankRef = db.ref("bank_accounts").push();
-  const payoutRef = db.ref("seller_payouts").push();
+// --- Tab Logic ---
+function switchTab(event, tabName) {
+  currentTab = tabName;
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+  if (event) event.currentTarget.classList.add("active");
+  renderOrders();
+}
 
+async function markInbound(orderId) {
   const updates = {};
+  updates[`order/${orderId}/status`] = "inbound";
+  updates[`order/${orderId}/status_history/inbound`] = Date.now();
+  await db.ref().update(updates);
+}
 
-  // 1️⃣ เพิ่มบัญชีธนาคาร
-  updates[`bank_accounts/${bankRef.key}`] = {
-    account_name: accName,
-    account_number: accNo,
-    created_at: Date.now()
-  };
+async function saveSorting() {
+  const weight = parseFloat(document.getElementById("sortWeight").value || 0);
+  if (!selectedSortType || weight <= 0) {
+    alert("กรุณาเลือกประเภทและระบุน้ำหนัก"); return;
+  }
+  const price = SORT_TYPES[selectedSortType].price;
+  const subtotal = weight * price;
+  const updates = {};
+  updates[`order/${currentSortOrderId}/sorting`] = { type: selectedSortType, label: SORT_TYPES[selectedSortType].label, weight, price, subtotal };
+  updates[`order/${currentSortOrderId}/total_estimate`] = subtotal;
+  updates[`order/${currentSortOrderId}/status`] = "sorted";
+  updates[`order/${currentSortOrderId}/status_history/sorted`] = Date.now();
+  await db.ref().update(updates);
+  closeSortModal();
+}
 
-  // 2️⃣ เพิ่มรายการจ่ายเงิน
+async function confirmPrice() {
+  const type = document.getElementById("editType").value;
+  const weight = parseFloat(document.getElementById("editWeight").value);
+  const price = parseFloat(document.getElementById("editPrice").value);
+  if (!weight || weight <= 0) { alert("ข้อมูลไม่ถูกต้อง"); return; }
+
+  const subtotal = weight * price;
+  const updates = {};
+  updates[`order/${currentPriceOrderId}/sorting`] = { type, label: SORT_TYPES[type].label, weight, price, subtotal };
+  updates[`order/${currentPriceOrderId}/total_estimate`] = subtotal;
+  updates[`order/${currentPriceOrderId}/status`] = "evaluated";
+  updates[`order/${currentPriceOrderId}/status_history/evaluated`] = Date.now();
+  await db.ref().update(updates);
+  closePriceModal();
+}
+
+async function markOutbound(orderId) {
+  const updates = { [`order/${orderId}/status`]: "outbound", [`order/${orderId}/status_history/outbound`]: Date.now() };
+  await db.ref().update(updates);
+}
+
+async function markSold(orderId) {
+  const updates = { [`order/${orderId}/status`]: "sold", [`order/${orderId}/status_history/sold`]: Date.now() };
+  await db.ref().update(updates);
+}
+
+async function submitPayment() {
+  const accName = document.getElementById("accname-payment").value;
+  const accNo = document.getElementById("accno-payment").value;
+  const paidAt = document.getElementById("paidat-payment").value;
+  if (!accName || !accNo || !paidAt) { alert("กรอกข้อมูลให้ครบ"); return; }
+
+  const order = allOrders[currentPaymentOrderId];
+  const paidTimestamp = new Date(paidAt).getTime();
+  
+  // Create Bank Account if not exists (Simple logic)
+  let bankAccountId = "bank_" + Date.now(); 
+  
+  const payoutRef = db.ref("seller_payouts").push();
+  const updates = {};
   updates[`seller_payouts/${payoutRef.key}`] = {
-    order_id: orderId,
-    bank_account_id: bankRef.key,
-    amount: Number(amount),
+    order_id: currentPaymentOrderId,
+    seller_id: currentPaymentUserId,
+    amount: order.total_estimate || 0,
     paid_at: paidTimestamp,
     created_at: Date.now()
   };
-
-  // 3️⃣ อัปเดต order
-  updates[`order/${orderId}/payment_status`] = "paid";
-  updates[`order/${orderId}/status`] = "completed";
-  updates[`order/${orderId}/status_history/completed`] = Date.now();
+  updates[`order/${currentPaymentOrderId}/payment_status`] = "paid";
+  updates[`order/${currentPaymentOrderId}/status`] = "completed";
+  updates[`order/${currentPaymentOrderId}/status_history/completed`] = Date.now();
 
   await db.ref().update(updates);
-
-  alert("บันทึกการจ่ายเงินเรียบร้อย ✅");
+  closePaymentModal();
 }
 
-async function updateStatus(orderId) {
+// --- UI Helpers ---
+function openAssignModal(orderId) {
 
-  const newStatus = document.getElementById("status-" + orderId).value;
+  const order = allOrders[orderId];
+
+  // 🔒 กันเปิดผิดประเภท
+  if (order.delivery_type !== "pickup") {
+    alert("ออเดอร์นี้ไม่ใช่ pickup");
+    return;
+  }
+
+  currentAssignOrderId = orderId;
+
+  document.getElementById("assignOrderInfo").innerHTML =
+    `<b>Order: ${order.display_id || orderId}</b>`;
+
+  populateDriverAndVehicle();
+
+  document.getElementById("assignModal").style.display = "flex";
+}
+
+async function assignTransport() {
+
+  const driverId = document.getElementById("driverSelect").value;
+  const vehicleId = document.getElementById("vehicleSelect").value;
+
+  if (!driverId || !vehicleId) {
+    alert("กรุณาเลือกคนขับและรถ");
+    return;
+  }
 
   const updates = {};
-  updates[`order/${orderId}/status`] = newStatus;
-  updates[`order/${orderId}/status_history/${newStatus}`] = Date.now();
+  updates[`order/${currentAssignOrderId}/delivery_type`] = "pickup";
+  updates[`order/${currentAssignOrderId}/status`] = "picked_up";
+  updates[`order/${currentAssignOrderId}/status_history/picked_up`] = Date.now();
+  updates[`order/${currentAssignOrderId}/driver_id`] = driverId;
+  updates[`order/${currentAssignOrderId}/vehicle_id`] = vehicleId;
 
   await db.ref().update(updates);
-
-  alert("อัปเดตสถานะเรียบร้อย ✅");
+  closeAssignModal();
 }
 
-loadAllOrdersRealtime();
+function togglePickupSection() {
+  const type = document.getElementById("deliveryType").value;
+  document.getElementById("pickupSection").style.display = type === "pickup" ? "block" : "none";
+}
 
+function populateDriverAndVehicle() {
+  const ds = document.getElementById("driverSelect");
+  const vs = document.getElementById("vehicleSelect");
+  ds.innerHTML = '<option value="">-- เลือกคนขับ --</option>';
+  vs.innerHTML = '<option value="">-- เลือกรถ --</option>';
+  for (let id in drivers) ds.innerHTML += `<option value="${id}">${drivers[id].name} ${drivers[id].surname || ''}</option>`;
+  for (let id in cars) vs.innerHTML += `<option value="${id}">${cars[id].plate_number || id}</option>`;
+}
+
+function openSortModal(orderId) {
+  currentSortOrderId = orderId;
+  selectedSortType = null;
+  document.getElementById("sortOrderInfo").innerHTML = `<b>Order: ${allOrders[orderId].display_id || orderId}</b>`;
+  const container = document.getElementById("sortInputs");
+  container.innerHTML = `<div class="sort-grid" id="sortGrid"></div>`;
+
+  const grid = document.getElementById("sortGrid");
+
+  for (let key in SORT_TYPES) {
+    grid.innerHTML += `
+      <label class="sort-option">
+        <input type="radio" name="sortType" value="${key}" onchange="selectedSortType='${key}'">
+        <b>${SORT_TYPES[key].label}</b><br>
+        <span style="color:#64748b; font-size:0.9rem;">
+          ${SORT_TYPES[key].price} บาท/กก.
+        </span>
+      </label>
+    `;
+  }
+
+  container.innerHTML += `
+    <label style="margin-top:15px;">น้ำหนักที่ชั่งได้ (กก.)</label>
+    <input type="number" step="0.01" id="sortWeight">
+  `;
+
+  document.getElementById("sortModal").style.display = "flex";
+}
+
+function openPriceModal(orderId) {
+  currentPriceOrderId = orderId;
+  const sorting = allOrders[orderId].sorting || {};
+  document.getElementById("priceOrderInfo").innerHTML = `
+    <label>ประเภทวัสดุ</label>
+    <select id="editType">
+      ${Object.keys(SORT_TYPES).map(k => `<option value="${k}" ${sorting.type===k?'selected':''}>${SORT_TYPES[k].label}</option>`).join('')}
+    </select>
+    <label>น้ำหนัก (กก.)</label><input type="number" id="editWeight" value="${sorting.weight||0}" step="0.01">
+    <label>ราคาต่อหน่วย (บาท)</label><input type="number" id="editPrice" value="${sorting.price||0}" step="0.01">
+  `;
+  document.getElementById("priceModal").style.display = "flex";
+}
+
+async function openPaymentForm(orderId) {
+  currentPaymentOrderId = orderId;
+  const order = allOrders[orderId];
+  currentPaymentUserId = order.user_id;
+  document.getElementById("paymentOrderInfo").innerHTML = `
+    <p><b>ID:</b> ${order.display_id || orderId}</p>
+    <p style="font-size:1.2rem; color:var(--primary); font-weight:bold;">ยอดโอน: ${order.total_estimate || 0} บาท</p>
+  `;
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  document.getElementById("paidat-payment").value = now.toISOString().slice(0, 16);
+  document.getElementById("paymentModal").style.display = "flex";
+}
+
+function closeAssignModal() { document.getElementById("assignModal").style.display = "none"; }
+function closeSortModal() { document.getElementById("sortModal").style.display = "none"; }
+function closePriceModal() { document.getElementById("priceModal").style.display = "none"; }
+function closePaymentModal() { document.getElementById("paymentModal").style.display = "none"; }
+
+// Start App
+loadAllOrdersRealtime();
 </script>
 
 </body>
