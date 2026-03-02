@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก | GomiWet</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/member_regist.css">
+
+    <!-- Firebase (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="reg-header">
+        <img src="images/logo.jpg" class="reg-logo" alt="GomiWet Logo">
+        <div class="reg-header-text">
+            <h1>สมัครสมาชิก</h1>
+            <p>กรอกข้อมูลเพื่อเริ่มใช้งาน GomiWet</p>
+        </div>
+    </div>
+
+    <!-- Loading state -->
+    <!-- <div id="page-loading" class="page-loading" style="display:flex;">
+        <div class="spinner"></div>
+        <p>กำลังโหลดข้อมูลจาก LINE...</p>
+    </div> -->
+
+    <!-- Main form (ซ่อนก่อน จนกว่า LIFF จะโหลดเสร็จ) -->
+    <div id="form-container" class="form-container" >
+
+        <!-- Profile Card (ข้อมูลจาก LINE — อ่านอย่างเดียว) -->
+        <div class="profile-card">
+            <div class="profile-card-label">
+                <span class="badge-line">LINE</span>
+                ข้อมูลจากบัญชี LINE ของคุณ
+            </div>
+            <div class="profile-card-body">
+                <img id="profile-pic" class="profile-avatar" src="" alt="Profile">
+                <div class="profile-detail">
+                    <span class="profile-name" id="profile-name">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="registration-form" novalidate>
+
+            <div class="form-section-title">ข้อมูลส่วนตัว</div>
+
+            <!-- ชื่อ-นามสกุล (แยกช่อง) -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">ชื่อ <span class="required">*</span></label>
+                    <input type="text" id="firstname" placeholder="เช่น สมชาย" autocomplete="given-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">นามสกุล <span class="required">*</span></label>
+                    <input type="text" id="lastname" placeholder="เช่น ใจดี" autocomplete="family-name" required>
+                </div>
+            </div>
+            <span class="field-hint"
+                style="display:block;margin-top:-12px;margin-bottom:16px;">ชื่อที่ใช้ติดต่อในการส่งสินค้า</span>
+
+            <!-- เบอร์โทร -->
+            <div class="form-group">
+                <label for="phone">เบอร์โทรศัพท์ <span class="required">*</span></label>
+                <div class="input-with-icon">
+                    <span class="input-icon">📞</span>
+                    <input type="tel" id="phone" placeholder="0812345678" maxlength="10" pattern="[0-9]{10}"
+                        inputmode="numeric" required>
+                </div>
+                <span class="field-hint">ตัวเลข 10 หลัก ไม่ต้องใส่ขีด</span>
+            </div>
+
+            <div class="form-section-title">ที่อยู่สำหรับรับสินค้า</div>
+
+            <!-- บ้านเลขที่ / ถนน -->
+            <div class="form-group">
+                <label for="address-line">บ้านเลขที่ / ถนน / ซอย <span class="required">*</span></label>
+                <input type="text" id="address-line" placeholder="เช่น 123 ซอยลาดพร้าว 10" required>
+            </div>
+
+            <!-- แขวง / ตำบล -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sub-district">แขวง / ตำบล <span class="required">*</span></label>
+                    <input type="text" id="sub-district" placeholder="จอมทอง" required>
+                </div>
+                <div class="form-group">
+                    <label for="district">เขต / อำเภอ <span class="required">*</span></label>
+                    <input type="text" id="district" placeholder="จตุจักร" required>
+                </div>
+            </div>
+
+            <!-- จังหวัด / รหัสไปรษณีย์ -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="province">จังหวัด <span class="required">*</span></label>
+                    <input type="text" id="province" placeholder="กรุงเทพมหานคร" required>
+                </div>
+                <div class="form-group">
+                    <label for="postcode">รหัสไปรษณีย์ <span class="required">*</span></label>
+                    <input type="text" id="postcode" placeholder="10900" maxlength="5" pattern="[0-9]{5}"
+                        inputmode="numeric" required>
+                </div>
+            </div>
+
+            <!-- Error message -->
+            <div id="form-error" class="form-error" style="display:none;"></div>
+
+            <div style="margin: 16px 0;">
+                <label style="font-size:14px;">
+                  <input type="checkbox" id="accept-privacy">
+                  ยอมรับ
+                  <a href="#" id="openPolicyBtn" style="color:#00BEC4;">
+                    นโยบายความเป็นส่วนตัว (Privacy Policy)
+                  </a>
+                </label>
+            </div>
+              
+            <p id="privacy-error" style="color:#e53e3e; display:none; font-size:14px;">
+                ⚠️ กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนสมัคร
+            </p>
+            
+            <!-- Submit -->
+            <button type="submit" id="submit-btn" class="submit-btn">
+                <span id="submit-text">✅ ยืนยันการสมัครสมาชิก</span>
+                <span id="submit-loading" style="display:none;">กำลังบันทึก...</span>
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="policyModal" class="modal-overlay" hidden>
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>นโยบายความเป็นส่วนตัว (Privacy Policy)</h3>
+            <button id="closePolicyBtn" class="modal-close">✕</button>
+          </div>
+      
+          <div class="modal-body" id="policyContent">
+            <p>
+              GomiWet ให้ความสำคัญกับความเป็นส่วนตัวของผู้ใช้งาน  
+              ข้อมูลของท่านจะถูกเก็บรวบรวมและใช้งานเท่าที่จำเป็นสำหรับการให้บริการของระบบเท่านั้น
+            </p>
+      
+            <h4>ข้อมูลที่เราเก็บรวบรวม</h4>
+            <ul>
+              <li>LINE User ID เพื่อใช้ยืนยันตัวตนผู้ใช้งาน</li>
+              <li>ชื่อ และเบอร์โทรศัพท์ สำหรับการติดต่อและจัดส่งสินค้า</li>
+              <li>ตำแหน่งพิกัดโดยประมาณ เพื่อคำนวณระยะทางและค่าขนส่ง</li>
+              <li>ประวัติการทำรายการและคำสั่งซื้อ</li>
+            </ul>
+      
+            <h4>วัตถุประสงค์ในการใช้ข้อมูล</h4>
+            <ul>
+              <li>ยืนยันตัวตนและระบุตัวผู้ใช้งานในระบบ</li>
+              <li>คำนวณระยะทางและค่าขนส่ง</li>
+              <li>จัดการคำสั่งซื้อและการให้บริการหลังการขาย</li>
+              <li>ปรับปรุงคุณภาพการให้บริการของระบบ</li>
+            </ul>
+      
+            <h4>การคุ้มครองและความปลอดภัยของข้อมูล</h4>
+            <p>
+              ระบบมีการเชื่อมต่อแบบ HTTPS และจำกัดสิทธิ์การเข้าถึงข้อมูลเฉพาะผู้ที่เกี่ยวข้องเท่านั้น  
+              ข้อมูลจะไม่ถูกเปิดเผยแก่บุคคลภายนอกโดยไม่ได้รับความยินยอมจากผู้ใช้งาน
+            </p>
+      
+            <h4>สิทธิ์ของผู้ใช้งาน</h4>
+            <ul>
+              <li>ผู้ใช้งานสามารถร้องขอแก้ไขข้อมูลส่วนบุคคลของตนเองได้</li>
+              <li>ผู้ใช้งานสามารถร้องขอให้ลบข้อมูลออกจากระบบได้</li>
+            </ul>
+      
+            <p style="margin-top:12px; font-size:13px; color:#666;">
+              การกดปุ่ม “ยอมรับนโยบายความเป็นส่วนตัว” หมายถึงท่านยินยอมให้ระบบเก็บและใช้งานข้อมูลตามรายละเอียดข้างต้น
+            </p>
+          </div>
+      
+          <div class="modal-footer">
+            <button id="acceptPolicyBtn" class="btn-primary">
+              ยอมรับนโยบายความเป็นส่วนตัว
+            </button>
+          </div>
+        </div>
+    </div>
+
+    <!-- LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <!-- Firebase (ต้องมาก่อน member_regist.js เพราะใช้ตัวแปร db) -->
+    <script src="js/firebase.js"></script>
+    <script src="js/member_regist.js"></script>
+</body>
+
+</html>

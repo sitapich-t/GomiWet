@@ -1,6 +1,12 @@
 // ✅ แก้ไข: ต้องประกาศ LIFF_ID ไว้ที่นี่เพื่อให้ฟังก์ชันข้างล่างเรียกใช้ได้
 const LIFF_ID = "2008999812-I2Dz19pN"; 
 
+const COMPANY_COORDS = {
+  lat: 13.868180264449515,
+  lng: 100.0101689952242
+};
+
+
 let map, userMarker;
 let allStores = [];
 let categoriesMap = {};
@@ -19,8 +25,10 @@ async function checkLogin() {
         }
 
         initMap();
-        getUserLocation();
         loadStores();
+
+        getUserLocation();
+        checkLocationPermission();
 
     } catch (error) {
         console.error("LIFF Init Error:", error);
@@ -28,34 +36,107 @@ async function checkLogin() {
 }
 
 function initMap() {
-    // ปิด zoomControl เพื่อให้เหมือนแอปมือถือ
-    map = L.map("map", { zoomControl: false }).setView([13.7563, 100.5018], 12);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
-    }).addTo(map);
+  map = L.map("map", { zoomControl: false })
+    .setView([COMPANY_COORDS.lat, COMPANY_COORDS.lng], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+
+  L.marker([COMPANY_COORDS.lat, COMPANY_COORDS.lng])
+    .addTo(map)
+    .bindPopup("โกดัง Gomi Wet")
+    .openPopup();   // เปิด popup ให้เห็นชัด ๆ
 }
 
 function getUserLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            map.setView([userCoords.lat, userCoords.lng], 14);
-            
-            if (userMarker) map.removeLayer(userMarker);
-            userMarker = L.marker([userCoords.lat, userCoords.lng])
-                .addTo(map)
-                .bindPopup("คุณอยู่ที่นี่")
-                .openPopup();
-            
-            // หลังจากได้พิกัด user แล้ว ให้วาดร้านค้าใหม่เพื่ออัปเดตระยะทาง
-            renderStores(allStores);
-        }, (err) => {
-            document.getElementById("distDisplay").innerText = "ไม่สามารถเข้าถึงตำแหน่งได้";
-        });
+
+  if (!navigator.geolocation) {
+    alert("อุปกรณ์ไม่รองรับ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    // ✅ SUCCESS
+    (pos) => {
+
+      userCoords = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+
+      map.setView([userCoords.lat, userCoords.lng], 14);
+
+      if (userMarker) map.removeLayer(userMarker);
+
+      userMarker = L.marker([userCoords.lat, userCoords.lng])
+        .addTo(map)
+        .bindPopup("คุณอยู่ที่นี่")
+        .openPopup();
+
+      renderStores(allStores);
+
+      // 🔥 ซ่อนปุ่ม retry ถ้าเคยแสดง
+      document.getElementById("retryLocationBtn").style.display = "none";
+    },
+
+    // ❌ ERROR
+    (err) => {
+
+      if (err.code === 1) {
+        // Permission denied
+        document.getElementById("retryLocationBtn").style.display = "block";
+      }
+
+      console.log("Location error:", err);
     }
+
+  );
 }
 
-// สูตรคำนวณระยะทาง
+async function checkLocationPermission() {
+
+  if (!navigator.permissions) return;
+
+  const result = await navigator.permissions.query({ name: "geolocation" });
+
+  if (result.state === "denied") {
+    document.getElementById("retryLocationBtn").style.display = "block";
+  }
+}
+
+async function requestLocation() {
+
+  const permission = await navigator.permissions.query({ name: "geolocation" });
+
+  if (permission.state === "denied") {
+    alert("คุณปิดการเข้าถึงตำแหน่งไว้\nกรุณาไปเปิดใน Settings");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      console.log("ตำแหน่ง:", lat, lng);
+
+      initMap(lat, lng); // เรียกฟังก์ชันที่คุณใช้สร้าง map
+
+    },
+    function (err) {
+
+      if (err.code === 1) {
+        alert("คุณปฏิเสธการเข้าถึงตำแหน่ง");
+      }
+
+      console.error("Location error:", err);
+    }
+  );
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -184,24 +265,17 @@ async function renderStores(stores) {
     stores.map(async (store) => {
 
       let distanceInfo = "กรุณาเปิด GPS";
-      if (userCoords && store.latitude && store.longitude) {
+
+      if (userCoords) {
         const dist = calculateDistance(
           userCoords.lat,
           userCoords.lng,
-          store.latitude,
-          store.longitude
+          COMPANY_COORDS.lat,
+          COMPANY_COORDS.lng
         );
-        distanceInfo = `ห่างจากคุณ ${dist.toFixed(1)} กม.`;
+        distanceInfo = `ห่างจากบริษัท ${dist.toFixed(1)} กม.`;
       }
 
-      if (store.latitude && store.longitude) {
-        const marker = L.marker([store.latitude, store.longitude])
-          .addTo(map)
-          .bindPopup(`<b>${store.shop_name}</b>`);
-
-        storeMarkers.push(marker);
-      }
-      
       const wasteList = await getWasteTypesByShop(store.id);
 
       return `
@@ -217,10 +291,6 @@ async function renderStores(stores) {
                 ? wasteList.map(w => `<span class="type-pill">${w}</span>`).join("")
                 : `<span class="type-pill">ไม่รับเศษอาหาร</span>`
             }
-          </div>
-
-          <div class="store-distance">
-            📍 ${distanceInfo}
           </div>
 
           <div class="card-footer">

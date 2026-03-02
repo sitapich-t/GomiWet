@@ -69,6 +69,10 @@ function init() {
   });
 }
 
+function openOrder(orderId) {
+  location.href = "status_details.html?order_id=".concat(orderId);
+}
+
 function loadAllOrders() {
   var snap, list, orders, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order, storeSnap, storeName;
 
@@ -77,7 +81,7 @@ function loadAllOrders() {
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
-          return regeneratorRuntime.awrap(db.ref("order").orderByChild("user_id").equalTo(userId).once("value"));
+          return regeneratorRuntime.awrap(db.ref("seller_payouts").orderByChild("seller_id").equalTo(userId).once("value"));
 
         case 2:
           snap = _context2.sent;

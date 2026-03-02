@@ -1,54 +1,63 @@
 * {
   box-sizing: border-box;
-  font-family: "IBM Plex Sans Thai Looped", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+  /*ทำให้เว็บไม่สามารถ scroll ซ้าย-ขวาได้ */
 }
 
 body {
-  margin: 0;
-  background: #f6f7f9;
-}
-h2 {
-  margin-top: 0;
+  width: 100%;
+  /* 👈 เพิ่ม: กำหนดความกว้าง 100% */
+  min-height: 100vh;
+  /* 👈 เพิ่ม: ความสูงขั้นต่ำเท่ากับหน้าจอ */
+  font-family: "IBM Plex Sans Thai Looped", system-ui, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+  /* 👈 เพิ่ม: ซ่อน scroll แนวนอน */
 }
 
-.page {
-  padding-bottom: 70px;
-}
-
-.page h4{
-  margin-left: 30px;
+.page-layout h4 {
+  padding: 20px 30px;
 }
 
 .header {
-  height: 70px;
-  background: #00BEC4;
-  color: black;
+  background: #00bec4;
+  padding: 20px 16px;
   display: flex;
-  padding: 16px;
-  font-size: 20px;
-  font-weight: bold;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
 }
 
 .icon_frame {
-  height: 40px;
-  width: 40px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 1.0);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 12px;
-  background-color: white;
-  border-radius: 50px;
-}
-.icon{
-  height: 20px;
-  width: 20px;
-}
-.bigIcon{
-  height: 40px;
-  width: 40px;
-  margin-top: 10px;
 }
 
+.icon_frame img {
+  width: 20px;
+  height: 20px;
+}
+
+.bigIcon {
+  width: 50px;
+  height: 50px;
+}
+
+/* ------------- card -------------*/
 .card_frame {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -56,6 +65,7 @@ h2 {
   margin-top: 0;
   gap: 16px;
 }
+
 .card {
   display: flex;
   flex-direction: column;
@@ -66,193 +76,67 @@ h2 {
   padding: 16px;
   border-radius: 12px;
 }
+
 .card:hover {
   border: #f5d41a 3px solid;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.calcCard{
-  height: 150px;
+
+/* ------------- card (Calculator Page)-------------*/
+.calcCard {
+  height: auto;
+  min-height: 120px;
   overflow: visible;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  margin: 30px;
-  margin-top: 0;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 20px 16px;
+  margin-top: 12px;
   gap: 16px;
+  padding: 12px 8px;
+  background: transparent;
 }
+
 .calcCard>div {
   display: flex;
   flex-direction: column;
 }
-.input_box{
+
+.input_box {
   flex: 1;
   font-size: 20px;
   font-weight: bold;
-  text-align: center ;
+  text-align: center;
   justify-content: center;
   background-color: #ffffff;
 }
 
-.table_wrapper{
+/* ------------- table: (Calculator Page)-------------*/
+.table_wrapper {
   display: flex;
   justify-content: center;
-  margin-left: 30px;
+  margin: 30px;
+  margin-top: 20px;
+  overflow-x: auto;
 }
-.price_table{
-  font-size: 18px;
+
+.price_table {
+  font-size: 14px;
   border-collapse: collapse;
-  border: 3px solid #00BEC4;
+  border: 2px solid #00696d;
   background-color: #f0f0f0;
-  width: 80%;
+  width: 100%;
+  min-width: 280px;
 }
-.price_table th{
-  background-color: #00BEC4;
+
+.price_table th {
+  background-color: #00696d;
   color: #ffffff;
 }
-.price_table th, td{
+
+.price_table th,
+td {
   border: 2px solid #ffffff;
   text-align: center;
-}
-
-.container{
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 30px;
-}
-#no_inprocess{
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: #5c5c5c;
-}
-.delivery{
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 8px;
-}
-.task{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-.task span{
-  padding: 4px 20px;
-  background-color: rgb(233, 201, 23);
-  border-radius: 15px;
-}
-.content{
-  display: flex;
-  flex-direction: column;
-  gap: 0px;
-  padding: 10px 16px 10px 16px ;
-  width: 100%;
-  border-radius: 12px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #5c3c11;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.content p{
-  margin: 8px 0px 4px 0px;
-  font-size: 14;
-}
-.content h4{
-  margin: 0;
-  font-size: 18px;
-  margin: 8px 0px 5px 0px;
-}
-.content_header{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  /* background-color: #f5d41a; */
-}
-.content_header h4{
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-}
-.content_header a{
-  font-size: 12px;
-}
-
-/* Order card (rendered per-order) */
-.order_card{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 16px;
-  margin: 12px 0;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background-color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-.order_card h4{font-size:18px;margin:0}
-.order_card p{margin:6px 0;font-size:14px}
-
-.order_header{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  font-size: 25px;
-}
-
-.timeline{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin:0;
-}
-.subTopic{
-  font-size: 18px;
-  margin: 0;
-}
-.state{
-  margin-left: 40px;
-  padding: 15px;
-  display: flex;
-  flex-direction: row;
-  align-items: start;
-  gap: 15px;
-  background-color: #ffffff;
-  border-radius: 12px;
-}
-.completed{
-  background-color: #00BEC4;
-}
-.circle{
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-  background-color: #919191;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.circle img{
-  height: 18px;
-  width: 18px;
-}
-.state_details{
-  display: flex;
-  align-content: start;
-  justify-content: start;
-  flex-direction: column;
-  /* background-color: blue; */
-}
-.state_details h4,p {
-  margin: 0;
-  line-height: 1.2;
-  /* ให้บรรทัดชิดกัน */
 }
 
 input,
@@ -265,35 +149,7 @@ button {
 }
 
 button.primary {
-  background: #00BEC4;
+  background: #06c755;
   color: white;
   border: none;
-}
-
-.result {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 8px;
-}
-
-
-nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  background: #ffffff;
-  border-top: 1px solid #ddd;
-}
-
-nav button {
-  flex: 1;
-  padding: 12px 0;
-  border: none;
-  background: none;
-  font-size: 14px;
-}
-
-nav button:active {
-  background: #eee;
 }

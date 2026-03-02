@@ -343,6 +343,8 @@
   </div>
 
 <script>
+  let allOrderItems = {};
+let foodWasteMap = {};
 // --- Configuration & Initialization ---
 const firebaseConfig = {
   apiKey: "AIzaSyAeuc1i5qjKd42_dKpNez4w7KnGnsB7E9c",
@@ -359,6 +361,7 @@ const db = firebase.database();
 
 const STATUS_OPTIONS = {
   order_received: "ได้รับคำสั่งซื้อ",
+  assigned: "มอบหมายขนส่ง",
   picked_up: "กำลังส่งไปโกดัง",
   inbound: "ถึงโกดัง/รอคัดแยก",
   sorted: "คัดแยกเสร็จสิ้น",
@@ -370,7 +373,7 @@ const STATUS_OPTIONS = {
 
 const TAB_FILTER = {
   incoming: ["order_received"],
-  shipping: ["picked_up"],
+  shipping: ["assigned", "picked_up"],
   warehouse: ["inbound"],
   sorting: ["sorted"],
   evaluating: ["evaluated"],
@@ -419,10 +422,28 @@ async function loadDriversAndCars() {
   cars = carSnap.val() || {};
 }
 
+async function loadFoodWasteTypes() {
+  const snap = await db.ref("food_waste_types").once("value");
+  if (!snap.exists()) return;
+
+  snap.forEach(s => {
+    foodWasteMap[s.key] = s.val().category;
+  });
+}
+
 function loadAllOrdersRealtime() {
   loadDriversAndCars();
+  loadFoodWasteTypes();
+
   const container = document.getElementById("ordersContainer");
 
+  // โหลด order_items
+  db.ref("order_items").on("value", snapshot => {
+    allOrderItems = snapshot.val() || {};
+    renderOrders();
+  });
+
+  // โหลด orders
   db.ref("order").on("value", snapshot => {
     if (!snapshot.exists()) {
       container.innerHTML = '<div class="empty-msg">ยังไม่มีรายการข้อมูล</div>';
@@ -440,7 +461,6 @@ function renderOrders() {
   container.innerHTML = "";
 
   const allowedStatus = TAB_FILTER[currentTab];
-
   if (!allOrders) return;
 
   const orderArray = Object.entries(allOrders);
@@ -478,6 +498,15 @@ function renderOrders() {
       }
     }    
 
+    if (order.status === "assigned") {
+      actionButton = `
+        <button class="green-btn"
+          onclick="driverConfirmPickup('${orderId}')">
+          🚚 คนขับรับของแล้ว
+        </button>
+      `;
+    }
+    
     if (order.status === "picked_up") {
       actionButton = `
         <button class="green-btn"
@@ -532,8 +561,22 @@ function renderOrders() {
       `;
     }
 
+    /* ===== ดึง order_items จาก memory ===== */
+    let wasteName = "-";
+    let weight = "-";
+
+    for (let itemId in allOrderItems) {
+      const item = allOrderItems[itemId];
+      if (item.order_id === orderId) {
+        weight = item.weight || 0;
+        wasteName = foodWasteMap[item.waste_id] || item.waste_id;
+        break;
+      }
+    }
+
     const card = document.createElement("div");
     card.className = "order-card";
+
     const seller = allSellers?.[order.user_id] || {};
 
     card.innerHTML = `
@@ -542,9 +585,16 @@ function renderOrders() {
       </div>
 
       <h3>ID: ${order.display_id || orderId}</h3>
-      <p>ประเภท: ${order.delivery_type === "pickup" ? "รับที่บ้าน" : "ลูกค้ามาส่ง"}</p>
-      <p>ผู้ขาย: ${seller.fullname || "ไม่ระบุ"}</p>
-      <p>น้ำหนักรวม: ${order.total_estimate || 0} กก.</p>
+      <p><b>ผู้ขาย:</b> ${seller.fullname || "ไม่ระบุ"}</p>
+      <p><b>ประเภทการส่ง:</b> ${order.delivery_type === "pickup" ? "รับที่บ้าน" : "ลูกค้ามาส่ง"}</p>
+      <p><b>ประเภทเศษอาหาร:</b> ${wasteName}</p>
+      <p><b>น้ำหนัก:</b> ${weight} กก.</p>
+      <p><b>ราคารวม:</b> ${order.total_price || 0} บาท</p>
+
+      <p><b>ประเภท:</b> ${order.sorting?.label || "-"}</p>
+      <p><b>น้ำหนักจริง:</b> ${order.sorting?.weight || 0} กก.</p>
+      <p><b>ราคาต่อกก.:</b> ${order.sorting?.price || 0} บาท</p>
+      <p><b>ราคารวม:</b> ${order.total_estimate || 0} บาท</p>
 
       ${actionButton}
     `;
@@ -648,7 +698,6 @@ function openAssignModal(orderId) {
 
   const order = allOrders[orderId];
 
-  // 🔒 กันเปิดผิดประเภท
   if (order.delivery_type !== "pickup") {
     alert("ออเดอร์นี้ไม่ใช่ pickup");
     return;
@@ -656,11 +705,24 @@ function openAssignModal(orderId) {
 
   currentAssignOrderId = orderId;
 
-  document.getElementById("assignOrderInfo").innerHTML =
-    `<b>Order: ${order.display_id || orderId}</b>`;
+  const seller = allSellers?.[order.user_id] || {};
+
+  document.getElementById("assignOrderInfo").innerHTML = `
+    <p><b>Order:</b> ${order.display_id || orderId}</p>
+    <p><b>ผู้ขาย:</b> ${seller.fullname || "-"}</p>
+    <p><b>เบอร์โทร:</b> ${seller.phone || "-"}</p>
+    <hr>
+    <p><b>ที่อยู่รับสินค้า:</b></p>
+    <p style="color:#334155;">
+      ${order.address?.full || "-"}
+    </p>
+    <p style="font-size:13px; color:#64748b;">
+      จังหวัด: ${order.address?.province || "-"} |
+      อำเภอ: ${order.address?.district || "-"}
+    </p>
+  `;
 
   populateDriverAndVehicle();
-
   document.getElementById("assignModal").style.display = "flex";
 }
 
@@ -676,8 +738,8 @@ async function assignTransport() {
 
   const updates = {};
   updates[`order/${currentAssignOrderId}/delivery_type`] = "pickup";
-  updates[`order/${currentAssignOrderId}/status`] = "picked_up";
-  updates[`order/${currentAssignOrderId}/status_history/picked_up`] = Date.now();
+  updates[`order/${currentAssignOrderId}/status`] = "assigned";
+  updates[`order/${currentAssignOrderId}/status_history/assigned`] = Date.now();
   updates[`order/${currentAssignOrderId}/driver_id`] = driverId;
   updates[`order/${currentAssignOrderId}/vehicle_id`] = vehicleId;
 
@@ -699,19 +761,70 @@ function populateDriverAndVehicle() {
   for (let id in cars) vs.innerHTML += `<option value="${id}">${cars[id].plate_number || id}</option>`;
 }
 
-function openSortModal(orderId) {
+async function driverConfirmPickup(orderId) {
+  const updates = {};
+  updates[`order/${orderId}/status`] = "picked_up";
+  updates[`order/${orderId}/status_history/picked_up`] = Date.now();
+  await db.ref().update(updates);
+}
+
+async function openSortModal(orderId) {
+
   currentSortOrderId = orderId;
   selectedSortType = null;
-  document.getElementById("sortOrderInfo").innerHTML = `<b>Order: ${allOrders[orderId].display_id || orderId}</b>`;
+
+  const order = allOrders[orderId];
+
+  document.getElementById("sortOrderInfo").innerHTML =
+    `<b>Order: ${order.display_id || orderId}</b>`;
+
+  // 🔥 1. ดึง order_items ของ order นี้
+  const itemSnap = await db.ref("order_items")
+    .orderByChild("order_id")
+    .equalTo(orderId)
+    .once("value");
+
+  let existingItem = null;
+
+  if (itemSnap.exists()) {
+    existingItem = Object.values(itemSnap.val())[0];
+  }
+
   const container = document.getElementById("sortInputs");
   container.innerHTML = `<div class="sort-grid" id="sortGrid"></div>`;
-
   const grid = document.getElementById("sortGrid");
 
+  // 🔥 2. map waste_id → key ของ SORT_TYPES
+  let selectedKey = null;
+
+  if (existingItem) {
+    selectedKey = Object.keys(SORT_TYPES).find(
+      key => SORT_TYPES[key].label_id == existingItem.waste_id
+    );
+  }
+
+  // 🔥 ถ้า waste_id เป็นตัวเลข string แบบ "2"
+  // เราจะ map แบบง่าย ๆ ตาม index
+  const wasteMap = Object.keys(SORT_TYPES);
+  if (!selectedKey && existingItem) {
+    selectedKey = wasteMap[parseInt(existingItem.waste_id) - 1];
+  }
+
   for (let key in SORT_TYPES) {
+
+    const checked = key === selectedKey ? "checked" : "";
+
+    if (key === selectedKey) {
+      selectedSortType = key;
+    }
+
     grid.innerHTML += `
       <label class="sort-option">
-        <input type="radio" name="sortType" value="${key}" onchange="selectedSortType='${key}'">
+        <input type="radio"
+               name="sortType"
+               value="${key}"
+               ${checked}
+               onchange="selectedSortType='${key}'">
         <b>${SORT_TYPES[key].label}</b><br>
         <span style="color:#64748b; font-size:0.9rem;">
           ${SORT_TYPES[key].price} บาท/กก.
@@ -722,7 +835,10 @@ function openSortModal(orderId) {
 
   container.innerHTML += `
     <label style="margin-top:15px;">น้ำหนักที่ชั่งได้ (กก.)</label>
-    <input type="number" step="0.01" id="sortWeight">
+    <input type="number"
+           step="0.01"
+           id="sortWeight"
+           value="${existingItem ? existingItem.weight : ''}">
   `;
 
   document.getElementById("sortModal").style.display = "flex";
@@ -732,7 +848,7 @@ function openPriceModal(orderId) {
   currentPriceOrderId = orderId;
   const sorting = allOrders[orderId].sorting || {};
   document.getElementById("priceOrderInfo").innerHTML = `
-    <label>ประเภทวัสดุ</label>
+    <label>ประเภทเศษอาหาร</label>
     <select id="editType">
       ${Object.keys(SORT_TYPES).map(k => `<option value="${k}" ${sorting.type===k?'selected':''}>${SORT_TYPES[k].label}</option>`).join('')}
     </select>
@@ -743,16 +859,41 @@ function openPriceModal(orderId) {
 }
 
 async function openPaymentForm(orderId) {
+
   currentPaymentOrderId = orderId;
   const order = allOrders[orderId];
   currentPaymentUserId = order.user_id;
+
+  // 🔥 ดึงบัญชีจาก bank_accounts/{user_id}
+  const bankSnap = await db
+    .ref("bank_accounts/" + currentPaymentUserId)
+    .once("value");
+
+  const bank = bankSnap.exists() ? bankSnap.val() : {};
+
+  console.log("USER ID:", currentPaymentUserId);
+console.log("BANK SNAP:", bankSnap.val());
+
   document.getElementById("paymentOrderInfo").innerHTML = `
     <p><b>ID:</b> ${order.display_id || orderId}</p>
-    <p style="font-size:1.2rem; color:var(--primary); font-weight:bold;">ยอดโอน: ${order.total_estimate || 0} บาท</p>
+    <p style="font-size:1.2rem; color:var(--primary); font-weight:bold;">
+      ยอดโอน: ${order.total_estimate || 0} บาท
+    </p>
   `;
+
+  // ✅ ใส่ค่าอัตโนมัติ
+  document.getElementById("accname-payment").value =
+    bank.account_name || "";
+
+  document.getElementById("accno-payment").value =
+    bank.account_number || "";
+
+  // เวลาโอน
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  document.getElementById("paidat-payment").value = now.toISOString().slice(0, 16);
+  document.getElementById("paidat-payment").value =
+    now.toISOString().slice(0, 16);
+
   document.getElementById("paymentModal").style.display = "flex";
 }
 

@@ -1,6 +1,7 @@
 // ==================== Status Labels ====================
 const STATUS_LABEL = {
 	'order_received': 'ได้รับคำสั่งซื้อ',
+    'assigned': 'มอบหมายขนส่ง',
 	'picked_up': 'กำลังส่งไปโกดัง',
 	'inbound': 'ถึงโกดังและคัดแยก',
 	'sorted': 'คัดแยกเสร็จสิ้น',
@@ -18,11 +19,12 @@ const TIMELINE_STEPS = ['order_received', 'picked_up', 'inbound', 'evaluated', '
 // Map: timeline step -> which order statuses count as "reached or passed" this step
 const STATUS_REACHED_MAP = {
     order_received: ['order_received', 'picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
-    picked_up:      ['picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
-    inbound:        ['inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
-    evaluated:      ['evaluated', 'outbound', 'sold', 'paid', 'completed'],
-    sold:           ['sold', 'paid', 'completed'],
-    paid:           ['paid', 'completed']
+    assigned: ['picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
+    picked_up: ['picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
+    inbound: ['inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
+    evaluated: ['evaluated', 'outbound', 'sold', 'paid', 'completed'],
+    sold: ['sold', 'paid', 'completed'],
+    paid: ['paid', 'completed']
 };
 
 // ==================== Global Variables ====================
@@ -154,6 +156,12 @@ async function getLogisticsByPayment(paymentId) {
 
 // Check if a timeline step has been reached given the current order status
 function isStepReached(timelineStep, currentStatus) {
+
+    // Treat assigned as order_received for display
+    if (currentStatus === 'assigned') {
+        currentStatus = 'order_received';
+    }
+
     const reached = STATUS_REACHED_MAP[timelineStep] || [];
     return reached.includes(currentStatus);
 }
@@ -306,16 +314,14 @@ async function loadFirebaseData(orderId) {
             Object.assign(outboundFoodWasteMap, obData);
         }
 
-        // Step 8: Load seller_payouts from outbound pk(s)
+        // Step 8: Load seller_payouts
         sellerPayoutsMap = {};
-        const outboundPks = Object.keys(outboundFoodWasteMap);
-        for (const outboundPk of outboundPks) {
-            const spSnap = await db.ref('seller_payouts')
-                .orderByChild('order_id')
-                .equalTo(orderId)
-                .once('value');
-            sellerPayoutsMap = spSnap.val() || {};
-        }
+        const spSnap = await db.ref('seller_payouts')
+            .orderByChild('order_id')
+            .equalTo(orderId)
+            .once('value');
+
+        sellerPayoutsMap = spSnap.val() || {};
 
         console.log('✅ Firebase chain loaded:', {
             payments: Object.keys(paymentsMap).length,
@@ -385,6 +391,46 @@ async function getTimelineDateTime(orderId, timelineStep, deliveryType) {
             }
         }
 
+                // --- picked_up ---
+        if (timelineStep === 'picked_up') {
+
+            // กรณี dropoff → ใช้ inbound_at
+            if (deliveryType === 'dropoff') {
+
+                const inbound = Object.values(inboundFoodWasteMap)
+                    .find(i => i && i.inbound_at);
+
+                if (inbound && inbound.inbound_at) {
+                    return {
+                        date: formatDateToDDMMYYYY(inbound.inbound_at),
+                        time: formatTimeToHHMM(inbound.inbound_at)
+                    };
+                }
+            }
+
+            // กรณี pickup → ใช้ pickup_at จาก order
+            if (currentOrder && currentOrder.pickup_at) {
+                return {
+                    date: formatDateToDDMMYYYY(currentOrder.pickup_at),
+                    time: formatTimeToHHMM(currentOrder.pickup_at)
+                };
+            }
+        }
+
+        // --- inbound ---
+        if (timelineStep === 'inbound') {
+
+            const inbound = Object.values(inboundFoodWasteMap)
+                .find(i => i && i.inbound_at);
+
+            if (inbound && inbound.inbound_at) {
+                return {
+                    date: formatDateToDDMMYYYY(inbound.inbound_at),
+                    time: formatTimeToHHMM(inbound.inbound_at)
+                };
+            }
+        }
+
         // --- evaluated ---
         if (timelineStep === 'evaluated') {
             let pe = Object.values(priceEstimationMap).find(p => p && p.estimate_at);
@@ -410,22 +456,25 @@ async function getTimelineDateTime(orderId, timelineStep, deliveryType) {
         // --- paid ---
         if (timelineStep === 'paid') {
 
-            const payoutSnap = await db.ref("seller_payouts")
-                .orderByChild("order_id")
-                .equalTo(orderId)
-                .once("value");
-
-            if (payoutSnap.exists()) {
-                const payoutData = Object.values(payoutSnap.val())[0];
-
-                if (payoutData && payoutData.paid_at) {
-                    return {
-                        date: formatDateToDDMMYYYY(payoutData.paid_at),
-                        time: formatTimeToHHMM(payoutData.paid_at)
-                    };
-                }
+            // ถ้ามี complete ให้ใช้ complete แทน
+            if (currentOrder?.status_history?.completed) {
+                const ts = currentOrder.status_history.completed;
+                return {
+                    date: formatDateToDDMMYYYY(ts),
+                    time: formatTimeToHHMM(ts)
+                };
+            }
+        
+            // fallback เผื่ออนาคตมี paid จริง ๆ
+            if (currentOrder?.status_history?.paid) {
+                const ts = currentOrder.status_history.paid;
+                return {
+                    date: formatDateToDDMMYYYY(ts),
+                    time: formatTimeToHHMM(ts)
+                };
             }
         }
+        
 
     } catch (error) {
         console.error(`❌ Error getting datetime for ${timelineStep}:`, error);
@@ -802,15 +851,12 @@ async function populatePayoutDetails(orderId) {
         }
 
         // 3️⃣ หา bank account ของ seller
-        const bankSnap = await db.ref("bank_accounts")
-            .orderByChild("owner_id")
-            .equalTo(sellerId)
-            .once("value");
+        const bankSnap = await db.ref("bank_accounts/" + sellerId).once("value");
 
         let bankData = null;
 
         if (bankSnap.exists()) {
-            bankData = Object.values(bankSnap.val())[0]; // เอาอันแรก
+            bankData = bankSnap.val();
         }
 
         // 4️⃣ แสดงข้อมูล
@@ -850,7 +896,8 @@ async function initPage() {
 
     try {
         const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('order_id');
+        console.log('url', window.location.search)
+        const orderId = urlParams.get('order_id') || urlParams.get('orderId');
 
         if (!orderId) {
             console.error('❌ No order_id in URL');

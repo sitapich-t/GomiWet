@@ -4,6 +4,8 @@ const LIFF_ID = "2008999812-I2Dz19pN";
 const params = new URLSearchParams(window.location.search);
 const storeId = params.get("storeId");
 
+let isSubmitting = false;
+
 async function generateDisplayOrderId() {
 
   const now = new Date();
@@ -103,9 +105,41 @@ function limitOneInput(current){
   });
 }
 
+function saveSaleDraft() {
+
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const note = document.getElementById("note").value;
+
+  let selectedWaste = null;
+
+  wasteTypes.forEach(w => {
+    const input = document.getElementById(`w_${w.id}`);
+    if (input && input.value) {
+      selectedWaste = {
+        waste_id: w.id,
+        weight: input.value
+      };
+    }
+  });
+
+  const draft = {
+    date,
+    time,
+    note,
+    selectedWaste
+  };
+
+  localStorage.setItem("sale_draft", JSON.stringify(draft));
+}
+
 async function submitSale(){
 
-  const shopId = storeId;
+  if (isSubmitting) return;
+  isSubmitting = true;
+
+  try {
+    const shopId = storeId;
   const userId = await getUserId();
   const deliveryType = localStorage.getItem("delivery_type")
 
@@ -127,6 +161,21 @@ async function submitSale(){
 
   if(!selectedWaste){
     alert("กรุณาเลือกประเภทเศษอาหาร");
+    isSubmitting = false;
+    return;
+  }
+
+  const isProfileComplete = await checkProfileComplete(userId);
+  const hasBank = await checkUserBankAccount(userId);
+
+  if (!isProfileComplete || !hasBank) {
+
+    saveSaleDraft();
+
+    alert("กรุณากรอกข้อมูลส่วนตัวและบัญชีธนาคารให้ครบก่อนทำรายการขาย");
+
+    const currentPage = encodeURIComponent(window.location.href);
+    window.location.href = `profile-edit.html?redirect=${currentPage}`;
     return;
   }
 
@@ -160,6 +209,30 @@ async function submitSale(){
     total_price: totalPrice
   });
 
-   alert("บันทึกสำเร็จ");
-   location.href = "home.html";
+  alert("บันทึกสำเร็จ");
+  location.href = "home.html";
+  } catch (error) {
+    console.error(error);
+  alert("เกิดข้อผิดพลาด");
+  isSubmitting = false;
+  }
+}
+
+async function checkProfileComplete(userId) {
+  const snap = await db.ref(`sellers/${userId}`).once("value");
+
+  if (!snap.exists()) return false;
+
+  const seller = snap.val();
+
+  if (!seller.fullname || !seller.phone || !seller.address) {
+    return false;
+  }
+
+  return true;
+}
+
+async function checkUserBankAccount(userId) {
+  const snap = await db.ref(`bank_accounts/${userId}`).once("value");
+  return snap.exists();
 }

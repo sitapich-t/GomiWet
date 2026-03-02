@@ -23,14 +23,14 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 // ==================== Global Variables ====================
-var currentUserId = 'U4ea11ac1926aecf3fb62406f5f2759b6'; // TODO: แก้เป็น real user ID จาก auth
-
+var currentUserId = null;
 var ongoingOrders = []; // รายการที่กำลังดำเนินการ
 
 var allShops = {}; // ==================== Status Labels ====================
 
 var STATUS_LABEL = {
   'order_received': 'ได้รับคำสั่งซื้อ',
+  'assigned': 'มอบหมายขนส่ง',
   'picked_up': 'กำลังส่งไปโกดัง',
   'inbound': 'ถึงโกดังและคัดแยก',
   'sorted': 'คัดแยกเสร็จสิ้น',
@@ -162,11 +162,22 @@ function loadFirebaseData() {
       }
     }
   }, null, null, [[1, 16]]);
+}
+
+function normalizeStatus(status) {
+  if (status === 'assigned') return 'order_received';
+  return status;
 } // ==================== Get Status Progress ====================
 
 
 function getStatusProgress(status) {
+  status = normalizeStatus(status);
   var statusOrder = ['order_received', 'picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold'];
+
+  if (status === 'assigned') {
+    status = 'order_received';
+  }
+
   var currentIndex = statusOrder.indexOf(status);
   var totalSteps = statusOrder.length;
   var progress = currentIndex >= 0 ? (currentIndex + 1) / totalSteps * 100 : 0;
@@ -188,7 +199,7 @@ function renderOrderCard(order) {
   var bookedDate = formatDate(order.pickup_at); // คำนวณ progress
 
   var statusInfo = getStatusProgress(order.status);
-  return "\n        <div class=\"order-card\" onclick=\"viewOrderDetails('".concat(order.order_id, "')\">\n            <div class=\"order-header\">\n                <h4>").concat(shopName, "</h4>\n                <span class=\"order-id\">").concat(orderId, "</span>\n            </div>\n            \n            <div class=\"status-progress\">\n                <div class=\"progress-bar\">\n                    <div class=\"progress-fill\" style=\"width: ").concat(statusInfo.progress, "%\"></div>\n                </div>\n                <div class=\"status-text\">\n                    <span class=\"current-status\">").concat(statusText, "</span>\n                    <span class=\"progress-info\">\u0E02\u0E31\u0E49\u0E19\u0E17\u0E35\u0E48 ").concat(statusInfo.currentStep, "/").concat(statusInfo.totalSteps, "</span>\n                </div>\n            </div>\n            \n            <div class=\"order-details\">\n                <p><strong>\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E2A\u0E31\u0E48\u0E07:</strong> ").concat(date, " ").concat(time, "</p>\n                <p><strong>\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E2A\u0E48\u0E07:</strong> ").concat(bookedDate, "</p>\n                <p><strong>\u0E1B\u0E23\u0E30\u0E40\u0E20\u0E17:</strong> ").concat(deliveryType, "</p>\n            </div>\n            \n            <button class=\"btn-view-details\" onclick=\"event.stopPropagation(); viewOrderDetails(").concat(order.order_id, ")\">\n                \u0E14\u0E39\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\n            </button>\n        </div>\n    ");
+  return "\n        <div class=\"order-card\" onclick=\"viewOrderDetails('".concat(order.order_id, "')\">\n            <div class=\"order-header\">\n                <h4>").concat(shopName, "</h4>\n                <span class=\"order-id\">").concat(orderId, "</span>\n            </div>\n            \n            <div class=\"status-progress\">\n                <div class=\"progress-bar\">\n                    <div class=\"progress-fill\" style=\"width: ").concat(statusInfo.progress, "%\"></div>\n                </div>\n                <div class=\"status-text\">\n                    <span class=\"current-status\">").concat(statusText, "</span>\n                    <span class=\"progress-info\">\u0E02\u0E31\u0E49\u0E19\u0E17\u0E35\u0E48 ").concat(statusInfo.currentStep, "/").concat(statusInfo.totalSteps, "</span>\n                </div>\n            </div>\n            \n            <div class=\"order-details\">\n                <p><strong>\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E2A\u0E31\u0E48\u0E07:</strong> ").concat(date, " ").concat(time, "</p>\n                <p><strong>\u0E01\u0E33\u0E2B\u0E19\u0E14\u0E2A\u0E48\u0E07:</strong> ").concat(bookedDate, "</p>\n                <p><strong>\u0E1B\u0E23\u0E30\u0E40\u0E20\u0E17:</strong> ").concat(deliveryType, "</p>\n            </div>\n            \n\t\t\t<button class=\"btn-view-details\" onclick=\"event.stopPropagation(); viewOrderDetails('").concat(order.order_id, "')\">\n                \u0E14\u0E39\u0E23\u0E32\u0E22\u0E25\u0E30\u0E40\u0E2D\u0E35\u0E22\u0E14\n            </button>\n        </div>\n    ");
 } // ==================== Display Orders ====================
 
 
@@ -226,39 +237,52 @@ window.viewOrderDetails = function (orderId) {
 
 
 function initStatusPage() {
-  var loaded, resultDiv;
+  var profile, loaded;
   return regeneratorRuntime.async(function initStatusPage$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          console.log('🚀 Initializing status page...'); // โหลดข้อมูลจาก Firebase
-
+          console.log('🚀 Initializing status page...');
           _context2.next = 3;
-          return regeneratorRuntime.awrap(loadFirebaseData());
+          return regeneratorRuntime.awrap(liff.init({
+            liffId: "2008999812-I2Dz19pN"
+          }));
 
         case 3:
-          loaded = _context2.sent;
-
-          if (loaded) {
-            _context2.next = 9;
+          if (liff.isLoggedIn()) {
+            _context2.next = 6;
             break;
           }
 
-          console.error('❌ Failed to load data');
-          resultDiv = document.getElementById('trackResult');
-
-          if (resultDiv) {
-            resultDiv.innerHTML = "\n                <div class=\"error-message\">\n                    <p>\u26A0\uFE0F \u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E42\u0E2B\u0E25\u0E14\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E44\u0E14\u0E49</p>\n                    <button onclick=\"location.reload()\">\u0E25\u0E2D\u0E07\u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07</button>\n                </div>\n            ";
-          }
-
+          liff.login();
           return _context2.abrupt("return");
 
-        case 9:
-          // แสดงรายการที่กำลังดำเนินการ
-          displayOrders();
-          console.log('✅ Status page initialized');
+        case 6:
+          _context2.next = 8;
+          return regeneratorRuntime.awrap(liff.getProfile());
 
-        case 11:
+        case 8:
+          profile = _context2.sent;
+          currentUserId = profile.userId;
+          console.log("Current user:", currentUserId);
+          _context2.next = 13;
+          return regeneratorRuntime.awrap(loadFirebaseData());
+
+        case 13:
+          loaded = _context2.sent;
+
+          if (loaded) {
+            _context2.next = 17;
+            break;
+          }
+
+          showError();
+          return _context2.abrupt("return");
+
+        case 17:
+          displayOrders();
+
+        case 18:
         case "end":
           return _context2.stop();
       }

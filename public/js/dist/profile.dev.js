@@ -125,11 +125,11 @@ function openAllOrders() {
 }
 
 function openOrder(orderId) {
-  window.location.href = "order-status.html?orderId=".concat(orderId);
+  location.href = "status_details.html?order_id=".concat(orderId);
 }
 
 function loadMyOrders() {
-  var list, allSnap, totalCount, totalIncome, snap, orders, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order, storeSnap, storeName;
+  var list, snap, payouts, totalIncome, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, p, paidDate, orderSnap, orderData, orderDate;
 
   return regeneratorRuntime.async(function loadMyOrders$(_context2) {
     while (1) {
@@ -137,49 +137,26 @@ function loadMyOrders() {
         case 0:
           list = document.getElementById("historyList");
           list.innerHTML = "กำลังโหลด...";
-          /* ==========================
-             1️⃣ ดึงทั้งหมดเพื่อคำนวณ
-          ========================== */
-
           _context2.next = 4;
-          return regeneratorRuntime.awrap(db.ref("order").orderByChild("user_id").equalTo(userId).once("value"));
+          return regeneratorRuntime.awrap(db.ref("seller_payouts").orderByChild("seller_id").equalTo(userId).once("value"));
 
         case 4:
-          allSnap = _context2.sent;
-          totalCount = 0;
-          totalIncome = 0;
-
-          if (allSnap.exists()) {
-            allSnap.forEach(function (child) {
-              totalCount++;
-              totalIncome += child.val().total_price || 0;
-            });
-          }
-
-          document.getElementById("historyCount").innerText = "".concat(totalCount, " \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23");
-          document.getElementById("totalSales").innerText = totalCount;
-          document.getElementById("totalIncome").innerText = Number(totalIncome).toFixed(2);
-          /* ==========================
-             2️⃣ ดึงแค่ 10 รายการล่าสุด
-          ========================== */
-
-          _context2.next = 13;
-          return regeneratorRuntime.awrap(db.ref("order").orderByChild("user_id").equalTo(userId).limitToLast(10).once("value"));
-
-        case 13:
           snap = _context2.sent;
           list.innerHTML = "";
 
           if (snap.exists()) {
-            _context2.next = 18;
+            _context2.next = 12;
             break;
           }
 
-          list.innerHTML = "ยังไม่มีประวัติการขาย";
+          list.innerHTML = "ยังไม่มีประวัติการรับเงิน";
+          document.getElementById("historyCount").innerText = "0 รายการ";
+          document.getElementById("totalSales").innerText = "0";
+          document.getElementById("totalIncome").innerText = "0.00";
           return _context2.abrupt("return");
 
-        case 18:
-          orders = Object.entries(snap.val()).map(function (_ref) {
+        case 12:
+          payouts = Object.entries(snap.val()).map(function (_ref) {
             var _ref2 = _slicedToArray(_ref, 2),
                 id = _ref2[0],
                 data = _ref2[1];
@@ -188,74 +165,85 @@ function loadMyOrders() {
               id: id
             }, data);
           }).sort(function (a, b) {
-            return new Date(b.order_at) - new Date(a.order_at);
-          });
+            return b.paid_at - a.paid_at;
+          }); // เรียงจากใหม่ไปเก่า
+
+          totalIncome = 0;
           _iteratorNormalCompletion = true;
           _didIteratorError = false;
           _iteratorError = undefined;
-          _context2.prev = 22;
-          _iterator = orders[Symbol.iterator]();
+          _context2.prev = 17;
+          _iterator = payouts[Symbol.iterator]();
 
-        case 24:
+        case 19:
           if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-            _context2.next = 34;
+            _context2.next = 32;
             break;
           }
 
-          order = _step.value;
-          _context2.next = 28;
-          return regeneratorRuntime.awrap(db.ref("shops/" + order.shop_id).once("value"));
+          p = _step.value;
+          totalIncome += p.amount || 0;
+          paidDate = p.paid_at ? new Date(p.paid_at).toLocaleString("th-TH") : "-"; // 🔥 ดึงข้อมูล order เพิ่ม
 
-        case 28:
-          storeSnap = _context2.sent;
-          storeName = storeSnap.exists() ? storeSnap.val().shop_name : "-";
-          list.innerHTML += "\n      <div class=\"order-card\" onclick=\"openOrder('".concat(order.id, "')\" style=\"cursor:pointer\">\n        <div class=\"order-row\">\n          <span>\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48</span>\n          <span>").concat(order.pickup_at || "-", "</span>\n        </div>\n        <div class=\"order-row\">\n          <span>\u0E23\u0E49\u0E32\u0E19\u0E04\u0E49\u0E32</span>\n          <span>").concat(storeName || "-", "</span>\n        </div>\n        <div class=\"order-row\">\n          <span>\u0E2A\u0E16\u0E32\u0E19\u0E30</span>\n          <span>").concat(STATUS_LABEL[order.status] || order.status || "-", "</span>\n        </div>\n        <div class=\"order-row\">\n          <span>\u0E22\u0E2D\u0E14</span>\n          <span class=\"order-price\">\u0E3F").concat(Number(order.total_price).toFixed(2) || "-", "</span>\n        </div>\n      </div>\n    ");
+          _context2.next = 25;
+          return regeneratorRuntime.awrap(db.ref("order/" + p.order_id).once("value"));
 
-        case 31:
+        case 25:
+          orderSnap = _context2.sent;
+          orderData = orderSnap.exists() ? orderSnap.val() : null;
+          orderDate = orderData && orderData.order_at ? new Date(orderData.order_at).toLocaleString("th-TH") : "-";
+          list.innerHTML += "\n      <div class=\"order-card\">\n        <div class=\"order-row\">\n          <span>\u0E40\u0E25\u0E02\u0E2D\u0E2D\u0E40\u0E14\u0E2D\u0E23\u0E4C</span>\n          <span>".concat(p.display_id, "</span>\n        </div>\n        <div class=\"order-row\">\n          <span>\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E02\u0E32\u0E22</span>\n          <span>").concat(orderDate, "</span>\n        </div>\n        <div class=\"order-row\">\n          <span>\u0E22\u0E2D\u0E14\u0E02\u0E32\u0E22</span>\n          <span class=\"order-price\">\n            \u0E3F").concat(Number(p.amount).toFixed(2), "\n          </span>\n        </div>\n      </div>\n    ");
+
+        case 29:
           _iteratorNormalCompletion = true;
-          _context2.next = 24;
+          _context2.next = 19;
+          break;
+
+        case 32:
+          _context2.next = 38;
           break;
 
         case 34:
-          _context2.next = 40;
-          break;
-
-        case 36:
-          _context2.prev = 36;
-          _context2.t0 = _context2["catch"](22);
+          _context2.prev = 34;
+          _context2.t0 = _context2["catch"](17);
           _didIteratorError = true;
           _iteratorError = _context2.t0;
 
-        case 40:
-          _context2.prev = 40;
-          _context2.prev = 41;
+        case 38:
+          _context2.prev = 38;
+          _context2.prev = 39;
 
           if (!_iteratorNormalCompletion && _iterator["return"] != null) {
             _iterator["return"]();
           }
 
-        case 43:
-          _context2.prev = 43;
+        case 41:
+          _context2.prev = 41;
 
           if (!_didIteratorError) {
-            _context2.next = 46;
+            _context2.next = 44;
             break;
           }
 
           throw _iteratorError;
 
+        case 44:
+          return _context2.finish(41);
+
+        case 45:
+          return _context2.finish(38);
+
         case 46:
-          return _context2.finish(43);
+          document.getElementById("historyCount").innerText = "".concat(payouts.length, " \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23");
+          document.getElementById("totalSales").innerText = payouts.length;
+          document.getElementById("totalIncome").innerText = Number(totalIncome).toFixed(2);
 
-        case 47:
-          return _context2.finish(40);
-
-        case 48:
+        case 49:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[22, 36, 40, 48], [41,, 43, 47]]);
+  }, null, null, [[17, 34, 38, 46], [39,, 41, 45]]);
 }
 
 loadProfile();

@@ -14,22 +14,55 @@
     <div class="container">
 
         <div class="card">
-            <label>เลือกวันเดือนปี</label>
-            <input type="date" id="date">
+            <h3>วัน-เวลาที่เข้ารับสินค้า</h3>
+          
+            <div class="datetime-group">
+              <div class="input-box">
+                <label>วันที่</label>
+                <input type="date" id="date">
+              </div>
+          
+              <div class="input-box">
+                <label>เวลา</label>
+                <input type="time" id="time">
+              </div>
+            </div>
         </div>
-
-        <div class="card">
-            <label>เวลา</label>
-            <input type="time" id="time">
-        </div>
-
+          
         <div class="card">
             <label>ที่อยู่รับสินค้า</label>
-            <input type="text" id="address" placeholder="ใช้ตำแหน่งปัจจุบัน">
-            <button type="button" onclick="getCurrentLocation()">ใช้ตำแหน่งปัจจุบัน</button>
-            <input type="text" id="addressDetail" placeholder="บ้านเลขที่ หมู่ ซอย เพิ่มเติม">
-            <p id="shippingText"></p>
-        </div>
+          
+            <!-- ช่องแสดงผลจาก GPS (ไม่ให้พิมพ์เอง ลดพัง) -->
+            <input
+              type="text"
+              id="address"
+              placeholder="กรุณากดปุ่มเพื่อใช้ตำแหน่งปัจจุบัน"
+              readonly
+            >
+          
+            <!-- ปุ่ม GPS ทำให้ใหญ่/เด่น -->
+            <button
+              type="button"
+              onclick="getCurrentLocation()"
+              style="width:100%; padding:12px; font-size:16px;"
+            >
+              📍 ใช้ตำแหน่งปัจจุบัน
+            </button>
+          
+            <!-- รายละเอียดเพิ่มเติมให้ผู้ใช้พิมพ์เอง -->
+            <input
+              type="text"
+              id="addressDetail"
+              placeholder="บ้านเลขที่ หมู่ ซอย เพิ่มเติม (ถ้ามี)"
+            >
+          
+            <p id="shippingText" style="margin-top:8px; font-weight:bold;"></p>
+
+            <p style="font-size:13px; color:#666; margin-top:6px;">
+                กรุณากดปุ่มด้านบนเพื่อให้ระบบคำนวณค่าขนส่งอัตโนมัติ
+            </p>
+            
+        </div>                  
 
         <div class="card">
             <h3>ประเภทเศษอาหาร / น้ำหนัก (กก.)</h3>
@@ -44,12 +77,12 @@
             <textarea id="note" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
         </div>
 
-        <button type="button" class="submit-btn" onclick="submitSale()">
-            ยืนยันการขาย
+        <button type="button" id="submitBtn" class="submit-btn" onclick="submitSale()">
+          ยืนยันการขาย
         </button>
 
     </div>
-
+  
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 

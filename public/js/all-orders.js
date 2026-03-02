@@ -31,49 +31,58 @@ async function init(){
   loadAllOrders();
 }
 
+function openOrder(orderId){
+  location.href = `status_details.html?order_id=${orderId}`;
+}
+
 async function loadAllOrders(){
 
-  const snap = await db.ref("order")
-                       .orderByChild("user_id")
+  const list = document.getElementById("orderList");
+  list.innerHTML = "กำลังโหลด...";
+
+  const snap = await db.ref("seller_payouts")
+                       .orderByChild("seller_id")
                        .equalTo(userId)
                        .once("value");
 
-  const list = document.getElementById("orderList");
   list.innerHTML = "";
 
   if(!snap.exists()){
-    list.innerHTML = "ยังไม่มีรายการขาย";
+    list.innerHTML = "ยังไม่มีรายการที่สำเร็จ";
     return;
   }
 
-  const orders = Object.entries(snap.val())
+  const payouts = Object.entries(snap.val())
     .map(([id, data]) => ({ id, ...data }))
-    .sort((a, b) => new Date(b.order_at) - new Date(a.order_at));
+    .sort((a, b) => b.paid_at - a.paid_at);
 
-  for (const order of orders) {
+  for (const p of payouts) {
 
-    const storeSnap = await db.ref("shops/" + order.shop_id).once("value");
-    const storeName = storeSnap.exists()
-      ? storeSnap.val().shop_name
+    // 🔥 ดึง order เพื่อเอา display_id และ order_at
+    const orderSnap = await db.ref("order/" + p.order_id).once("value");
+    const orderData = orderSnap.exists() ? orderSnap.val() : null;
+
+    const displayId = orderData?.display_id || p.order_id;
+
+    const orderDate = orderData?.order_at
+      ? new Date(orderData.order_at).toLocaleString("th-TH")
       : "-";
 
     list.innerHTML += `
-      <div class="order-card" onclick="openOrder('${order.id}')" style="cursor:pointer">
+      <div class="order-card" onclick="openOrder('${p.order_id}')" style="cursor:pointer">
         <div class="order-row">
-          <span>วันที่</span>
-          <span>${order.pickup_at || "-"}</span>
+          <span>รหัสการขาย</span>
+          <span>${displayId}</span>
         </div>
         <div class="order-row">
-          <span>ร้านค้า</span>
-          <span>${storeName || "-"}</span>
+          <span>วันที่ขาย</span>
+          <span>${orderDate}</span>
         </div>
         <div class="order-row">
-          <span>สถานะ</span>
-          <span>${STATUS_LABEL[order.status] || order.status || "-"}</span>
-        </div>
-        <div class="order-row">
-          <span>ยอด</span>
-          <span class="order-price">฿${Number(order.total_price).toFixed(2) || "-"}</span>
+          <span>ยอดที่โอนจริง</span>
+          <span class="order-price">
+            ฿${Number(p.amount).toFixed(2)}
+          </span>
         </div>
       </div>
     `;

@@ -37,11 +37,17 @@
       </div>
     </div>
 
-    <!-- Map กพำำำำำำำำดไไ--->
     <div id="map" class="map-section"></div>
     <div class="dist-info" id="distDisplay">
       คำนวณระยะทางจากตำแหน่งของคุณ...
     </div>
+
+    <button id="retryLocationBtn"
+        onclick="requestLocation()"
+        class="gps-btn"
+        style="display:none;">
+      📍
+    </button>
 
     <!-- Store list -->
     <main class="store-section">

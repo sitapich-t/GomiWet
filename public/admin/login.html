@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Login | GomiWet</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .login-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      width: 360px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      color: white;
+    }
+  
+    .login-card h2 {
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 600;
+    }
+  
+    .input-group {
+      margin-bottom: 18px;
+    }
+  
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+  
+    input:focus {
+      box-shadow: 0 0 0 2px #00c6ff;
+    }
+  
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+  
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
+    }
+  
+    button:active {
+      transform: scale(0.98);
+    }
+  
+    .footer-text {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+  </style>
+  
+</head>
+<body>
+    <div class="login-card">
+        <h2>Admin Login</h2>
+      
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Email">
+        </div>
+      
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password">
+        </div>
+      
+        <button onclick="login()">Login</button>
+      
+        <div class="footer-text">
+            GomiWet Admin Panel
+        </div>
+    </div>      
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAeuc1i5qjKd42_dKpNez4w7KnGnsB7E9c",
+        authDomain: "gomiwet-2ba6e.firebaseapp.com",
+        databaseURL: "https://gomiwet-2ba6e-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "gomiwet-2ba6e",
+        storageBucket: "gomiwet-2ba6e.firebasestorage.app",
+        messagingSenderId: "438646724029",
+        appId: "1:438646724029:web:c11f2f40708c4bc84f2ed4",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const cred = await firebase.auth()
+          .signInWithEmailAndPassword(email, password);
+
+        const uid = cred.user.uid;
+
+        // 🔎 เช็ค role ใน Realtime DB
+        const snap = await firebase.database()
+          .ref("users/" + uid + "/role")
+          .once("value");
+
+        if (snap.val() !== "admin") {
+          alert("คุณไม่มีสิทธิ์เข้าใช้งาน");
+          await firebase.auth().signOut();
+          return;
+        }
+
+        // ผ่านแล้วเข้า dashboard
+        window.location.href = "/admin/dashboard.html";
+
+      } catch (err) {
+        alert("Login ไม่สำเร็จ");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

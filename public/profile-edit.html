@@ -38,7 +38,7 @@
 
     <div class="form-group">
       <label>เบอร์โทรศัพท์</label>
-      <input type="tel" id="phoneInput" placeholder="เช่น 0812345678">
+      <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="เบอร์โทร 10 หลัก">    
     </div>
 
     <div class="form-group">
@@ -47,6 +47,18 @@
         placeholder="กรอกที่อยู่ของคุณ"></textarea>
     </div>
 
+    <h3 style="margin-bottom:10px;">ข้อมูลบัญชีธนาคาร</h3>
+
+    <div class="form-group">
+      <label>ชื่อบัญชี</label>
+      <input type="text" id="bankAccName" placeholder="ชื่อเจ้าของบัญชี">
+    </div>
+
+    <div class="form-group">
+      <label>เลขที่บัญชี</label>
+      <input id="bankAccNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="เลขบัญชี 10 หลัก">
+    </div>
+    
     <button id="saveBtn" class="save-btn">บันทึกข้อมูล</button>
 
   </div>

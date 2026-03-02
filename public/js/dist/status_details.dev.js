@@ -17,6 +17,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // ==================== Status Labels ====================
 var STATUS_LABEL = {
   'order_received': 'ได้รับคำสั่งซื้อ',
+  'assigned': 'มอบหมายขนส่ง',
   'picked_up': 'กำลังส่งไปโกดัง',
   'inbound': 'ถึงโกดังและคัดแยก',
   'sorted': 'คัดแยกเสร็จสิ้น',
@@ -32,6 +33,7 @@ var TIMELINE_STEPS = ['order_received', 'picked_up', 'inbound', 'evaluated', 'so
 
 var STATUS_REACHED_MAP = {
   order_received: ['order_received', 'picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
+  assigned: ['picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
   picked_up: ['picked_up', 'inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
   inbound: ['inbound', 'sorted', 'evaluated', 'outbound', 'sold', 'paid', 'completed'],
   evaluated: ['evaluated', 'outbound', 'sold', 'paid', 'completed'],
@@ -230,6 +232,11 @@ function getLogisticsByPayment(paymentId) {
 
 
 function isStepReached(timelineStep, currentStatus) {
+  // Treat assigned as order_received for display
+  if (currentStatus === 'assigned') {
+    currentStatus = 'order_received';
+  }
+
   var reached = STATUS_REACHED_MAP[timelineStep] || [];
   return reached.includes(currentStatus);
 } // setText helper
@@ -253,7 +260,7 @@ function hideSection(id) {
 
 
 function loadFirebaseData(orderId) {
-  var _ref3, _ref4, paymentSnap, foodWasteSnap, bankSnap, paymentData, paymentId, logisticData, selfDropSnap, logisticEntry, schedSnap, sched, driverSnap, deliveryType, pickupLogistic, logisticPk, inboundSnap, inboundData, selfEntry, selfDropPk, _inboundSnap, _inboundData, inboundPks, _i2, _inboundPks, inboundPk, wsSnap, wsData, sortPks, _i3, _sortPks, sortPk, peSnap, peData, estimatePks, _i4, _estimatePks, estimatePk, obSnap, obData, outboundPks, _i5, _outboundPks, outboundPk, spSnap;
+  var _ref3, _ref4, paymentSnap, foodWasteSnap, bankSnap, paymentData, paymentId, logisticData, selfDropSnap, logisticEntry, schedSnap, sched, driverSnap, deliveryType, pickupLogistic, logisticPk, inboundSnap, inboundData, selfEntry, selfDropPk, _inboundSnap, _inboundData, inboundPks, _i2, _inboundPks, inboundPk, wsSnap, wsData, sortPks, _i3, _sortPks, sortPk, peSnap, peData, estimatePks, _i4, _estimatePks, estimatePk, obSnap, obData, spSnap;
 
   return regeneratorRuntime.async(function loadFirebaseData$(_context3) {
     while (1) {
@@ -500,31 +507,14 @@ function loadFirebaseData(orderId) {
           break;
 
         case 102:
-          // Step 8: Load seller_payouts from outbound pk(s)
+          // Step 8: Load seller_payouts
           sellerPayoutsMap = {};
-          outboundPks = Object.keys(outboundFoodWasteMap);
-          _i5 = 0, _outboundPks = outboundPks;
-
-        case 105:
-          if (!(_i5 < _outboundPks.length)) {
-            _context3.next = 114;
-            break;
-          }
-
-          outboundPk = _outboundPks[_i5];
-          _context3.next = 109;
+          _context3.next = 105;
           return regeneratorRuntime.awrap(db.ref('seller_payouts').orderByChild('order_id').equalTo(orderId).once('value'));
 
-        case 109:
+        case 105:
           spSnap = _context3.sent;
           sellerPayoutsMap = spSnap.val() || {};
-
-        case 111:
-          _i5++;
-          _context3.next = 105;
-          break;
-
-        case 114:
           console.log('✅ Firebase chain loaded:', {
             payments: Object.keys(paymentsMap).length,
             logistics: Object.keys(logisticsMap).length,
@@ -537,18 +527,18 @@ function loadFirebaseData(orderId) {
           });
           return _context3.abrupt("return", true);
 
-        case 118:
-          _context3.prev = 118;
+        case 111:
+          _context3.prev = 111;
           _context3.t0 = _context3["catch"](1);
           console.error('❌ Error loading Firebase data:', _context3.t0);
           return _context3.abrupt("return", false);
 
-        case 122:
+        case 115:
         case "end":
           return _context3.stop();
       }
     }
-  }, null, null, [[1, 118]]);
+  }, null, null, [[1, 111]]);
 } // ==================== Get Order ====================
 
 
@@ -594,7 +584,8 @@ function getOrderFromFirebase(orderId) {
 
 
 function getTimelineDateTime(orderId, timelineStep, deliveryType) {
-  var ts, payment, paymentId, pe, ob, payoutSnap, payoutData;
+  var ts, payment, paymentId, inbound, _inbound, pe, ob, payout;
+
   return regeneratorRuntime.async(function getTimelineDateTime$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -642,8 +633,64 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
           });
 
         case 11:
+          if (!(timelineStep === 'picked_up')) {
+            _context5.next = 18;
+            break;
+          }
+
+          if (!(deliveryType === 'dropoff')) {
+            _context5.next = 16;
+            break;
+          }
+
+          inbound = Object.values(inboundFoodWasteMap).find(function (i) {
+            return i && i.inbound_at;
+          });
+
+          if (!(inbound && inbound.inbound_at)) {
+            _context5.next = 16;
+            break;
+          }
+
+          return _context5.abrupt("return", {
+            date: formatDateToDDMMYYYY(inbound.inbound_at),
+            time: formatTimeToHHMM(inbound.inbound_at)
+          });
+
+        case 16:
+          if (!(currentOrder && currentOrder.pickup_at)) {
+            _context5.next = 18;
+            break;
+          }
+
+          return _context5.abrupt("return", {
+            date: formatDateToDDMMYYYY(currentOrder.pickup_at),
+            time: formatTimeToHHMM(currentOrder.pickup_at)
+          });
+
+        case 18:
+          if (!(timelineStep === 'inbound')) {
+            _context5.next = 22;
+            break;
+          }
+
+          _inbound = Object.values(inboundFoodWasteMap).find(function (i) {
+            return i && i.inbound_at;
+          });
+
+          if (!(_inbound && _inbound.inbound_at)) {
+            _context5.next = 22;
+            break;
+          }
+
+          return _context5.abrupt("return", {
+            date: formatDateToDDMMYYYY(_inbound.inbound_at),
+            time: formatTimeToHHMM(_inbound.inbound_at)
+          });
+
+        case 22:
           if (!(timelineStep === 'evaluated')) {
-            _context5.next = 15;
+            _context5.next = 26;
             break;
           }
 
@@ -652,7 +699,7 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
           });
 
           if (!(pe && pe.estimate_at)) {
-            _context5.next = 15;
+            _context5.next = 26;
             break;
           }
 
@@ -661,9 +708,9 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
             time: formatTimeToHHMM(pe.estimate_at)
           });
 
-        case 15:
+        case 26:
           if (!(timelineStep === 'sold')) {
-            _context5.next = 19;
+            _context5.next = 30;
             break;
           }
 
@@ -672,7 +719,7 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
           });
 
           if (!(ob && ob.delivered_at)) {
-            _context5.next = 19;
+            _context5.next = 30;
             break;
           }
 
@@ -681,53 +728,44 @@ function getTimelineDateTime(orderId, timelineStep, deliveryType) {
             time: formatTimeToHHMM(ob.delivered_at)
           });
 
-        case 19:
+        case 30:
           if (!(timelineStep === 'paid')) {
-            _context5.next = 27;
+            _context5.next = 34;
             break;
           }
 
-          _context5.next = 22;
-          return regeneratorRuntime.awrap(db.ref("seller_payouts").orderByChild("order_id").equalTo(orderId).once("value"));
+          payout = Object.values(sellerPayoutsMap).find(function (p) {
+            return p && p.paid_at;
+          });
 
-        case 22:
-          payoutSnap = _context5.sent;
-
-          if (!payoutSnap.exists()) {
-            _context5.next = 27;
-            break;
-          }
-
-          payoutData = Object.values(payoutSnap.val())[0];
-
-          if (!(payoutData && payoutData.paid_at)) {
-            _context5.next = 27;
+          if (!(payout && payout.paid_at)) {
+            _context5.next = 34;
             break;
           }
 
           return _context5.abrupt("return", {
-            date: formatDateToDDMMYYYY(payoutData.paid_at),
-            time: formatTimeToHHMM(payoutData.paid_at)
+            date: formatDateToDDMMYYYY(payout.paid_at),
+            time: formatTimeToHHMM(payout.paid_at)
           });
 
-        case 27:
-          _context5.next = 32;
+        case 34:
+          _context5.next = 39;
           break;
 
-        case 29:
-          _context5.prev = 29;
+        case 36:
+          _context5.prev = 36;
           _context5.t0 = _context5["catch"](0);
           console.error("\u274C Error getting datetime for ".concat(timelineStep, ":"), _context5.t0);
 
-        case 32:
+        case 39:
           return _context5.abrupt("return", null);
 
-        case 33:
+        case 40:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 29]]);
+  }, null, null, [[0, 36]]);
 } // ==================== Populate Timeline ====================
 
 
@@ -1316,14 +1354,14 @@ function populatePayoutDetails(orderId) {
 
         case 18:
           _context11.next = 20;
-          return regeneratorRuntime.awrap(db.ref("bank_accounts").orderByChild("owner_id").equalTo(sellerId).once("value"));
+          return regeneratorRuntime.awrap(db.ref("bank_accounts/" + sellerId).once("value"));
 
         case 20:
           bankSnap = _context11.sent;
           bankData = null;
 
           if (bankSnap.exists()) {
-            bankData = Object.values(bankSnap.val())[0]; // เอาอันแรก
+            bankData = bankSnap.val();
           } // 4️⃣ แสดงข้อมูล
 
 
@@ -1363,10 +1401,11 @@ function initPage() {
           console.log('🚀 Initializing status details page...');
           _context12.prev = 1;
           urlParams = new URLSearchParams(window.location.search);
-          orderId = urlParams.get('order_id');
+          console.log('url', window.location.search);
+          orderId = urlParams.get('order_id') || urlParams.get('orderId');
 
           if (orderId) {
-            _context12.next = 9;
+            _context12.next = 10;
             break;
           }
 
@@ -1375,17 +1414,17 @@ function initPage() {
           window.location.href = 'status.html';
           return _context12.abrupt("return");
 
-        case 9:
+        case 10:
           console.log('📦 Order number:', orderId); // Fetch the order first (we need delivery_type before loading chain)
 
-          _context12.next = 12;
+          _context12.next = 13;
           return regeneratorRuntime.awrap(getOrderFromFirebase(orderId));
 
-        case 12:
+        case 13:
           order = _context12.sent;
 
           if (order) {
-            _context12.next = 18;
+            _context12.next = 19;
             break;
           }
 
@@ -1394,17 +1433,17 @@ function initPage() {
           window.location.href = 'status.html';
           return _context12.abrupt("return");
 
-        case 18:
+        case 19:
           currentOrder = order; // Load all related data (delivery_type now known)
 
-          _context12.next = 21;
+          _context12.next = 22;
           return regeneratorRuntime.awrap(loadFirebaseData(orderId));
 
-        case 21:
+        case 22:
           dataLoaded = _context12.sent;
 
           if (dataLoaded) {
-            _context12.next = 26;
+            _context12.next = 27;
             break;
           }
 
@@ -1412,31 +1451,31 @@ function initPage() {
           alert('ไม่สามารถโหลดข้อมูลได้');
           return _context12.abrupt("return");
 
-        case 26:
-          _context12.next = 28;
+        case 27:
+          _context12.next = 29;
           return regeneratorRuntime.awrap(populateOrderTimeline(order));
 
-        case 28:
-          _context12.next = 30;
+        case 29:
+          _context12.next = 31;
           return regeneratorRuntime.awrap(populateOrderDetails(order));
 
-        case 30:
+        case 31:
           console.log('✅ Page initialized successfully');
-          _context12.next = 37;
+          _context12.next = 38;
           break;
 
-        case 33:
-          _context12.prev = 33;
+        case 34:
+          _context12.prev = 34;
           _context12.t0 = _context12["catch"](1);
           console.error('❌ Error initializing page:', _context12.t0);
           alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
 
-        case 37:
+        case 38:
         case "end":
           return _context12.stop();
       }
     }
-  }, null, null, [[1, 33]]);
+  }, null, null, [[1, 34]]);
 } // ==================== Event Listeners ====================
 
 

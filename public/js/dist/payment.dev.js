@@ -1,8 +1,8 @@
 "use strict";
 
 var params = new URLSearchParams(window.location.search);
-var orderId = params.get("orderId");
-document.getElementById("orderId").innerText = orderId;
+var orderKey = params.get("orderId"); // key ของ Firebase
+
 var shippingFee = 0;
 
 function loadOrder() {
@@ -11,7 +11,7 @@ function loadOrder() {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          if (orderId) {
+          if (orderKey) {
             _context.next = 3;
             break;
           }
@@ -21,7 +21,7 @@ function loadOrder() {
 
         case 3:
           _context.next = 5;
-          return regeneratorRuntime.awrap(db.ref("order/" + orderId).once("value"));
+          return regeneratorRuntime.awrap(db.ref("order/" + orderKey).once("value"));
 
         case 5:
           snap = _context.sent;
@@ -36,10 +36,12 @@ function loadOrder() {
 
         case 9:
           data = snap.val();
-          shippingFee = data.shipping_fee || 0;
+          shippingFee = data.shipping_fee || 0; // ✅ ใช้ display order id แทน key
+
+          document.getElementById("orderId").innerText = data.display_id || "-";
           document.getElementById("fee").innerText = shippingFee + " บาท";
 
-        case 12:
+        case 13:
         case "end":
           return _context.stop();
       }
@@ -53,7 +55,7 @@ function payNow() {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          if (orderId) {
+          if (orderKey) {
             _context2.next = 3;
             break;
           }
@@ -64,7 +66,7 @@ function payNow() {
         case 3:
           now = Date.now();
           _context2.next = 6;
-          return regeneratorRuntime.awrap(db.ref("order/" + orderId).update({
+          return regeneratorRuntime.awrap(db.ref("order/" + orderKey).update({
             payment_status: "paid",
             status: "order_received",
             "status_history/order_received": now

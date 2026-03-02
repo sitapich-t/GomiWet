@@ -1,8 +1,12 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
+  width: 100%;
+  min-height: 100vh;
   margin: 0;
   font-family: "IBM Plex Sans Thai Looped", system-ui, -apple-system, BlinkMacSystemFont;
   background: #f6f7f8;
@@ -198,10 +202,6 @@ body {
   margin: 0;
   font-family: "IBM Plex Sans Thai Looped", sans-serif;
   background: #f4f6f8;
-}
-
-.container {
-  padding: 16px;
 }
 
 /* ===== HEADER ===== */

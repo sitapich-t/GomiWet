@@ -1,11 +1,12 @@
 // ==================== Global Variables ====================
-let currentUserId = 'U4ea11ac1926aecf3fb62406f5f2759b6'; // TODO: แก้เป็น real user ID จาก auth
+let currentUserId = null;
 let ongoingOrders = []; // รายการที่กำลังดำเนินการ
 let allShops = {};
 
 // ==================== Status Labels ====================
 const STATUS_LABEL = {
 	'order_received': 'ได้รับคำสั่งซื้อ',
+	'assigned': 'มอบหมายขนส่ง',
 	'picked_up': 'กำลังส่งไปโกดัง',
 	'inbound': 'ถึงโกดังและคัดแยก',
 	'sorted': 'คัดแยกเสร็จสิ้น',
@@ -115,8 +116,16 @@ async function loadFirebaseData() {
 	}
 }
 
+function normalizeStatus(status) {
+	if (status === 'assigned') return 'order_received';
+	return status;
+}
+
 // ==================== Get Status Progress ====================
 function getStatusProgress(status) {
+
+	status = normalizeStatus(status);
+
 	const statusOrder = [
 		'order_received',
 		'picked_up',
@@ -127,6 +136,10 @@ function getStatusProgress(status) {
 		'sold'
 	];
 
+	if (status === 'assigned') {
+		status = 'order_received';
+	}
+	
 	const currentIndex = statusOrder.indexOf(status);
 	const totalSteps = statusOrder.length;
 	const progress = currentIndex >= 0 ? ((currentIndex + 1) / totalSteps) * 100 : 0;
@@ -174,7 +187,7 @@ function renderOrderCard(order) {
                 <p><strong>ประเภท:</strong> ${deliveryType}</p>
             </div>
             
-            <button class="btn-view-details" onclick="event.stopPropagation(); viewOrderDetails(${order.order_id})">
+			<button class="btn-view-details" onclick="event.stopPropagation(); viewOrderDetails('${order.order_id}')">
                 ดูรายละเอียด
             </button>
         </div>
@@ -227,30 +240,29 @@ window.viewOrderDetails = function (orderId) {
 // ==================== Initialize ====================
 async function initStatusPage() {
 	console.log('🚀 Initializing status page...');
-
-	// โหลดข้อมูลจาก Firebase
-	const loaded = await loadFirebaseData();
-
-	if (!loaded) {
-		console.error('❌ Failed to load data');
-		const resultDiv = document.getElementById('trackResult');
-		if (resultDiv) {
-			resultDiv.innerHTML = `
-                <div class="error-message">
-                    <p>⚠️ ไม่สามารถโหลดข้อมูลได้</p>
-                    <button onclick="location.reload()">ลองอีกครั้ง</button>
-                </div>
-            `;
-		}
-		return;
+  
+	await liff.init({ liffId: "2008999812-I2Dz19pN" });
+  
+	if (!liff.isLoggedIn()) {
+	  liff.login();
+	  return;
 	}
-
-	// แสดงรายการที่กำลังดำเนินการ
+  
+	const profile = await liff.getProfile();
+	currentUserId = profile.userId;
+  
+	console.log("Current user:", currentUserId);
+  
+	const loaded = await loadFirebaseData();
+  
+	if (!loaded) {
+	  showError();
+	  return;
+	}
+  
 	displayOrders();
-
-	console.log('✅ Status page initialized');
-}
-
+  }
+  
 // ==================== Event Listeners ====================
 document.addEventListener('DOMContentLoaded', () => {
 	console.log('📄 DOM loaded, initializing status page...');

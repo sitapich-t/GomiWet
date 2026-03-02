@@ -64,6 +64,7 @@ function loadHistory(userId) {
   let totalSales = 0;
   let totalIncome = 0;
 
+  
   db.ref("order")
     .orderByChild("user_id")
     .equalTo(userId)
@@ -100,7 +101,7 @@ function openAllOrders(){
 }
 
 function openOrder(orderId){
-  window.location.href = `order-status.html?orderId=${orderId}`;
+  location.href = `status_details.html?order_id=${orderId}`;
 }
 
 async function loadMyOrders() {
@@ -108,80 +109,89 @@ async function loadMyOrders() {
   const list = document.getElementById("historyList");
   list.innerHTML = "กำลังโหลด...";
 
-  /* ==========================
-     1️⃣ ดึงทั้งหมดเพื่อคำนวณ
-  ========================== */
-
-  const allSnap = await db.ref("order")
-    .orderByChild("user_id")
+  const allSnap = await db.ref("seller_payouts")
+    .orderByChild("seller_id")
     .equalTo(userId)
     .once("value");
 
-  let totalCount = 0;
-  let totalIncome = 0;
+  let allCount = 0;
+  let allIncome = 0;
 
   if (allSnap.exists()) {
-    allSnap.forEach(child => {
-      totalCount++;
-      totalIncome += child.val().total_price || 0;
+    Object.values(allSnap.val()).forEach(p => {
+      allCount++;
+      allIncome += p.amount || 0;
     });
   }
 
-  document.getElementById("historyCount").innerText = `${totalCount} รายการ`;
-  document.getElementById("totalSales").innerText = totalCount;
-  document.getElementById("totalIncome").innerText =
-    Number(totalIncome).toFixed(2);
-
-  /* ==========================
-     2️⃣ ดึงแค่ 10 รายการล่าสุด
-  ========================== */
-
-  const snap = await db.ref("order")
-    .orderByChild("user_id")
+  const snap = await db.ref("seller_payouts")
+    .orderByChild("seller_id")
     .equalTo(userId)
-    .limitToLast(10)
+    .limitToLast(5)
     .once("value");
 
   list.innerHTML = "";
 
   if (!snap.exists()) {
-    list.innerHTML = "ยังไม่มีประวัติการขาย";
+    list.innerHTML = "ยังไม่มีประวัติการรับเงิน";
+    document.getElementById("historyCount").innerText = "0 รายการ";
+    document.getElementById("totalSales").innerText = "0";
+    document.getElementById("totalIncome").innerText = "0.00";
     return;
   }
 
-  const orders = Object.entries(snap.val())
+  const payouts = Object.entries(snap.val())
     .map(([id, data]) => ({ id, ...data }))
-    .sort((a, b) => new Date(b.order_at) - new Date(a.order_at));
+    .sort((a, b) => b.paid_at - a.paid_at); // เรียงจากใหม่ไปเก่า
 
-  for (const order of orders) {
+  let totalIncome = 0;
 
-    const storeSnap = await db.ref("shops/" + order.shop_id).once("value");
-    const storeName = storeSnap.exists()
-      ? storeSnap.val().shop_name
+  for (const p of payouts) {
+
+    totalIncome += p.amount || 0;
+  
+    const paidDate = p.paid_at
+      ? new Date(p.paid_at).toLocaleString("th-TH")
       : "-";
-
+  
+    // 🔥 ดึงข้อมูล order เพิ่ม
+    const orderSnap = await db.ref("order/" + p.order_id).once("value");
+    const orderData = orderSnap.exists() ? orderSnap.val() : null;
+  
+    const orderDate = orderData && orderData.order_at
+      ? new Date(orderData.order_at).toLocaleString("th-TH")
+      : "-";
+  
+    const displayId = orderData?.display_id || p.order_id;
+    
     list.innerHTML += `
-      <div class="order-card" onclick="openOrder('${order.id}')" style="cursor:pointer">
+      <div class="order-card" onclick="openOrder('${p.order_id}')" style="cursor:pointer">
         <div class="order-row">
-          <span>วันที่</span>
-          <span>${order.pickup_at || "-"}</span>
+          <span>รหัสการขาย</span>
+          <span>${displayId}</span>
         </div>
         <div class="order-row">
-          <span>ร้านค้า</span>
-          <span>${storeName || "-"}</span>
+          <span>วันที่ขาย</span>
+          <span>${orderDate}</span>
         </div>
         <div class="order-row">
-          <span>สถานะ</span>
-          <span>${STATUS_LABEL[order.status] || order.status || "-"}</span>
-        </div>
-        <div class="order-row">
-          <span>ยอด</span>
-          <span class="order-price">฿${Number(order.total_price).toFixed(2) || "-"}</span>
+          <span>ยอดขาย</span>
+          <span class="order-price">
+            ฿${Number(p.amount).toFixed(2)}
+          </span>
         </div>
       </div>
     `;
   }
-}
+  
+  document.getElementById("historyCount").innerText =
+    `${allCount} รายการ`;
 
+  document.getElementById("totalSales").innerText =
+    allCount;
+
+  document.getElementById("totalIncome").innerText =
+    Number(allIncome).toFixed(2);
+}
 
 loadProfile();
